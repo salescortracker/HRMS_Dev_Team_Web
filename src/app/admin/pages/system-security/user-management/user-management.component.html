@@ -1,0 +1,170 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4 user-management">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-semibold">User Management</h4>
+    <button class="btn btn-danger" (click)="resetForm()">
+      <i class="fa-solid fa-plus me-2"></i> Bulk Upload
+    </button>
+    </div>
+<hr/>
+    <!-- Form -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <form (ngSubmit)="onSubmit()" #userForm="ngForm" novalidate>
+          <div class="row g-3">
+
+            <!-- User Details -->
+            <div class="col-md-4">
+              <label class="form-label">Full Name <span class="text-danger">*</span></label>
+              <input type="text" [(ngModel)]="user.FullName" name="FullName" class="form-control" required placeholder="Enter Full Name" />
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Email <span class="text-danger">*</span></label>
+              <input type="email" [(ngModel)]="user.Email" name="Email" class="form-control" required placeholder="Enter Email" />
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Mobile Number</label>
+              <input type="text" [(ngModel)]="user.Mobile" name="Mobile" class="form-control" placeholder="Enter Mobile Number" />
+            </div>
+
+            <!-- Role & Department -->
+            <div class="col-md-4">
+              <label class="form-label">Role <span class="text-danger">*</span></label>
+              <select class="form-select" [(ngModel)]="user.Role" name="Role" required>
+                <option value="">Select Role</option>
+                <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Department <span class="text-danger">*</span></label>
+              <select class="form-select" [(ngModel)]="user.Department" name="Department" required>
+                <option value="">Select Department</option>
+                <option *ngFor="let d of departments" [value]="d">{{ d }}</option>
+              </select>
+            </div>
+
+            <!-- Active Toggle -->
+            <div class="col-md-4 d-flex align-items-center mt-4">
+              <label class="form-check-label me-2 fw-semibold">Is Active</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="user.IsActive" name="IsActive" />
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="col-md-6 mt-3">
+              <label class="form-label">Password</label>
+              <div class="input-group">
+                <input type="text" [(ngModel)]="user.Password" name="Password" class="form-control" placeholder="Auto-generated or enter manually" />
+                <button class="btn btn-outline-secondary" type="button" (click)="generatePassword()">
+                  Generate
+                </button>
+              </div>
+            </div>
+
+            <!-- Send Email Option -->
+            <div class="col-md-6 mt-3">
+              <label class="form-label">Send Credentials</label>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="sendEmailOption" [(ngModel)]="user.sendEmailOption" value="auto" id="sendAuto" />
+                <label class="form-check-label" for="sendAuto">Automatically</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="sendEmailOption" [(ngModel)]="user.sendEmailOption" value="manual" id="sendManual" />
+                <label class="form-check-label" for="sendManual">Manually</label>
+              </div>
+            </div>
+
+            <!-- Form Buttons -->
+            <div class="col-12 mt-3 text-end">
+              <button class="btn btn-success me-2" type="submit" [disabled]="!userForm.valid">
+                <i class="fa-solid fa-save me-2"></i> {{ isEditMode ? 'Update' : 'Save' }}
+              </button>
+              <button class="btn btn-secondary" type="button" (click)="resetForm()">
+                <i class="fa-solid fa-rotate-left me-2"></i> Reset
+              </button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <!-- Search -->
+        <div class="mb-3 d-flex justify-content-end">
+          <input type="text" class="form-control w-25" placeholder="Search User" [(ngModel)]="searchText" />
+        </div>
+
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 50px;">S.No</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Department</th>
+              <th class="text-center">Active</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let u of paginatedUsers(); let i = index">
+              <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+              <td>{{ u.FullName }}</td>
+              <td>{{ u.Email }}</td>
+              <td>{{ u.Role }}</td>
+              <td>{{ u.Department }}</td>
+              <td class="text-center">
+                <i [ngClass]="u.IsActive ? 'fa-solid fa-circle-check text-success' : 'fa-solid fa-circle-xmark text-danger'"></i>
+              </td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editUser(u)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger me-2" (click)="deleteUser(u)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-info"
+                        *ngIf="u.sendEmailOption === 'manual'"
+                        (click)="sendEmail(u)">
+                  <i class="fa-solid fa-envelope"></i> Send Email
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredUsers().length === 0">
+              <td colspan="7" class="text-center text-muted">No records found</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <nav *ngIf="totalPages() > 1">
+          <ul class="pagination justify-content-center mt-3">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <a class="page-link" href="#" (click)="changePage(currentPage - 1)">Previous</a>
+            </li>
+            <li class="page-item"
+                *ngFor="let page of pagesArray()"
+                [class.active]="currentPage === page">
+              <a class="page-link" href="#" (click)="changePage(page)">{{ page }}</a>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages()">
+              <a class="page-link" href="#" (click)="changePage(currentPage + 1)">Next</a>
+            </li>
+          </ul>
+        </nav>
+
+      </div>
+    </div>
+
+  </div>
+</div>

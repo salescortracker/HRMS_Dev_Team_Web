@@ -1,0 +1,20 @@
+.tax-settings .card {
+  border-radius: 10px;
+}
+
+.tax-settings table th,
+.tax-settings table td {
+  vertical-align: middle;
+}
+
+.tax-settings .table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.tax-settings .text-success {
+  font-weight: 600;
+}
+
+.tax-settings .text-danger {
+  font-weight: 600;
+}

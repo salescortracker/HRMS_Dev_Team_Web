@@ -1,0 +1,19 @@
+.required-fields table th,
+.required-fields table td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.required-fields table th:first-child,
+.required-fields table td:first-child,
+.required-fields table td:nth-child(2) {
+  text-align: left;
+}
+
+.required-fields .form-control {
+  min-height: 38px;
+}
+
+.required-fields .btn {
+  min-width: 100px;
+}

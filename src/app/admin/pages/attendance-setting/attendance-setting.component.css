@@ -1,0 +1,15 @@
+.card {
+  border-radius: 10px;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+.fa-circle-check {
+  color: #28a745;
+}
+
+.fa-circle-xmark {
+  color: #dc3545;
+}

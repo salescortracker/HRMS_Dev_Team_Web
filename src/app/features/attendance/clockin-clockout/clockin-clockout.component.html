@@ -1,0 +1,153 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<!-- CLOCK IN / CLOCK OUT SCREEN -->
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Attendance Management</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">Attandance</a> &gt;
+    <span>Clock In / Clock Out</span>
+  </nav>
+</div>
+
+<div class="tab-container mt-4">
+  <!-- Current Date & Time -->
+  <div class="row mb-4">
+    <div class="col text-center">
+      <h4 id="currentDateTime">Wednesday, 15 Oct 2025 09:30 AM</h4>
+    </div>
+  </div>
+
+  <!-- Clock In / Clock Out Form -->
+  <div class="card p-4 mb-4 shadow-sm">
+    <h5 class="mb-3">Clock In / Clock Out</h5>
+    <form id="attendanceForm">
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label for="employeeCode" class="form-label">Employee Code <span class="text-danger">*</span></label>
+          <input type="text" id="employeeCode" class="form-control" placeholder="Enter employee code" required>
+        </div>
+        <div class="col-md-4">
+          <label for="employeeName" class="form-label">Employee Name <span class="text-danger">*</span></label>
+          <input type="text" id="employeeName" class="form-control" placeholder="Enter employee name" required>
+        </div>
+        <div class="col-md-4">
+          <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
+          <select id="department" class="form-select" required>
+            <option value="">Select Department</option>
+            <option>IT</option>
+            <option>HR</option>
+            <option>Finance</option>
+            <option>Sales</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label for="clockType" class="form-label">Action <span class="text-danger">*</span></label>
+          <select id="clockType" class="form-select" required>
+            <option value="">Select Action</option>
+            <option>Clock In</option>
+            <option>Clock Out</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="time" class="form-label">Time <span class="text-danger">*</span></label>
+          <input type="time" id="time" class="form-control" required>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100">Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Today's Attendance Summary -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card p-3 text-center shadow-sm">
+        <h6>Clock In Time</h6>
+        <p id="todayClockIn">--:--</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3 text-center shadow-sm">
+        <h6>Clock Out Time</h6>
+        <p id="todayClockOut">--:--</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3 text-center shadow-sm">
+        <h6>Total Hours Worked</h6>
+        <p id="todayHours">0h 0m</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attendance List / Table -->
+  <div class="card p-4 shadow-sm">
+    <h5 class="mb-3">Recent Attendance Records</h5>
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>Date</th>
+          <th>Employee Code</th>
+          <th>Employee Name</th>
+          <th>Department</th>
+          <th>Clock In</th>
+          <th>Clock Out</th>
+          <th>Total Hours</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2025-10-14</td>
+          <td>EMP001</td>
+          <td>John Doe</td>
+          <td>IT</td>
+          <td>09:05 AM</td>
+          <td>06:10 PM</td>
+          <td>9h 5m</td>
+          <td>Present</td>
+         <td class="action-icons">
+              <i class="fa-solid fa-pen"></i>
+              <i class="fa-solid fa-trash"></i>
+            </td>
+        </tr>
+        <tr>
+          <td>2025-10-13</td>
+          <td>EMP002</td>
+          <td>Anita Sharma</td>
+          <td>HR</td>
+          <td>09:15 AM</td>
+          <td>06:00 PM</td>
+          <td>8h 45m</td>
+          <td>Present</td>
+          <td class="action-icons">
+              <i class="fa-solid fa-pen"></i>
+              <i class="fa-solid fa-trash"></i>
+            </td>
+        </tr>
+        <tr>
+          <td>2025-10-12</td>
+          <td>EMP003</td>
+          <td>Ravi Kumar</td>
+          <td>Finance</td>
+          <td>--</td>
+          <td>--</td>
+          <td>0h 0m</td>
+          <td>Absent</td>
+         <td class="action-icons">
+              <i class="fa-solid fa-pen"></i>
+            
+            </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<app-footer></app-footer>

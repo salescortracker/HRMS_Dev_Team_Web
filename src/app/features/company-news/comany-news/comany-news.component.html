@@ -1,0 +1,63 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Company News</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">More</a> &gt;
+    <span>Company News</span>
+  </nav>
+</div>
+
+<div class="tab-container p-4">
+
+  <!-- Filter Bar -->
+  <div class="filter-bar mb-4 p-3 bg-light rounded shadow-sm">
+    <div class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label">Category</label>
+        <select class="form-select">
+          <option value="">All Categories</option>
+          <option>Announcements</option>
+          <option>HR Policy</option>
+          <option>Events</option>
+          <option>Achievements</option>
+          <option>General Updates</option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-control">
+      </div>
+
+      <div class="col-md-3 d-flex align-items-end">
+        <button class="btn btn-primary w-100">Filter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- News Listing -->
+  <div class="news-list row g-4">
+    
+    <!-- Single News Card -->
+    <div class="col-md-6 col-lg-4" *ngFor="let news of newsList">
+      <div class="news-card p-3 shadow-sm rounded bg-white h-100 d-flex flex-column justify-content-between">
+        <div>
+          <div class="news-header d-flex justify-content-between align-items-start">
+            <h5 class="fw-semibold mb-2">{{ news.Title }}</h5>
+            <span class="news-date text-muted">{{ news.Date | date:'dd-MMM-yyyy' }}</span>
+          </div>
+          <span class="badge bg-info mb-2">{{ news.Category }}</span>
+          <p class="news-desc text-muted">{{ news.Description }}</p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<app-footer></app-footer>

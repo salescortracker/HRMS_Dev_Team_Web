@@ -1,0 +1,14 @@
+.department-master .form-label {
+  font-weight: 500;
+}
+
+.department-master table th,
+.department-master table td {
+  vertical-align: middle;
+}
+
+.department-master .pagination .page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}

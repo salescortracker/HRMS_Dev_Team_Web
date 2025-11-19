@@ -1,0 +1,551 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Recruitment (ATS)</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    
+    <span>Recruitment</span>
+  </nav>
+</div>
+
+<div class="">
+<div class="tab-container my-4 recruitment-container">
+  <h2 class="text-center mb-3">Recruitment Process (ATS)</h2>
+
+  <!-- Top row: global filters + overall progress for selected candidate -->
+  <div class="row mb-3">
+    <div class="col-md-6 d-flex gap-2">
+      <input type="text" class="form-control" placeholder="Search candidate / tech..." [(ngModel)]="globalFilter">
+      <select class="form-select w-auto" [(ngModel)]="filterStage">
+        <option value="">All stages</option>
+        <option *ngFor="let t of tabs; let idx = index" [value]="idx+1">{{ t }}</option>
+      </select>
+      <button class="btn btn-outline-secondary" (click)="applyFilter()">Apply</button>
+      <button class="btn btn-outline-secondary" (click)="clearFilter()">Clear</button>
+    </div>
+
+    <div class="col-md-6">
+      <div class="d-flex align-items-center justify-content-end gap-3">
+        <div class="text-end">
+          <small class="text-muted">Selected Candidate</small>
+          <div><strong>{{ selectedCandidate?.name || '— none —' }}</strong></div>
+        </div>
+        <div style="min-width:260px;">
+          <div class="progress mb-1" style="height:12px;">
+            <div
+              class="progress-bar"
+              role="progressbar"
+              [style.width.%]="selectedCandidate ? calculateProgress(selectedCandidate) : 0"
+              [ngClass]="getProgressColor(selectedCandidate)">
+            </div>
+          </div>
+          <small class="text-muted">{{ selectedCandidate ? calculateProgress(selectedCandidate) + '%' : '0%' }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs header -->
+  <div class="card mb-3">
+    <div class="card-body p-2">
+      <div class="d-flex">
+        <button *ngFor="let t of tabs; let i = index"
+                class="btn flex-fill me-1"
+                [class.btn-primary]="activeTab === i+1"
+                [class.btn-outline-primary]="activeTab !== i+1"
+                (click)="setActiveTab(i+1)">
+          {{ t }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- main content area -->
+  <div class="card">
+    <div class="card-body">
+
+      <!-- TAB 1: Resume Upload / Candidate Intake -->
+      <div *ngIf="activeTab === 1">
+        <h4>Resume Upload / Application Intake</h4>
+
+        <form class="row g-3 align-items-end" (ngSubmit)="addCandidate()" #uploadForm="ngForm">
+          <div class="col-md-3">
+            <label class="form-label">Candidate Name</label>
+            <input name="name" class="form-control" [(ngModel)]="candidateForm.name" required />
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Email</label>
+            <input name="email" type="email" class="form-control" [(ngModel)]="candidateForm.email" required />
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Mobile</label>
+            <input name="mobile" class="form-control" [(ngModel)]="candidateForm.mobile" />
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Technology / Skill</label>
+            <input name="technology" class="form-control" [(ngModel)]="candidateForm.technology" placeholder="Angular, Java..." required />
+          </div>
+          <div class="col-md-1">
+            <label class="form-label">Exp (yrs)</label>
+            <input name="exp" type="number" class="form-control" [(ngModel)]="candidateForm.experience" min="0" />
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Current CTC</label>
+            <input name="currentCTC" class="form-control" [(ngModel)]="candidateForm.currentCTC" placeholder="₹" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Resume (select files)</label>
+            <input type="file" (change)="onResumeFiles($event)" class="form-control" multiple />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Applied Date</label>
+            <input type="date" class="form-control" [(ngModel)]="candidateForm.appliedDate" name="appliedDate" />
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">&nbsp;</label>
+            <button class="btn btn-success w-100" type="submit">Add Candidate</button>
+          </div>
+        </form>
+
+        <hr />
+
+        <h5>Candidates Listing</h5>
+        <div class="table-responsive">
+          <table class="table table-sm table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Tech</th>
+                <th>Exp</th>
+                <th>Applied</th>
+                <th>Stage</th>
+                <th>Progress</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of viewCandidates(); let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ c.name }} <small class="d-block text-muted">{{ c.email }}</small></td>
+                <td>{{ c.technology }}</td>
+                <td>{{ c.experience }}</td>
+                <td>{{ c.appliedDate }}</td>
+                <td><span class="badge bg-info text-dark">{{ tabs[c.stage - 1] }}</span></td>
+                <td style="min-width:170px;">
+                  <div class="d-flex align-items-center">
+                    <div class="flex-fill me-2">
+                      <div class="progress" style="height:8px;">
+                        <div class="progress-bar" role="progressbar"
+                             [style.width.%]="calculateProgress(c)" [ngClass]="getProgressColor(c)"></div>
+                      </div>
+                    </div>
+                    <small>{{ calculateProgress(c)}}%</small>
+                  </div>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary me-1" (click)="selectCandidate(c)">Select</button>
+                  <button class="btn btn-sm btn-outline-success me-1" (click)="advanceStage(c)">Advance</button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="removeCandidate(c)">Delete</button>
+                </td>
+              </tr>
+              <tr *ngIf="viewCandidates().length === 0">
+                <td colspan="8" class="text-center text-muted">No candidates found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: Screening / Shortlisting -->
+      <div *ngIf="activeTab === 2">
+        <h4>Screening / Shortlisting</h4>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Select Candidates (multiple)</label>
+            <select class="form-select" multiple [(ngModel)]="screeningSelectedCandidates" name="screenCandidates">
+              <option *ngFor="let c of candidates" [ngValue]="c">{{ c.name }} — {{ c.technology }}</option>
+            </select>
+            <small class="text-muted">Ctrl/Cmd + click to multi-select</small>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Select Recruiters (multiple)</label>
+            <select class="form-select" multiple [(ngModel)]="screeningRecruiters" name="screenRecruiters">
+              <option *ngFor="let r of recruiters" [value]="r">{{ r }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Result</label>
+            <select class="form-select" [(ngModel)]="screeningResult">
+              <option value="Pass">Pass / Shortlist</option>
+              <option value="Hold">Hold</option>
+              <option value="Reject">Reject</option>
+            </select>
+          </div>
+
+          <div class="col-md-8">
+            <label class="form-label">Remarks</label>
+            <textarea class="form-control" rows="2" [(ngModel)]="screeningRemarks"></textarea>
+          </div>
+
+          <div class="col-md-4 d-flex align-items-end">
+            <button class="btn btn-primary w-100" (click)="applyScreening()">Apply Screening</button>
+          </div>
+        </div>
+
+        <hr />
+
+        <h5>Screening Records</h5>
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Candidate</th>
+                <th>Recruiters</th>
+                <th>Result</th>
+                <th>Remarks</th>
+                <th>Date</th>
+                <th>Progress</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of viewCandidates(); let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ c.name }}</td>
+                <td>
+                  <ul class="mb-0">
+                    <li *ngFor="let s of c.screening">{{ s.recruiter }}</li>
+                  </ul>
+                </td>
+                <td>{{ c.screening.length ? c.screening[c.screening.length-1].status : '-' }}</td>
+                <td>{{ c.screening.length ? c.screening[c.screening.length-1].remarks : '-' }}</td>
+                <td>{{ c.screening.length ? c.screening[c.screening.length-1].date : '-' }}</td>
+                <td style="width:170px;">
+                  <div class="progress" style="height:8px;">
+                    <div class="progress-bar" [style.width.%]="calculateProgress(c)" [ngClass]="getProgressColor(c)"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: Interview Process (dynamic rounds) -->
+      <div *ngIf="activeTab === 3">
+        <h4>Interview Scheduling & Feedback</h4>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Candidate</label>
+            <select class="form-select" [(ngModel)]="interviewForm.candidate" name="interviewCandidate">
+              <option *ngFor="let c of candidates" [ngValue]="c">{{ c.name }} — {{ c.technology }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Level</label>
+            <select class="form-select" [(ngModel)]="interviewForm.level">
+              <option *ngFor="let lv of [1,2,3]" [ngValue]="lv">Level {{ lv }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Interviewer</label>
+            <input class="form-control" [(ngModel)]="interviewForm.interviewer" name="iviewer" />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Date & Time</label>
+            <input type="datetime-local" class="form-control" [(ngModel)]="interviewForm.dt" name="ivdt" />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Location</label>
+            <input class="form-control" [(ngModel)]="interviewForm.location" name="ivloc" placeholder="Office / Online" />
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Cabin / Room</label>
+            <input class="form-control" [(ngModel)]="interviewForm.cabin" name="ivcabin" placeholder="A-101" />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Result</label>
+            <select class="form-select" [(ngModel)]="interviewForm.result">
+              <option value="Pending">Pending</option>
+              <option value="Pass">Pass</option>
+              <option value="Fail">Fail</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Feedback / Notes</label>
+            <textarea class="form-control" [(ngModel)]="interviewForm.feedback" rows="2"></textarea>
+          </div>
+
+          <div class="col-md-1 d-flex align-items-end">
+            <button class="btn btn-success w-100" (click)="scheduleInterview()">Schedule / Save</button>
+          </div>
+        </div>
+
+        <hr />
+
+        <h5>Interview Records</h5>
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Candidate</th>
+                <th>Level</th>
+                <th>Interviewer</th>
+                <th>DateTime</th>
+                <th>Location</th>
+                <th>Cabin</th>
+                <th>Result</th>
+                <th>Feedback</th>
+                <th>Progress</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of viewCandidates(); let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ c.name }}</td>
+                <td>
+                  <ul class="mb-0">
+                    <li *ngFor="let iv of c.interviews">Level {{ iv.level }}</li>
+                  </ul>
+                </td>
+                <td>
+                  <ul class="mb-0">
+                    <li *ngFor="let iv of c.interviews">{{ iv.interviewer }}</li>
+                  </ul>
+                </td>
+                <td>
+                  <ul class="mb-0">
+                    <li *ngFor="let iv of c.interviews">{{ iv.dt }}</li>
+                  </ul>
+                </td>
+                <td>
+                  <ul class="mb-0">
+                    <li *ngFor="let iv of c.interviews">{{ iv.location }}</li>
+                  </ul>
+                </td>
+                <td>
+                  <ul class="mb-0">
+                    <li *ngFor="let iv of c.interviews">{{ iv.cabin }}</li>
+                  </ul>
+                </td>
+                <td>
+                  <ul class="mb-0">
+                    <li *ngFor="let iv of c.interviews">{{ iv.result }}</li>
+                  </ul>
+                </td>
+                <td>
+                  <ul class="mb-0">
+                    <li *ngFor="let iv of c.interviews">{{ iv.feedback }}</li>
+                  </ul>
+                </td>
+                <td style="width:160px;">
+                  <div class="progress" style="height:8px;">
+                    <div class="progress-bar" [style.width.%]="calculateProgress(c)" [ngClass]="getProgressColor(c)"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 4: Offer Management -->
+      <div *ngIf="activeTab === 4">
+        <h4>Offer Management</h4>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Candidate</label>
+            <select class="form-select" [(ngModel)]="offerForm.candidate" name="offCandidate">
+              <option *ngFor="let c of candidates" [ngValue]="c">{{ c.name }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Offered Role</label>
+            <input class="form-control" [(ngModel)]="offerForm.role" name="offRole" />
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">CTC</label>
+            <input class="form-control" [(ngModel)]="offerForm.ctc" name="offCTC" />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Expected DOJ</label>
+            <input type="date" class="form-control" [(ngModel)]="offerForm.doj" name="offDOJ" />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Offer Status</label>
+            <select class="form-select" [(ngModel)]="offerForm.status" name="offStatus">
+              <option>Offered</option>
+              <option>Accepted</option>
+              <option>Declined</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">HR Name</label>
+            <input class="form-control" [(ngModel)]="offerForm.hrName" name="offHR" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Offer Letter (file)</label>
+            <input type="file" class="form-control" (change)="onOfferLetter($event)" />
+          </div>
+
+          <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-success w-100" (click)="applyOffer()">Save Offer</button>
+          </div>
+        </div>
+
+        <hr />
+
+        <h5>Offers List</h5>
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Candidate</th>
+                <th>Role</th>
+                <th>CTC</th>
+                <th>DOJ</th>
+                <th>HR</th>
+                <th>Status</th>
+                <th>Progress</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of viewCandidates(); let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ c.name }}</td>
+                <td>{{ c.offer.role || '-' }}</td>
+                <td>{{ c.offer.ctc || '-' }}</td>
+                <td>{{ c.offer.doj || '-' }}</td>
+                <td>{{ c.offer.hrName || '-' }}</td>
+                <td>{{ c.offer.status || '-' }}</td>
+                <td>
+                  <div class="progress" style="height:8px;">
+                    <div class="progress-bar" [style.width.%]="calculateProgress(c)" [ngClass]="getProgressColor(c)"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 5: Onboarding -->
+      <div *ngIf="activeTab === 5">
+        <h4>Onboarding</h4>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Candidate</label>
+            <select class="form-select" [(ngModel)]="onboardForm.candidate" name="onCandidate">
+              <option *ngFor="let c of candidates" [ngValue]="c">{{ c.name }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Joining Date</label>
+            <input type="date" class="form-control" [(ngModel)]="onboardForm.joiningDate" name="onJoin" />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Documents Collected</label>
+            <select class="form-select" [(ngModel)]="onboardForm.docsCollected" name="onDocs">
+              <option [ngValue]="true">Yes</option>
+              <option [ngValue]="false">No</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Background Check</label>
+            <select class="form-select" [(ngModel)]="onboardForm.bgCheck" name="onBg">
+              <option>Pending</option>
+              <option>Clear</option>
+              <option>Issue</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Laptop Issued</label>
+            <select class="form-select" [(ngModel)]="onboardForm.laptop" name="onLaptop">
+              <option [ngValue]="true">Yes</option>
+              <option [ngValue]="false">No</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Buddy Assigned</label>
+            <input class="form-control" [(ngModel)]="onboardForm.buddy" name="onBuddy" />
+          </div>
+
+          <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-success w-100" (click)="applyOnboarding()">Save Onboarding</button>
+          </div>
+        </div>
+
+        <hr />
+
+        <h5>Onboarding Status</h5>
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Candidate</th>
+                <th>Joining</th>
+                <th>Docs</th>
+                <th>BG Check</th>
+                <th>Laptop</th>
+                <th>Buddy</th>
+                <th>Progress</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of viewCandidates(); let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ c.name }}</td>
+                <td>{{ c.onboarding.joiningDate || '-' }}</td>
+                <td>{{ c.onboarding.docsCollected ? 'Yes' : 'No' }}</td>
+                <td>{{ c.onboarding.bgCheck || '-' }}</td>
+                <td>{{ c.onboarding.laptop ? 'Yes' : 'No' }}</td>
+                <td>{{ c.onboarding.buddy || '-' }}</td>
+                <td>
+                  <div class="progress" style="height:8px;">
+                    <div class="progress-bar" [style.width.%]="calculateProgress(c)" [ngClass]="getProgressColor(c)"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+<app-footer></app-footer>

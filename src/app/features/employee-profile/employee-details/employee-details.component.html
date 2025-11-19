@@ -1,0 +1,49 @@
+ <app-header></app-header>
+ <app-sidebar></app-sidebar>
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Employee Details</h2>
+  <nav class="breadcrumb">
+    <a href="#"> Home</a> &gt; 
+     <a href="#"> Employee Profile</a> &gt; 
+    <span>Employee Details</span>
+  </nav>
+</div>
+<div class="tab-container">
+
+    <!-- Radios -->
+    <input type="radio" id="tab1" name="tab" checked>
+    <input type="radio" id="tab2" name="tab">
+    <input type="radio" id="tab3" name="tab">
+    <input type="radio" id="tab4" name="tab">
+
+    <!-- Tab Header -->
+    <div class="tab-header">
+      <label class="tab-label" for="tab1">Personal Details</label>
+      <label class="tab-label" for="tab2">Family Details</label>
+      <label class="tab-label" for="tab3">Emergency Contact</label>
+      <label class="tab-label" for="tab4">References</label>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <div id="content1" class="tab-content">
+       
+       <app-employee-personal-details></app-employee-personal-details>
+      </div>
+
+      <div id="content2" class="tab-content">
+        
+        <app-employee-family-details></app-employee-family-details>
+      </div>
+
+      <div id="content3" class="tab-content">
+     <app-employee-emergency-contact></app-employee-emergency-contact>
+      </div>
+
+      <div id="content4" class="tab-content">
+       <app-employee-references></app-employee-references>
+      </div>
+    </div>
+
+  </div>
+<app-footer></app-footer>

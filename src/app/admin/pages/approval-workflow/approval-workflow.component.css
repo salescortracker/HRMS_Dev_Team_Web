@@ -1,0 +1,17 @@
+.card {
+  border-radius: 10px;
+}
+
+.table td input {
+  border: none;
+  background: transparent;
+}
+
+.table td input:focus {
+  border-bottom: 1px solid #b02828;
+  background: #fff;
+}
+
+.btn-danger i {
+  margin-right: 4px;
+}

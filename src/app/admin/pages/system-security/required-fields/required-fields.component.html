@@ -1,0 +1,94 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4 required-fields">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-semibold">Module-Based Required Fields</h4>
+    </div>
+
+    <!-- Module and Field Selection -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="row g-3 align-items-center">
+
+          <!-- Module Dropdown -->
+          <div class="col-md-4">
+            <label class="form-label">Select Module <span class="text-danger">*</span></label>
+            <select class="form-select" [(ngModel)]="selectedModule" name="selectedModule" (change)="loadModuleFields()" required>
+              <option value="">Select Module</option>
+              <option *ngFor="let m of modules" [value]="m">{{ m }}</option>
+            </select>
+          </div>
+
+          <!-- Fields Dropdown -->
+          <div class="col-md-4" *ngIf="moduleFields.length > 0">
+            <label class="form-label">Select Field <span class="text-danger">*</span></label>
+            <select class="form-select" [(ngModel)]="selectedFieldName" name="selectedFieldName">
+              <option value="">Select Field</option>
+              <option *ngFor="let f of moduleFields" [value]="f.FieldName">{{ f.FieldName }}</option>
+            </select>
+          </div>
+
+          <!-- Required Toggle -->
+          <div class="col-md-2 d-flex align-items-center mt-4" *ngIf="selectedFieldName">
+            <label class="form-check-label me-2 fw-semibold">Required</label>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="selectedFieldRequired" name="selectedFieldRequired" />
+            </div>
+          </div>
+
+          <!-- Add Button -->
+          <div class="col-md-2 text-end mt-4">
+            <button class="btn btn-primary" (click)="addField()" [disabled]="!selectedFieldName">
+              <i class="fa-solid fa-plus me-2"></i> Add Field
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Added Fields Table -->
+    <div class="card shadow-sm" *ngIf="addedFields.length > 0">
+      <div class="card-body">
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 50px;">S.No</th>
+              <th>Field Name</th>
+              <th class="text-center">Required</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let f of addedFields; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ f.FieldName }}</td>
+              <td class="text-center">
+                <div class="form-check form-switch d-inline-block">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="f.IsRequired" [name]="'required'+i" />
+                </div>
+              </td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-danger" (click)="removeField(i)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Save/Reset Buttons -->
+    <div class="mt-4 text-end">
+      <button class="btn btn-success me-2" (click)="saveFields()" [disabled]="addedFields.length === 0">
+        <i class="fa-solid fa-save me-2"></i> Save
+      </button>
+      <button class="btn btn-secondary" (click)="resetAll()">
+        <i class="fa-solid fa-rotate-left me-2"></i> Reset
+      </button>
+    </div>
+
+  </div>
+</div>

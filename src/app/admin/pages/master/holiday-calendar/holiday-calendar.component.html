@@ -1,0 +1,143 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4 holiday-calendar-master">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-semibold">Holiday Calendar</h4>
+     <button class="btn btn-danger" (click)="resetForm()">
+      <i class="fa-solid fa-plus me-2"></i> Bulk Upload
+    </button>
+    </div>
+<hr/>
+    <!-- Form -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <form (ngSubmit)="onSubmit()" #holidayForm="ngForm" novalidate>
+          <div class="row align-items-center g-3">
+
+            <div class="col-md-3">
+              <label class="form-label">Holiday Date <span class="text-danger">*</span></label>
+              <input type="date"
+                [(ngModel)]="holiday.HolidayDate"
+                name="HolidayDate"
+                class="form-control"
+                required />
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Holiday Name <span class="text-danger">*</span></label>
+              <input type="text"
+                [(ngModel)]="holiday.HolidayName"
+                name="HolidayName"
+                class="form-control"
+                required
+                placeholder="Enter Holiday Name" />
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Holiday Type</label>
+              <select class="form-select" [(ngModel)]="holiday.HolidayType" name="HolidayType">
+                <option value="">Select Type</option>
+                <option value="Public">Public</option>
+                <option value="Optional">Optional</option>
+                <option value="Restricted">Restricted</option>
+              </select>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-center mt-4">
+              <label class="form-check-label me-2 fw-semibold">Is Active</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox"
+                  [(ngModel)]="holiday.IsActive" name="IsActive" />
+              </div>
+            </div>
+
+            <div class="col-12 mt-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control"
+                        rows="2"
+                        [(ngModel)]="holiday.Description"
+                        name="Description"
+                        placeholder="Optional description for the holiday"></textarea>
+            </div>
+
+            <div class="col-12 mt-3 text-end">
+              <button class="btn btn-success me-2" type="submit" [disabled]="!holidayForm.valid">
+                <i class="fa-solid fa-save me-2"></i> {{ isEditMode ? 'Update' : 'Save' }}
+              </button>
+              <button class="btn btn-secondary" type="button" (click)="resetForm()">
+                <i class="fa-solid fa-rotate-left me-2"></i> Reset
+              </button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <!-- Search -->
+        <div class="mb-3 d-flex justify-content-end">
+          <input type="text" class="form-control w-25" placeholder="Search Holiday" [(ngModel)]="searchText" />
+        </div>
+
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 60px;">S.No</th>
+              <th>Date</th>
+              <th>Holiday Name</th>
+              <th>Type</th>
+              <th class="text-center">Active</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of paginatedHolidays(); let i = index">
+              <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+              <td>{{ h.HolidayDate | date:'yyyy-MM-dd' }}</td>
+              <td>{{ h.HolidayName }}</td>
+              <td>{{ h.HolidayType }}</td>
+              <td class="text-center">
+                <i [ngClass]="h.IsActive ? 'fa-solid fa-circle-check text-success' : 'fa-solid fa-circle-xmark text-danger'"></i>
+              </td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editHoliday(h)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteHoliday(h)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredHolidays().length === 0">
+              <td colspan="6" class="text-center text-muted">No records found</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <nav *ngIf="totalPages() > 1">
+          <ul class="pagination justify-content-center mt-3">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <a class="page-link" href="#" (click)="changePage(currentPage - 1)">Previous</a>
+            </li>
+            <li class="page-item"
+                *ngFor="let page of pagesArray()"
+                [class.active]="currentPage === page">
+              <a class="page-link" href="#" (click)="changePage(page)">{{ page }}</a>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages()">
+              <a class="page-link" href="#" (click)="changePage(currentPage + 1)">Next</a>
+            </li>
+          </ul>
+        </nav>
+
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,278 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Asset Management</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">Assets</a> &gt;
+    <span>Asset Module</span>
+  </nav>
+</div>
+
+<div class="tab-container">
+  <!-- Radios for tabs -->
+  <input type="radio" id="tab1" name="tab" checked>
+  <input type="radio" id="tab2" name="tab">
+  <input type="radio" id="tab3" name="tab">
+
+  <!-- Tab Header -->
+  <div class="tab-header">
+    <label class="tab-label" for="tab1">Add Asset</label>
+    <label class="tab-label" for="tab2">My Assets</label>
+    <label class="tab-label" for="tab3">Asset Approval</label>
+  </div>
+
+  <!-- TAB 1: ADD ASSET -->
+  <div id="content1" class="tab-content">
+    <form>
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Asset Name</label>
+          <input type="text" class="form-control" placeholder="Enter asset name" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Asset Code</label>
+          <input type="text" class="form-control" placeholder="Enter asset code" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Asset Location</label>
+          <input type="text" class="form-control" placeholder="Enter location">
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Asset Cost</label>
+          <div class="d-flex">
+            <select class="form-select" style="max-width:100px; margin-right:5px;" required>
+              <option>INR</option>
+              <option>USD</option>
+              <option>MYR</option>
+              <option>EUR</option>
+            </select>
+            <input type="number" class="form-control" placeholder="Enter amount" required>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Asset Description</label>
+          <textarea class="form-control" placeholder="Enter description"></textarea>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Asset Model / Version</label>
+          <input type="text" class="form-control" placeholder="Enter model/version">
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Purchase Order</label>
+          <input type="text" class="form-control" placeholder="Enter purchase order">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Warranty Start Date</label>
+          <input type="date" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Warranty End Date</label>
+          <input type="date" class="form-control">
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Asset Return Date</label>
+          <input type="date" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Status</label>
+          <select class="form-select">
+            <option value="">Select Status</option>
+            <option>In Use</option>
+            <option>Available</option>
+            <option>Under Repair</option>
+            <option>Disposed</option>
+          </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100">Add Asset</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Listing Table -->
+    <div class="dashboard-tables full-row mt-4">
+      <div class="table-card">
+        <h3>Asset List</h3>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Asset Name</th>
+              <th>Asset Code</th>
+              <th>Location</th>
+              <th>Cost</th>
+              <th>Description</th>
+              <th>Model/Version</th>
+              <th>PO</th>
+              <th>Warranty Start</th>
+              <th>Warranty End</th>
+              <th>Return Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Laptop</td>
+              <td>AS001</td>
+              <td>NY Office</td>
+              <td>USD 1200</td>
+              <td>Dell Latitude</td>
+              <td>7410</td>
+              <td>PO12345</td>
+              <td>2025-01-01</td>
+              <td>2026-01-01</td>
+              <td>—</td>
+              <td>In Use</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: MY ASSETS WITH FILTERS -->
+  <div id="content2" class="tab-content">
+    <form class="row mb-3">
+      <div class="col-md-3">
+        <label class="form-label">Asset Name</label>
+        <input type="text" class="form-control" placeholder="Enter asset name">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Location</label>
+        <input type="text" class="form-control" placeholder="Enter location">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Status</label>
+        <select class="form-select">
+          <option value="">All</option>
+          <option>In Use</option>
+          <option>Available</option>
+          <option>Under Repair</option>
+          <option>Disposed</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Currency</label>
+        <select class="form-select">
+          <option value="">All</option>
+          <option>INR</option>
+          <option>USD</option>
+          <option>MYR</option>
+          <option>EUR</option>
+        </select>
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+      </div>
+    </form>
+
+    <div class="dashboard-tables full-row mt-2">
+      <div class="table-card">
+        <h3>My Assets</h3>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Asset Name</th>
+              <th>Asset Code</th>
+              <th>Location</th>
+              <th>Cost</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Laptop</td>
+              <td>AS001</td>
+              <td>NY Office</td>
+              <td>USD 1200</td>
+              <td>In Use</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: ASSET APPROVAL -->
+  <div id="content3" class="tab-content">
+    <form class="row mb-3">
+      <div class="col-md-3">
+        <label class="form-label">Asset Name</label>
+        <input type="text" class="form-control" placeholder="Enter asset name">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Location</label>
+        <input type="text" class="form-control" placeholder="Enter location">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Status</label>
+        <select class="form-select">
+          <option value="">All</option>
+          <option>In Use</option>
+          <option>Available</option>
+          <option>Under Repair</option>
+          <option>Disposed</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Currency</label>
+        <select class="form-select">
+          <option value="">All</option>
+          <option>INR</option>
+          <option>USD</option>
+          <option>MYR</option>
+          <option>EUR</option>
+        </select>
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+      </div>
+    </form>
+
+    <div class="dashboard-tables full-row mt-2">
+      <div class="table-card">
+        <h3>Asset Approvals</h3>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th><input type="checkbox"></th>
+              <th>Asset Name</th>
+              <th>Asset Code</th>
+              <th>Location</th>
+              <th>Cost</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>Laptop</td>
+              <td>AS001</td>
+              <td>NY Office</td>
+              <td>USD 1200</td>
+              <td>Pending</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="mt-2">
+          <button class="btn btn-success btn-sm">Approve Selected</button>
+          <button class="btn btn-danger btn-sm">Reject Selected</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<app-footer></app-footer>

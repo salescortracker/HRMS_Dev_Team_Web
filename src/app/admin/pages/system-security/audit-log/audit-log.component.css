@@ -1,0 +1,14 @@
+.audit-log table th,
+.audit-log table td {
+  vertical-align: middle;
+}
+
+.audit-log .pagination .page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}
+
+.audit-log .form-control {
+  min-height: 38px;
+}

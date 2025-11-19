@@ -1,0 +1,124 @@
+<div class="card shadow-sm">
+<div class="container-fluid p-4 sms-template-master">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-semibold">SMS Templates</h4>
+   
+  </div>
+
+  <!-- Form Section -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <form (ngSubmit)="onSubmit()" #form="ngForm" novalidate>
+        <div class="row g-3">
+          <div class="col-md-5">
+            <label class="form-label">Template Name <span class="text-danger">*</span></label>
+            <input type="text" [(ngModel)]="smsTemplate.TemplateName" name="TemplateName"
+              class="form-control" required placeholder="Enter template name (e.g., Leave Approval)" />
+          </div>
+
+          <div class="col-md-5">
+            <label class="form-label">Template Type <span class="text-danger">*</span></label>
+            <select class="form-select" [(ngModel)]="smsTemplate.TemplateType" name="TemplateType" required>
+              <option value="">-- Select Type --</option>
+              <option value="Leave">Leave</option>
+              <option value="Attendance">Attendance</option>
+              <option value="Expense">Expense</option>
+              <option value="Payroll">Payroll</option>
+              <option value="General">General</option>
+            </select>
+          </div>
+
+          <div class="col-md-2 d-flex align-items-center mt-4">
+            <label class="form-check-label me-2 fw-semibold">Is Active</label>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="smsTemplate.IsActive" name="IsActive" />
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <label class="form-label">Message Content <span class="text-danger">*</span></label>
+            <textarea [(ngModel)]="smsTemplate.MessageContent" name="MessageContent" rows="4"
+              class="form-control" maxlength="480" required
+              placeholder="Enter SMS content (max 480 characters)..."></textarea>
+            <small class="text-muted float-end mt-1">{{ smsTemplate.MessageContent?.length || 0 }}/480 characters</small>
+          </div>
+
+          <div class="col-md-12 text-end mt-3">
+            <button class="btn btn-success me-2" type="submit" [disabled]="!form.valid">
+              <i class="fa-solid fa-save me-2"></i> {{ isEditMode ? 'Update' : 'Save' }}
+            </button>
+            <button class="btn btn-secondary" type="button" (click)="resetForm()">
+              <i class="fa-solid fa-rotate-left me-2"></i> Reset
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Table Section -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+
+      <!-- Search -->
+      <div class="mb-3 d-flex justify-content-end">
+        <input type="text" class="form-control w-25" placeholder="Search Template" [(ngModel)]="searchText" />
+      </div>
+
+      <!-- Table -->
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th style="width: 80px;">S.No</th>
+            <th>Template Name</th>
+            <th>Template Type</th>
+            <th>Message Preview</th>
+            <th class="text-center">Active</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of paginatedTemplates(); let i = index">
+            <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+            <td>{{ t.TemplateName }}</td>
+            <td>{{ t.TemplateType }}</td>
+            <td>{{ t.MessageContent | slice:0:60 }}{{ t.MessageContent.length > 60 ? '...' : '' }}</td>
+            <td class="text-center">
+              <i [ngClass]="t.IsActive ? 'fa-solid fa-circle-check text-success' : 'fa-solid fa-circle-xmark text-danger'"></i>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-primary me-2" (click)="editTemplate(t)">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" (click)="deleteTemplate(t)">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredTemplates().length === 0">
+            <td colspan="6" class="text-center text-muted">No templates found</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <nav *ngIf="totalPages() > 1">
+        <ul class="pagination justify-content-center mt-3">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a class="page-link" href="#" (click)="changePage(currentPage - 1)">Previous</a>
+          </li>
+          <li class="page-item" *ngFor="let page of pagesArray()" [class.active]="currentPage === page">
+            <a class="page-link" href="#" (click)="changePage(page)">{{ page }}</a>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages()">
+            <a class="page-link" href="#" (click)="changePage(currentPage + 1)">Next</a>
+          </li>
+        </ul>
+      </nav>
+
+    </div>
+  </div>
+</div>
+
+</div>

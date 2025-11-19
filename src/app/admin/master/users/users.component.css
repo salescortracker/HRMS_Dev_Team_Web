@@ -1,0 +1,53 @@
+.user-management {
+  font-family: 'Poppins', sans-serif;
+}
+
+.user-management .card {
+  border-radius: 10px;
+  border: none;
+}
+
+.user-management .form-label {
+  font-weight: 500;
+}
+
+.user-management .btn-dark {
+  border-radius: 8px;
+}
+
+.user-management table {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.user-management .badge {
+  font-size: 0.85rem;
+  padding: 0.5em 0.8em;
+}
+.user-management {
+  h4 {
+    color: #343a40;
+  }
+
+  .form-label {
+    font-weight: 500;
+  }
+
+  .table {
+    th {
+      font-size: 0.9rem;
+      background-color: #f8f9fa;
+    }
+    td {
+      font-size: 0.9rem;
+    }
+  }
+
+  .btn {
+    border-radius: 6px;
+  }
+
+  .card {
+    border-radius: 10px;
+  }
+}

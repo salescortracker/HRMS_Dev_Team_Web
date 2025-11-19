@@ -1,0 +1,27 @@
+.menu-management {
+  font-family: "Segoe UI", sans-serif;
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+.card {
+  border-radius: 10px;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+}
+
+.badge {
+  font-size: 0.85rem;
+  padding: 0.5em 0.7em;
+}
+
+.btn {
+  border-radius: 6px;
+}
+.badge {
+  padding: 5px 10px;
+}

@@ -1,0 +1,32 @@
+.payslip-template .card {
+  border-radius: 10px;
+}
+
+.payslip-template table th,
+.payslip-template table td {
+  vertical-align: middle;
+}
+
+.payslip-template .table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.payslip-template .text-success {
+  font-weight: 600;
+}
+
+.payslip-template .text-danger {
+  font-weight: 600;
+}
+
+.payslip-template .p-4 {
+  min-height: 300px;
+}
+
+.payslip-template hr {
+  border-top: 2px solid #dee2e6;
+}
+
+.payslip-template h5, h6 {
+  margin-bottom: 0.5rem;
+}

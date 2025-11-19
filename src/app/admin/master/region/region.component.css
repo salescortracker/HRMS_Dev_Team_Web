@@ -1,0 +1,32 @@
+.region-management {
+  font-family: "Segoe UI", sans-serif;
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+}
+
+.badge {
+  font-size: 0.85rem;
+  padding: 0.5em 0.7em;
+}
+
+.card {
+  border-radius: 10px;
+}
+
+.btn {
+  border-radius: 6px;
+}
+.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+.sortable i {
+  margin-left: 5px;
+  color: #888;
+}

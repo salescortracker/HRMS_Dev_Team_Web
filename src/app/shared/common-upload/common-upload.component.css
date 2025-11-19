@@ -1,0 +1,38 @@
+.upload-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1055;
+  backdrop-filter: blur(4px);
+}
+
+.upload-box {
+  width: 100%;
+  max-width: 500px;
+  animation: fadeInDown 0.4s ease-in-out;
+}
+
+.upload-area {
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background: #f9fafc;
+}
+
+.upload-area:hover {
+  background: #eef5ff;
+  border-color: #007bff;
+}
+
+.btn-close {
+  filter: invert(0.5);
+}
+
+@media (max-width: 576px) {
+  .upload-box {
+    width: 90%;
+    padding: 1.5rem !important;
+  }
+}

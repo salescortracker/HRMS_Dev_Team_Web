@@ -1,0 +1,332 @@
+ <app-header></app-header>
+ <app-sidebar></app-sidebar>
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Employee Document</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">Employee Profile</a> &gt;
+    <span>Employee Documents</span>
+  </nav>
+</div>
+
+<div class="tab-container">
+  <!-- Radios -->
+  <input type="radio" id="tab1" name="tab" checked>
+  <input type="radio" id="tab2" name="tab">
+  <input type="radio" id="tab3" name="tab">
+
+  <!-- Tab Header -->
+  <div class="tab-header">
+    <label class="tab-label" for="tab1">Letters</label>
+    <label class="tab-label" for="tab2">Forms</label>
+    <label class="tab-label" for="tab3">Employee Documents</label>
+  </div>
+
+  <!-- TAB 1: LETTERS -->
+<div id="content1" class="tab-content">
+
+  <form>
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Document Type</label>
+        <select class="form-select" required>
+          <option value="">Select Document Type</option>
+          <option>Offer Letter</option>
+          <option>Appointment Letter</option>
+          <option>Relieving Letter</option>
+          <option>Experience Letter</option>
+          <option>Increment Letter</option>
+          <option>Promotion Letter</option>
+          <option>Transfer Letter</option>
+          <option>Warning Letter</option>
+          <option>Others</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Document Title / Name</label>
+        <input type="text" class="form-control" placeholder="Enter document title" required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Employee Code / ID</label>
+        <input type="text" class="form-control" placeholder="Enter employee code or ID">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Employee Name</label>
+        <input type="text" class="form-control" placeholder="Enter employee name">
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Issued Date</label>
+        <input type="date" class="form-control" required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Validity Date</label>
+        <input type="date" class="form-control">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Upload File</label>
+        <input type="file" class="form-control" accept=".pdf,.docx,.jpg" required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Remarks / Notes</label>
+        <textarea class="form-control" placeholder="Enter remarks (optional)"></textarea>
+      </div>
+
+      <div class="col-md-4 d-flex align-items-center">
+        <div class="form-check mt-4">
+          <input class="form-check-input" type="checkbox" required>
+          <label class="form-check-label">Mark as Confidential</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <button type="submit" class="btn btn-primary">Save Letter</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Table -->
+  <div class="dashboard-tables full-row mt-4">
+    <div class="table-card">
+      <h3>Letters List</h3>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Document Type</th>
+            <th>Title</th>
+            <th>Employee</th>
+            <th>Issued Date</th>
+            <th>Validity</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Offer Letter</td>
+            <td>Offer for Software Engineer</td>
+            <td>EMP001 - John</td>
+            <td>2024-02-12</td>
+            <td>2025-02-12</td>
+            <td class="action-icons">
+             <i class="fa-solid fa-pen"></i>
+             <i class="fa-solid fa-trash"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+  <!-- TAB 2: FORMS -->
+ <div id="content2" class="tab-content">
+
+  <form>
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Form / Document Type</label>
+        <select class="form-select" required>
+          <option value="">Select document type</option>
+          <option>HR Letter</option>
+          <option>Bank Form</option>
+          <option>Insurance Form</option>
+          <option>W4 (USA)</option>
+          <option>PF</option>
+          <option>ESIC</option>
+          <option>Others</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Form / Document Name</label>
+        <input type="text" class="form-control" placeholder="Enter document name" required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Employee Code / ID</label>
+        <input type="text" class="form-control" placeholder="Enter employee code" required>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Issued / Submitted Date</label>
+        <input type="date" class="form-control" required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Upload File</label>
+        <input type="file" class="form-control" accept=".pdf,.docx,.jpg,.png" required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Remarks / Notes</label>
+        <textarea class="form-control" placeholder="Additional details..."></textarea>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4 d-flex align-items-center">
+        <div class="form-check mt-2">
+          <input class="form-check-input" type="checkbox">
+          <label class="form-check-label">Mark as Confidential</label>
+        </div>
+      </div>
+
+      <div class="col-md-8 text-end">
+        <button type="submit" class="btn btn-primary">Upload Form</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Table -->
+  <div class="dashboard-tables full-row mt-4">
+    <div class="table-card">
+      <h3>Forms List</h3>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Employee</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Insurance Form</td>
+            <td>Health Insurance 2024</td>
+            <td>EMP003 - Anita</td>
+            <td>2024-10-01</td>
+            <td class="action-icons">
+             <i class="fa-solid fa-pen"></i>
+          <i class="fa-solid fa-trash"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+  <!-- TAB 3: EMPLOYEE DOCUMENTS -->
+ <div id="content3" class="tab-content">
+   <form>
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Document Type</label>
+        <select class="form-select" required>
+          <option value="">Select document type</option>
+          <option>ID Proof</option>
+          <option>Address Proof</option>
+          <option>PAN</option>
+          <option>Aadhaar</option>
+          <option>Passport</option>
+          <option>Driving License</option>
+          <option>Voter ID</option>
+          <option>Offer Letter</option>
+          <option>Experience Letter</option>
+          <option>Salary Slip</option>
+          <option>Bank Passbook</option>
+          <option>Tax Form</option>
+          <option>Insurance</option>
+          <option>Others</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Document Name / Title</label>
+        <input type="text" class="form-control" placeholder="Enter document name" required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Document Number</label>
+        <input type="text" class="form-control" placeholder="Enter document number" required>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Issued Date</label>
+        <input type="date" class="form-control" required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Expiry Date</label>
+        <input type="date" class="form-control">
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Upload File</label>
+        <input type="file" class="form-control" accept=".pdf,.jpg,.png,.docx" required>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Remarks / Notes</label>
+        <textarea class="form-control" placeholder="Enter remarks..."></textarea>
+      </div>
+
+      <div class="col-md-4 d-flex align-items-center">
+        <div class="form-check mt-2">
+          <input class="form-check-input" type="checkbox">
+          <label class="form-check-label">Mark as Confidential</label>
+        </div>
+      </div>
+
+      <div class="col-md-4 text-end">
+        <button type="submit" class="btn btn-primary">Save Document</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Table -->
+  <div class="dashboard-tables full-row mt-4">
+    <div class="table-card">
+      <h3>Employee Documents List</h3>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Title</th>
+            <th>Document No</th>
+            <th>Issued Date</th>
+            <th>Expiry Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PAN</td>
+            <td>PAN Card</td>
+            <td>ABCDE1234F</td>
+            <td>2019-05-01</td>
+            <td>—</td>
+             <td class="action-icons">
+             <i class="fa-solid fa-pen"></i>
+          <i class="fa-solid fa-trash"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div>
+<app-footer></app-footer>

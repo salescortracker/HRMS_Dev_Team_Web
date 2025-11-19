@@ -1,0 +1,217 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Missed Punch Requests</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">Attendance</a> &gt;
+    <span>Missed Punch Requests</span>
+  </nav>
+</div>
+
+<div class="tab-container mt-4">
+
+  <!-- Tab Controls -->
+  <input type="radio" id="tab1" name="tab" checked>
+  <input type="radio" id="tab2" name="tab">
+
+  <div class="tab-header">
+    <label class="tab-label" for="tab1">My Requests</label>
+    <label class="tab-label" for="tab2">Manager Approval</label>
+  </div>
+
+  <!-- My Requests Tab -->
+  <div id="content1" class="tab-content">
+    <div class="card p-4 shadow-sm mb-4">
+      <h5 class="mb-3">Submit Missed Punch Request</h5>
+
+      <form>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Date of Missed Punch <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Missed Type <span class="text-danger">*</span></label>
+            <select class="form-select" required>
+              <option value="">Select Type</option>
+              <option>Missed Clock In</option>
+              <option>Missed Clock Out</option>
+              <option>Both In & Out</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Correct Clock In Time</label>
+            <input type="time" class="form-control" placeholder="Enter clock in time">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Correct Clock Out Time</label>
+            <input type="time" class="form-control" placeholder="Enter clock out time">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <label class="form-label">Reason / Remarks <span class="text-danger">*</span></label>
+            <textarea class="form-control" rows="3" placeholder="Explain the reason for missed punch" required></textarea>
+          </div>
+        </div>
+
+        <div class="text-start">
+          <button type="submit" class="btn btn-primary">Submit Request</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- My Requests List -->
+    <div class="card p-4 shadow-sm">
+      <h5 class="mb-3">My Missed Punch Requests</h5>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Date</th>
+              <th>Missed Type</th>
+              <th>Clock In</th>
+              <th>Clock Out</th>
+              <th>Reason</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2025-10-14</td>
+              <td>Missed Clock In</td>
+              <td>09:15</td>
+              <td>18:00</td>
+              <td>Forgot to punch in due to system delay</td>
+              <td><span class="badge bg-warning text-dark">Pending</span></td>
+              <td class="text-center">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#viewMissedModal">
+                  <i class="fa-solid fa-eye text-primary"></i>
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>2025-10-10</td>
+              <td>Both In & Out</td>
+              <td>09:00</td>
+              <td>18:30</td>
+              <td>System error during punch</td>
+              <td><span class="badge bg-success">Approved</span></td>
+              <td class="text-center">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#viewMissedModal">
+                  <i class="fa-solid fa-eye text-primary"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manager Approval Tab -->
+  <div id="content2" class="tab-content">
+    <div class="card p-4 shadow-sm">
+      <h5 class="mb-3">Pending Missed Punch Approvals</h5>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th><input type="checkbox"></th>
+              <th>Employee Name</th>
+              <th>Date</th>
+              <th>Missed Type</th>
+              <th>Clock In</th>
+              <th>Clock Out</th>
+              <th>Reason</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>John Doe</td>
+              <td>2025-10-14</td>
+              <td>Missed Clock In</td>
+              <td>09:15</td>
+              <td>18:00</td>
+              <td>Forgot to punch in due to network delay</td>
+              <td><span class="badge bg-warning text-dark">Pending</span></td>
+              <td>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#approveModal">
+                  <i class="fa-solid fa-check text-success me-2"></i>
+                </a>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#approveModal">
+                  <i class="fa-solid fa-xmark text-danger"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-end mt-3">
+        <button class="btn btn-success btn-sm me-2">Approve Selected</button>
+        <button class="btn btn-danger btn-sm">Reject Selected</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW MODAL -->
+<div class="modal fade" id="viewMissedModal" tabindex="-1" aria-labelledby="viewMissedModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Missed Punch Request Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Date:</strong> 2025-10-14</p>
+        <p><strong>Missed Type:</strong> Missed Clock In</p>
+        <p><strong>Clock In:</strong> 09:15</p>
+        <p><strong>Clock Out:</strong> 18:00</p>
+        <p><strong>Reason:</strong> Forgot to punch in due to network delay</p>
+        <p><strong>Status:</strong> Pending</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APPROVAL MODAL -->
+<div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Approve / Reject Request</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Employee:</strong> John Doe</p>
+        <p><strong>Date:</strong> 2025-10-14</p>
+        <p><strong>Missed Type:</strong> Missed Clock In</p>
+        <label class="form-label">Manager Remarks</label>
+        <textarea class="form-control" rows="3" placeholder="Enter your remarks"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-success">Approve</button>
+        <button class="btn btn-danger">Reject</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

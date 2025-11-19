@@ -1,0 +1,14 @@
+.kpi-category-master .form-label {
+  font-weight: 500;
+}
+
+.kpi-category-master table th,
+.kpi-category-master table td {
+  vertical-align: middle;
+}
+
+.kpi-category-master .pagination .page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}

@@ -1,0 +1,345 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Help Desk</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">Support</a> &gt;
+    <span>Help Desk</span>
+  </nav>
+</div>
+
+<div class="tab-container">
+  <input type="radio" id="tab1" name="tab" checked>
+  <input type="radio" id="tab2" name="tab">
+  <input type="radio" id="tab3" name="tab">
+
+  <div class="tab-header">
+    <label class="tab-label" for="tab1">Raise Ticket</label>
+    <label class="tab-label" for="tab2">My Tickets</label>
+    <label class="tab-label" for="tab3">Ticket Approval</label>
+  </div>
+
+  <!-- TAB 1: Raise Ticket -->
+  <div id="content1" class="tab-content">
+    <form>
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Employee Name / ID</label>
+          <input type="text" class="form-control" placeholder="Auto-filled Employee Name / ID" readonly>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Department</label>
+          <input type="text" class="form-control" placeholder="Auto-filled Department" readonly>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Category <span class="text-danger">*</span></label>
+          <select class="form-select" required>
+            <option value="">Select Category</option>
+            <option>IT Support</option>
+            <option>Payroll</option>
+            <option>Leave/Attendance</option>
+            <option>HR Query</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label class="form-label">Issue Subject <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" placeholder="Enter subject" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Priority <span class="text-danger">*</span></label>
+          <select class="form-select" required>
+            <option value="">Select Priority</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+            <option>Critical</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-12">
+          <label class="form-label">Description <span class="text-danger">*</span></label>
+          <textarea class="form-control" rows="4" placeholder="Describe your issue in detail" required></textarea>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label class="form-label">Attachment (optional)</label>
+          <input type="file" class="form-control" accept=".pdf,.docx,.jpg,.png">
+        </div>
+        <div class="col-md-6 text-end align-self-end">
+          <button type="submit" class="btn btn-primary">Submit Ticket</button>
+        </div>
+      </div>
+    </form>
+     <!-- List of Raised Tickets -->
+  <div class="card mt-3">
+    <h3 class="section-title">My Raised Tickets</h3>
+
+    <!-- Filter Bar -->
+  
+
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Ticket ID</th>
+          <th>Category</th>
+          <th>Subject</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>Raised On</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>#TK2001</td>
+          <td>IT Support</td>
+          <td>System not booting</td>
+          <td><span class="priority high">High</span></td>
+          <td><span class="status open">Open</span></td>
+          <td>15-Oct-2025</td>
+          <td>
+            <button class="btn btn-edit">Edit</button>
+            <button class="btn btn-delete">Delete</button>
+          </td>
+        </tr>
+        <tr>
+          <td>#TK2002</td>
+          <td>Payroll</td>
+          <td>Salary not credited</td>
+          <td><span class="priority critical">Critical</span></td>
+          <td><span class="status progress">In Progress</span></td>
+          <td>14-Oct-2025</td>
+          <td>
+            <button class="btn btn-edit">Edit</button>
+            <button class="btn btn-delete">Delete</button>
+          </td>
+        </tr>
+        <tr>
+          <td>#TK2003</td>
+          <td>HR Query</td>
+          <td>Leave balance incorrect</td>
+          <td><span class="priority medium">Medium</span></td>
+          <td><span class="status resolved">Resolved</span></td>
+          <td>10-Oct-2025</td>
+          <td>
+            <button class="btn btn-edit">Edit</button>
+            <button class="btn btn-delete">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  </div>
+
+  <!-- TAB 2: My Tickets -->
+ <!-- MY TICKETS TAB -->
+<div id="content2" class="tab-content">
+
+  <div class="card">
+    <h3 class="section-title">My Tickets</h3>
+
+    <!-- Filter Bar -->
+    <form class="filter-container mb-3">
+      <div class="row">
+        <div class="col-md-3">
+          <label class="form-label">Category</label>
+          <select class="form-select">
+            <option value="">All Categories</option>
+            <option>IT Support</option>
+            <option>Payroll</option>
+            <option>HR Query</option>
+            <option>Leave/Attendance</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Status</label>
+          <select class="form-select">
+            <option value="">All Status</option>
+            <option>Open</option>
+            <option>In Progress</option>
+            <option>Resolved</option>
+            <option>Closed</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Date Range</label>
+          <input type="date" class="form-control">
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Ticket Table -->
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Ticket ID</th>
+          <th>Category</th>
+          <th>Subject</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>Raised On</th>
+          <th>Last Updated</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>#TK2004</td>
+          <td>IT Support</td>
+          <td>Email not syncing</td>
+          <td><span class="priority medium">Medium</span></td>
+          <td><span class="status progress">In Progress</span></td>
+          <td>10-Oct-2025</td>
+          <td>15-Oct-2025</td>
+        </tr>
+        <tr>
+          <td>#TK2005</td>
+          <td>Payroll</td>
+          <td>Reimbursement not processed</td>
+          <td><span class="priority high">High</span></td>
+          <td><span class="status open">Open</span></td>
+          <td>12-Oct-2025</td>
+          <td>14-Oct-2025</td>
+        </tr>
+        <tr>
+          <td>#TK2006</td>
+          <td>HR Query</td>
+          <td>Leave balance incorrect</td>
+          <td><span class="priority low">Low</span></td>
+          <td><span class="status resolved">Resolved</span></td>
+          <td>05-Oct-2025</td>
+          <td>10-Oct-2025</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+  <!-- TAB 3: Ticket Approval -->
+<!-- APPROVE TICKETS TAB -->
+<div id="content3" class="tab-content">
+
+  <div class="card">
+    <h3 class="section-title">Approve Tickets</h3>
+
+    <!-- Filter Section -->
+    <form class="filter-container mb-3">
+      <div class="row">
+        <div class="col-md-3">
+          <label class="form-label">Employee Name</label>
+          <select class="form-select">
+            <option value="">All Employees</option>
+            <option>John Doe</option>
+            <option>Mary Thomas</option>
+            <option>Rajesh Kumar</option>
+            <option>Fatima Ali</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Status</label>
+          <select class="form-select">
+            <option value="">All Status</option>
+            <option>Open</option>
+            <option>In Progress</option>
+            <option>Resolved</option>
+            <option>Closed</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">From Date</label>
+          <input type="date" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">To Date</label>
+          <input type="date" class="form-control">
+        </div>
+      </div>
+
+      <div class="text-end mt-2">
+        <button type="submit" class="btn btn-primary">Filter</button>
+      </div>
+    </form>
+
+    <!-- Ticket Table for Approval -->
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th><input type="checkbox"></th>
+          <th>Ticket ID</th>
+          <th>Employee</th>
+          <th>Category</th>
+          <th>Subject</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th>Raised On</th>
+          <th>Manager Comments</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td>#TK3001</td>
+          <td>John Doe</td>
+          <td>IT Support</td>
+          <td>System not booting</td>
+          <td><span class="status open">Open</span></td>
+          <td><span class="priority high">High</span></td>
+          <td>10-Oct-2025</td>
+          <td><textarea class="form-control" rows="1" placeholder="Add remarks..."></textarea></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox"></td>
+          <td>#TK3002</td>
+          <td>Mary Thomas</td>
+          <td>Payroll</td>
+          <td>Salary not credited</td>
+          <td><span class="status progress">In Progress</span></td>
+          <td><span class="priority medium">Medium</span></td>
+          <td>12-Oct-2025</td>
+          <td><textarea class="form-control" rows="1" placeholder="Add remarks..."></textarea></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox"></td>
+          <td>#TK3003</td>
+          <td>Rajesh Kumar</td>
+          <td>Leave/Attendance</td>
+          <td>Attendance missing</td>
+          <td><span class="status resolved">Resolved</span></td>
+          <td><span class="priority low">Low</span></td>
+          <td>05-Oct-2025</td>
+          <td><textarea class="form-control" rows="1" placeholder="Add remarks..."></textarea></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons text-end mt-3">
+      <button class="btn btn-success">Approve Selected</button>
+      <button class="btn btn-danger">Reject Selected</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<app-footer></app-footer>

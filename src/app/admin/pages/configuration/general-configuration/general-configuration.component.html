@@ -1,0 +1,152 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4 general-config">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-semibold">General Configuration</h4>
+    </div>
+
+    <!-- Configuration Form -->
+    <form #generalForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="row g-3">
+
+            <!-- Company Name -->
+            <div class="col-md-6">
+              <label class="form-label">Company Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" name="CompanyName" [(ngModel)]="config.CompanyName" placeholder="Enter Company Name" required />
+            </div>
+
+            <!-- Company Code -->
+            <div class="col-md-6">
+              <label class="form-label">Company Code / Short Name</label>
+              <input type="text" class="form-control" name="CompanyCode" [(ngModel)]="config.CompanyCode" placeholder="Enter Short Code" maxlength="10" />
+            </div>
+
+            <!-- Country -->
+            <div class="col-md-4">
+              <label class="form-label">Default Country</label>
+              <select class="form-select" name="Country" [(ngModel)]="config.Country">
+                <option value="">Select Country</option>
+                <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
+              </select>
+            </div>
+
+            <!-- Time Zone -->
+            <div class="col-md-4">
+              <label class="form-label">Time Zone</label>
+              <select class="form-select" name="TimeZone" [(ngModel)]="config.TimeZone">
+                <option value="">Select Time Zone</option>
+                <option *ngFor="let tz of timeZones" [value]="tz">{{ tz }}</option>
+              </select>
+            </div>
+
+            <!-- Currency -->
+            <div class="col-md-4">
+              <label class="form-label">Currency</label>
+              <select class="form-select" name="Currency" [(ngModel)]="config.Currency">
+                <option value="">Select Currency</option>
+                <option *ngFor="let c of currencies" [value]="c">{{ c }}</option>
+              </select>
+            </div>
+
+            <!-- Date Format -->
+            <div class="col-md-4">
+              <label class="form-label">Date Format</label>
+              <select class="form-select" name="DateFormat" [(ngModel)]="config.DateFormat">
+                <option *ngFor="let df of dateFormats" [value]="df">{{ df }}</option>
+              </select>
+            </div>
+
+            <!-- Financial Year Start -->
+            <div class="col-md-4">
+              <label class="form-label">Financial Year Start</label>
+              <input type="date" class="form-control" name="FYStart" [(ngModel)]="config.FYStart" />
+            </div>
+
+            <!-- Financial Year End -->
+            <div class="col-md-4">
+              <label class="form-label">Financial Year End</label>
+              <input type="date" class="form-control" name="FYEnd" [(ngModel)]="config.FYEnd" />
+            </div>
+
+            <!-- Auto Logout -->
+            <div class="col-md-4">
+              <label class="form-label">Auto Logout (Minutes)</label>
+              <input type="number" class="form-control" name="AutoLogout" [(ngModel)]="config.AutoLogout" min="1" />
+            </div>
+
+            <!-- Dark Mode -->
+            <div class="col-md-4 d-flex align-items-center mt-4">
+              <label class="form-check-label me-2 fw-semibold">Enable Dark Mode</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="config.EnableDarkMode" name="EnableDarkMode" />
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="text-end">
+        <button class="btn btn-success me-2" type="submit" [disabled]="!generalForm.valid">
+          <i class="fa-solid fa-save me-2"></i> {{ isEditMode ? 'Update' : 'Save' }}
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="resetForm()">
+          <i class="fa-solid fa-rotate-left me-2"></i> Reset
+        </button>
+      </div>
+    </form>
+
+    <!-- Table Section -->
+    <div class="card shadow-sm mt-4">
+      <div class="card-body">
+
+        <div class="mb-3 d-flex justify-content-end">
+          <input type="text" class="form-control w-25" placeholder="Search..." [(ngModel)]="searchText" />
+        </div>
+
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 60px;">S.No</th>
+              <th>Company</th>
+              <th>Country</th>
+              <th>Currency</th>
+              <th>Time Zone</th>
+              <th>Auto Logout</th>
+              <th class="text-center">Dark Mode</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of filteredConfigs(); let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ c.CompanyName }}</td>
+              <td>{{ c.Country }}</td>
+              <td>{{ c.Currency }}</td>
+              <td>{{ c.TimeZone }}</td>
+              <td>{{ c.AutoLogout }} min</td>
+              <td class="text-center">
+                <i [ngClass]="c.EnableDarkMode ? 'fa-solid fa-circle-check text-success' : 'fa-solid fa-circle-xmark text-danger'"></i>
+              </td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editConfig(c)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteConfig(i)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredConfigs().length === 0">
+              <td colspan="8" class="text-center text-muted">No records found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

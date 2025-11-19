@@ -1,0 +1,21 @@
+.system-log table th,
+.system-log table td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.system-log table th:first-child,
+.system-log table td:first-child,
+.system-log table td:nth-child(2) {
+  text-align: left;
+}
+
+.system-log .pagination .page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}
+
+.system-log .form-control {
+  min-height: 38px;
+}

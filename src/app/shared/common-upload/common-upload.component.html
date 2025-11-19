@@ -1,0 +1,48 @@
+<div class="upload-popup animate__animated animate__fadeInDown" *ngIf="visible">
+  <div class="upload-box shadow-lg bg-white rounded-4 p-4 position-relative">
+
+    <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
+            aria-label="Close" (click)="close()"></button>
+
+    <div class="text-center mb-4">
+      <img src="assets/images/company-logo.png" alt="Company Logo"
+           width="80" height="80" class="mb-2" />
+      <h5 class="fw-bold text-primary mb-1">{{screenName}} - Bulk Upload</h5>
+      <p class="text-muted small mb-0">Upload Excel files to add or update multiple records.</p>
+    </div>
+
+    <div class="upload-area border border-2 border-dashed rounded-4 text-center p-4 mb-4">
+      <i class="fa-solid fa-cloud-arrow-up fa-3x text-primary mb-3"></i>
+      <p class="mb-2 fw-semibold">Drag & drop your file here</p>
+      <p class="text-muted small mb-3">or click below to browse</p>
+
+      <input type="file" class="form-control mb-2" accept=".xls,.xlsx"
+             (change)="onFileSelect($event)" />
+      <p class="text-muted small">
+        <i class="fa-solid fa-circle-info me-1"></i>
+        Allowed: <b>.xls / .xlsx</b> | Max size: <b>5 MB</b>
+      </p>
+    </div>
+
+    <div *ngIf="selectedFile" class="alert alert-info d-flex align-items-center justify-content-between">
+      <div>
+        <i class="fa-solid fa-file-excel me-2 text-success"></i>
+        <strong>{{ selectedFile.name }}</strong>
+        ({{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB)
+      </div>
+      <button class="btn btn-sm btn-outline-danger" (click)="removeFile()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4">
+      <button class="btn btn-outline-secondary px-4" (click)="close()">
+        <i class="fa-solid fa-xmark me-2"></i> Cancel
+      </button>
+      <button class="btn btn-primary px-4" (click)="upload()" [disabled]="!selectedFile">
+        <i class="fa-solid fa-upload me-2"></i> Upload
+      </button>
+    </div>
+
+  </div>
+</div>

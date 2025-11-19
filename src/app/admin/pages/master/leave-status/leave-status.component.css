@@ -1,0 +1,14 @@
+.leave-status-master .form-label {
+  font-weight: 500;
+}
+
+.leave-status-master table th,
+.leave-status-master table td {
+  vertical-align: middle;
+}
+
+.leave-status-master .pagination .page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}

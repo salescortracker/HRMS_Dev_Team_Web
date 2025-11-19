@@ -1,0 +1,117 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<!-- EMPLOYEE SHIFT ASSIGNMENT SCREEN -->
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Shift Allocation</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">Attendance</a> &gt;
+    <span>Shift Allocation</span>
+  </nav>
+</div>
+
+<div class="tab-container t-4">
+  <!-- Employee Shift Form -->
+  <div class="card p-4 mb-4 shadow-sm">
+    <h5 class="mb-3">Assign Shift</h5>
+    <form id="employeeShiftForm">
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Employee Name <span class="text-danger">*</span></label>
+          <select class="form-select" required>
+            <option value="">Select Employee</option>
+            <option>John Doe (EMP001)</option>
+            <option>Anita Sharma (EMP003)</option>
+            <option>Rahul Kumar (EMP007)</option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Employee Code / ID</label>
+          <input type="text" class="form-control" placeholder="Auto-filled or enter manually">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Shift <span class="text-danger">*</span></label>
+          <select class="form-select" required>
+            <option value="">Select Shift</option>
+            <option>Morning Shift (09:00 - 17:30)</option>
+            <option>Evening Shift (14:00 - 22:30)</option>
+            <option>Night Shift (22:00 - 06:00)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Start Date <span class="text-danger">*</span></label>
+          <input type="date" class="form-control" required>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">End Date</label>
+          <input type="date" class="form-control">
+        </div>
+
+        <div class="col-md-4 d-flex align-items-end">
+          <div class="form-check mt-2">
+            <input class="form-check-input" type="checkbox" id="isActiveShift" checked>
+            <label class="form-check-label" for="isActiveShift">Active Assignment</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12 text-first">
+          <button type="submit" class="btn btn-primary">Assign Shift</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Assigned Shifts List -->
+  <div class="card p-4 shadow-sm">
+    <h5 class="mb-3">Employee Assigned Shifts</h5>
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>Employee Name</th>
+          <th>Employee Code</th>
+          <th>Shift</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>John Doe</td>
+          <td>EMP001</td>
+          <td>Morning Shift (09:00 - 17:30)</td>
+          <td>2025-10-01</td>
+          <td>2025-12-31</td>
+          <td>Active</td>
+         <td class="action-icons">
+              <i class="fa-solid fa-pen"></i>
+              <i class="fa-solid fa-trash"></i>
+            </td>
+        </tr>
+        <tr>
+          <td>Anita Sharma</td>
+          <td>EMP003</td>
+          <td>Evening Shift (14:00 - 22:30)</td>
+          <td>2025-10-10</td>
+          <td>2025-11-30</td>
+          <td>Active</td>
+          <td class="action-icons">
+              <i class="fa-solid fa-pen"></i>
+              <i class="fa-solid fa-trash"></i>
+            </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<app-footer></app-footer>

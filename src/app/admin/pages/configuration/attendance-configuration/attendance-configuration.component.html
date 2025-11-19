@@ -1,0 +1,143 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4 attendance-config">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-semibold">Attendance Configuration</h4>
+    </div>
+
+    <!-- Attendance Configuration Form -->
+    <form #attendanceForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="row g-3">
+
+            <!-- Attendance Mode -->
+            <div class="col-md-6">
+              <label class="form-label">Attendance Mode <span class="text-danger">*</span></label>
+              <select class="form-select" name="Mode" [(ngModel)]="attendance.Mode" required>
+                <option value="">Select Mode</option>
+                <option *ngFor="let mode of attendanceModes" [value]="mode">{{ mode }}</option>
+              </select>
+            </div>
+
+            <!-- Grace Period -->
+            <div class="col-md-6">
+              <label class="form-label">Grace Period (Minutes)</label>
+              <input type="number" class="form-control" name="GracePeriod" [(ngModel)]="attendance.GracePeriod" min="0" placeholder="e.g. 10" />
+            </div>
+
+            <!-- Late Mark Threshold -->
+            <div class="col-md-6">
+              <label class="form-label">Late Mark Threshold (Minutes)</label>
+              <input type="number" class="form-control" name="LateMarkThreshold" [(ngModel)]="attendance.LateMarkThreshold" min="0" />
+            </div>
+
+            <!-- Early Leave Threshold -->
+            <div class="col-md-6">
+              <label class="form-label">Early Leave Threshold (Minutes)</label>
+              <input type="number" class="form-control" name="EarlyLeaveThreshold" [(ngModel)]="attendance.EarlyLeaveThreshold" min="0" />
+            </div>
+
+            <!-- Shift Timing Required -->
+            <div class="col-md-4 d-flex align-items-center mt-3">
+              <label class="form-check-label me-2 fw-semibold">Shift Timing Required</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="attendance.ShiftRequired" name="ShiftRequired" />
+              </div>
+            </div>
+
+            <!-- Auto Mark Absent -->
+            <div class="col-md-4 d-flex align-items-center mt-3">
+              <label class="form-check-label me-2 fw-semibold">Auto Mark Absent</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="attendance.AutoAbsent" name="AutoAbsent" />
+              </div>
+            </div>
+
+            <!-- Overtime Calculation -->
+            <div class="col-md-4">
+              <label class="form-label">Overtime Calculation</label>
+              <select class="form-select" name="OvertimeCalc" [(ngModel)]="attendance.OvertimeCalc">
+                <option value="">Select</option>
+                <option *ngFor="let calc of overtimeOptions" [value]="calc">{{ calc }}</option>
+              </select>
+            </div>
+
+            <!-- Description -->
+            <div class="col-12">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" rows="2" name="Description" [(ngModel)]="attendance.Description" placeholder="Describe attendance policy"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="text-end">
+        <button class="btn btn-success me-2" type="submit" [disabled]="!attendanceForm.valid">
+          <i class="fa-solid fa-save me-2"></i>{{ isEditMode ? 'Update' : 'Save' }}
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="resetForm()">
+          <i class="fa-solid fa-rotate-left me-2"></i>Reset
+        </button>
+      </div>
+    </form>
+
+    <!-- Table -->
+    <div class="card shadow-sm mt-4">
+      <div class="card-body">
+
+        <!-- Search -->
+        <div class="d-flex justify-content-end mb-3">
+          <input type="text" class="form-control w-25" placeholder="Search..." [(ngModel)]="searchText" />
+        </div>
+
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 60px;">S.No</th>
+              <th>Mode</th>
+              <th>Grace</th>
+              <th>Late Mark</th>
+              <th>Early Leave</th>
+              <th>Shift Req.</th>
+              <th>Auto Absent</th>
+              <th>Overtime Calc</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let config of filteredConfigs(); let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ config.Mode }}</td>
+              <td>{{ config.GracePeriod || '-' }}</td>
+              <td>{{ config.LateMarkThreshold || '-' }}</td>
+              <td>{{ config.EarlyLeaveThreshold || '-' }}</td>
+              <td class="text-center">
+                <i [ngClass]="config.ShiftRequired ? 'fa-solid fa-circle-check text-success' : 'fa-solid fa-circle-xmark text-danger'"></i>
+              </td>
+              <td class="text-center">
+                <i [ngClass]="config.AutoAbsent ? 'fa-solid fa-circle-check text-success' : 'fa-solid fa-circle-xmark text-danger'"></i>
+              </td>
+              <td>{{ config.OvertimeCalc || '-' }}</td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editConfig(config)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteConfig(i)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredConfigs().length === 0">
+              <td colspan="9" class="text-center text-muted">No records found</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+
+  </div>
+</div>

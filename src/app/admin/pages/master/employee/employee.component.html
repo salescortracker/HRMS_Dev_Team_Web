@@ -1,0 +1,156 @@
+<div class="employee-container">
+  <!-- Page Header -->
+  <div class="header">
+    <h2>Employee Management</h2>
+    <button class="btn-add" (click)="openEmployeeForm()">+ Add Employee</button>
+  </div>
+
+  <!-- Employee List Section -->
+  <div class="employee-list" *ngIf="!showForm">
+    <div class="search-bar">
+      <input type="text" placeholder="Search by name, department..." [(ngModel)]="searchText" />
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Emp ID</th>
+          <th>Name</th>
+          <th>Department</th>
+          <th>Designation</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th class="actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emp of employees ">
+          <td>{{ emp.employeeId }}</td>
+          <td>{{ emp.firstName }} {{ emp.lastName }}</td>
+          <td>{{ emp.department }}</td>
+          <td>{{ emp.designation }}</td>
+          <td>{{ emp.email }}</td>
+          <td>
+            <span [class.active]="emp.isActive" [class.inactive]="!emp.isActive">
+              {{ emp.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td class="actions">
+            <button class="btn-view" (click)="viewEmployee(emp)">View</button>
+            <button class="btn-edit" (click)="editEmployee(emp)">Edit</button>
+            <button class="btn-delete" (click)="deleteEmployee(emp.employeeId)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+   
+  </div>
+
+  <!-- Employee Form Section -->
+  <div class="employee-form" *ngIf="showForm">
+    <h3>{{ isEdit ? 'Edit Employee' : 'Add New Employee' }}</h3>
+
+    <mat-tab-group>
+      <!-- Personal Details -->
+      <mat-tab label="Personal Details">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" [(ngModel)]="employee.firstName" required />
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" [(ngModel)]="employee.lastName" required />
+          </div>
+          <div class="form-group">
+            <label>Gender</label>
+            <select [(ngModel)]="employee.gender">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Date of Birth</label>
+            <input type="date" [(ngModel)]="employee.dob" />
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Contact Details -->
+      <mat-tab label="Contact Details">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" [(ngModel)]="employee.email" required />
+          </div>
+          <div class="form-group">
+            <label>Mobile</label>
+            <input type="text" [(ngModel)]="employee.mobile" required />
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <textarea [(ngModel)]="employee.address"></textarea>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Employment Details -->
+      <mat-tab label="Employment Details">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Department</label>
+            <select [(ngModel)]="employee.department">
+              <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Designation</label>
+            <input type="text" [(ngModel)]="employee.designation" />
+          </div>
+          <div class="form-group">
+            <label>Joining Date</label>
+            <input type="date" [(ngModel)]="employee.joiningDate" />
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select [(ngModel)]="employee.isActive">
+              <option [value]="true">Active</option>
+              <option [value]="false">Inactive</option>
+            </select>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Payroll Details -->
+      <mat-tab label="Payroll Details">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Basic Salary</label>
+            <input type="number" [(ngModel)]="employee.basicSalary" />
+          </div>
+          <div class="form-group">
+            <label>Bank Name</label>
+            <input type="text" [(ngModel)]="employee.bankName" />
+          </div>
+          <div class="form-group">
+            <label>Account Number</label>
+            <input type="text" [(ngModel)]="employee.accountNumber" />
+          </div>
+          <div class="form-group">
+            <label>IFSC Code</label>
+            <input type="text" [(ngModel)]="employee.ifscCode" />
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    <!-- Form Buttons -->
+    <div class="form-buttons">
+      <button class="btn-save" (click)="saveEmployee()">Save</button>
+      <button class="btn-cancel" (click)="cancelForm()">Cancel</button>
+    </div>
+  </div>
+</div>

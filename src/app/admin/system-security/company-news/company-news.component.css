@@ -1,0 +1,14 @@
+.user-management .form-label {
+  font-weight: 500;
+}
+
+.user-management table th,
+.user-management table td {
+  vertical-align: middle;
+}
+
+.user-management .pagination .page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}

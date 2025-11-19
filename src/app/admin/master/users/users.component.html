@@ -1,0 +1,166 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4 user-management">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+     <h4 class="fw-semibold mb-0 text-dark">
+  <i class="fa-solid fa-user-gear me-2 text-danger"></i>
+  User Management
+</h4>
+      <!-- <button class="btn btn-danger" (click)="resetForm()">
+        <i class="fa-solid fa-plus me-2"></i> Add New User
+      </button> -->
+    </div>
+
+    <hr />
+
+    <!-- User Form -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <form (ngSubmit)="onSubmit()" #userForm="ngForm" novalidate>
+          <div class="row g-3">
+
+            <!-- Company -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Company <span class="text-danger">*</span></label>
+              <select class="form-select" name="CompanyID" [(ngModel)]="user.companyId" required>
+                <option value="">Select Company</option>
+                <option *ngFor="let c of companies" [value]="c.companyId">{{ c.companyName }}</option>
+              </select>
+            </div>
+
+            <!-- Region -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Region <span class="text-danger">*</span></label>
+              <select class="form-select" name="RegionID" [(ngModel)]="user.regionId" required>
+                <option value="">Select Region</option>
+                <option *ngFor="let r of regions" [value]="r.regionID">{{ r.regionName }}</option>
+              </select>
+            </div>
+
+            <!-- Employee Code -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Employee Code <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" name="EmployeeCode"
+                     [(ngModel)]="user.employeeCode" required placeholder="Enter employee code" disabled />
+            </div>
+
+            <!-- Full Name -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" name="FullName"
+                     [(ngModel)]="user.fullName" required placeholder="Enter full name" />
+            </div>
+
+            <!-- Email -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" name="Email"
+                     [(ngModel)]="user.email" required placeholder="Enter email address" />
+            </div>
+
+            <!-- Role -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Role <span class="text-danger">*</span></label>
+              <select class="form-select" name="Role" [(ngModel)]="user.roleId" required>
+                <option value="">Select Role</option>
+                <option *ngFor="let r of roles" [value]="r.roleId">{{ r.roleName }}</option>
+              </select>
+            </div>
+
+            <!-- Password -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Password</label>
+              <div class="input-group">
+                <input type="text" class="form-control" [(ngModel)]="user.password"
+                       name="Password" placeholder="Auto-generated or enter manually" />
+                <button class="btn btn-outline-secondary" type="button" (click)="generateFormPassword()">
+                  Generate
+                </button>
+              </div>
+            </div>
+
+            <!-- Status -->
+            <div class="col-md-6 d-flex align-items-center">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="statusSwitch"
+                       [checked]="user.status === 'Active'"
+                       (change)="onStatusChange($event)" />
+                <label class="form-check-label" for="statusSwitch">
+                  {{ user.status === 'Active' ? 'Active' : 'Inactive' }}
+                </label>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="col-md-12 text-end mt-3">
+              <button type="submit" class="btn btn-dark px-4" [disabled]="!userForm.valid">
+                <i class="fa-solid fa-save me-2"></i>
+                {{ isEditMode ? 'Update User' : 'Create User' }}
+              </button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- User List -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="mb-3 fw-semibold">User List</h5>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Employee Code</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Company</th>
+                <th>Region</th>
+                <th>Role</th>
+                <th>Status</th>              
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let u of users; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ u.employeeCode }}</td>
+                <td>{{ u.fullName }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ getCompanyName(u.companyId) }}</td>
+                <td>{{ getRegionName(u.regionId) }}</td>
+                <td>{{ getRoleName(u.roleId) }}</td>
+                <td>
+                  <span class="badge" [ngClass]="u.status === 'Active' ? 'bg-success' : 'bg-secondary'">
+                    {{ u.status }}
+                  </span>
+                </td>
+                <!-- <td>
+                  <input type="text" class="form-control form-control-sm" [value]="u.password" readonly />
+                </td> -->
+                <td class="text-center">
+                  <button class="btn btn-sm btn-outline-primary me-2" (click)="editUser(u)">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-success me-2" (click)="sendPasswordEmail(u)">
+                    <i class="fa-solid fa-envelope"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteUser(u)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="users.length === 0">
+                <td colspan="10" class="text-center text-muted">No users found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,20 @@
+.earnings-deductions .card {
+  border-radius: 10px;
+}
+
+.earnings-deductions table th,
+.earnings-deductions table td {
+  vertical-align: middle;
+}
+
+.earnings-deductions .table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.earnings-deductions .text-success {
+  font-weight: 600;
+}
+
+.earnings-deductions .text-danger {
+  font-weight: 600;
+}

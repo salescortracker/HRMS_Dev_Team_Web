@@ -1,0 +1,192 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Performance & KPI Review</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">Performance</a> &gt;
+    <span>KPI Submission</span>
+  </nav>
+</div>
+
+<div class="tab-container">
+  <input type="radio" id="tab1" name="tab" checked>
+  <input type="radio" id="tab2" name="tab">
+
+  <div class="tab-header">
+    <label class="tab-label" for="tab1">Employee Submission</label>
+    <label class="tab-label" for="tab2">Manager Review & Approval</label>
+  </div>
+
+  <!-- TAB 1: Employee Submission -->
+  <div id="content1" class="tab-content">
+    <form>
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Employee Name / ID</label>
+          <input type="text" class="form-control" placeholder="Employee Name / ID" readonly>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Year</label>
+          <select class="form-select" required>
+            <option value="">Select Year</option>
+            <option>2025</option>
+            <option>2024</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Department / Project</label>
+          <input type="text" class="form-control" placeholder="Department or Project" required>
+        </div>
+      </div>
+
+      <!-- KPI / Task Table -->
+      <div class="dashboard-tables full-row mt-2">
+        <div class="table-card">
+          <h3>KPIs & Completed Tasks</h3>
+
+          <!-- Toggle for extra rows -->
+          <input type="checkbox" id="show-more" class="d-none">
+          <label for="show-more" class="btn btn-secondary mb-2">+ Add More</label>
+
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>KPI / Objective</th>
+                <th>Weightage (%)</th>
+                <th>Target</th>
+                <th>Project / Task Completed</th>
+                <th>Self Rating (1-5)</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Always visible rows -->
+              <tr>
+                <td><input type="text" class="form-control" placeholder="KPI description" name="kpi[]"></td>
+                <td><input type="number" class="form-control" placeholder="Weightage" name="weightage[]"></td>
+                <td><input type="text" class="form-control" placeholder="Target" name="target[]"></td>
+                <td><input type="text" class="form-control" placeholder="Project / Task" name="task[]"></td>
+                <td><input type="number" class="form-control" min="1" max="5" placeholder="Self Rating" name="self_rating[]"></td>
+                <td><textarea class="form-control" placeholder="Remarks" name="remarks[]"></textarea></td>
+              </tr>
+              <tr>
+                <td><input type="text" class="form-control" placeholder="KPI description" name="kpi[]"></td>
+                <td><input type="number" class="form-control" placeholder="Weightage" name="weightage[]"></td>
+                <td><input type="text" class="form-control" placeholder="Target" name="target[]"></td>
+                <td><input type="text" class="form-control" placeholder="Project / Task" name="task[]"></td>
+                <td><input type="number" class="form-control" min="1" max="5" placeholder="Self Rating" name="self_rating[]"></td>
+                <td><textarea class="form-control" placeholder="Remarks" name="remarks[]"></textarea></td>
+              </tr>
+
+              <!-- Extra rows visible only if checkbox checked -->
+              <tr class="extra-row">
+                <td><input type="text" class="form-control" placeholder="KPI description" name="kpi[]"></td>
+                <td><input type="number" class="form-control" placeholder="Weightage" name="weightage[]"></td>
+                <td><input type="text" class="form-control" placeholder="Target" name="target[]"></td>
+                <td><input type="text" class="form-control" placeholder="Project / Task" name="task[]"></td>
+                <td><input type="number" class="form-control" min="1" max="5" placeholder="Self Rating" name="self_rating[]"></td>
+                <td><textarea class="form-control" placeholder="Remarks" name="remarks[]"></textarea></td>
+              </tr>
+              <tr class="extra-row">
+                <td><input type="text" class="form-control" placeholder="KPI description" name="kpi[]"></td>
+                <td><input type="number" class="form-control" placeholder="Weightage" name="weightage[]"></td>
+                <td><input type="text" class="form-control" placeholder="Target" name="target[]"></td>
+                <td><input type="text" class="form-control" placeholder="Project / Task" name="task[]"></td>
+                <td><input type="number" class="form-control" min="1" max="5" placeholder="Self Rating" name="self_rating[]"></td>
+                <td><textarea class="form-control" placeholder="Remarks" name="remarks[]"></textarea></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-md-12 text-end">
+          <button type="submit" class="btn btn-primary">Submit Performance</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- TAB 2: Manager Review -->
+  <div id="content2" class="tab-content">
+      <div class="dashboard-tables full-row mt-2">
+      <div class="table-card">
+        <h3>Manager Approval & Feedback</h3>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th><input type="checkbox"></th>
+              <th>Employee Name</th>
+              <th>Employee ID</th>
+              <th>Year</th>
+              <th>KPI / Objective</th>
+              <th>Weightage (%)</th>
+              <th>Target</th>
+              <th>Project / Task</th>
+              <th>Self Rating</th>
+              <th>Manager Rating</th>
+              <th>Manager Comments</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>John Doe</td>
+              <td>EMP001</td>
+              <td>2025</td>
+              <td>Project Delivery</td>
+              <td>40</td>
+              <td>On-time completion</td>
+              <td>Website Redesign</td>
+              <td>4</td>
+              <td><input type="number" class="form-control" min="1" max="5" placeholder="Manager Rating"></td>
+              <td><textarea class="form-control" placeholder="Manager feedback"></textarea></td>
+              <td>
+                <select class="form-select">
+                  <option>Pending</option>
+                  <option>Approved</option>
+                  <option>Rejected</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>Anita Sharma</td>
+              <td>EMP002</td>
+              <td>2025</td>
+              <td>Client Satisfaction</td>
+              <td>30</td>
+              <td>Positive feedback >90%</td>
+              <td>Support & Maintenance</td>
+              <td>5</td>
+              <td><input type="number" class="form-control" min="1" max="5" placeholder="Manager Rating"></td>
+              <td><textarea class="form-control" placeholder="Manager feedback"></textarea></td>
+              <td>
+                <select class="form-select">
+                  <option>Pending</option>
+                  <option>Approved</option>
+                  <option>Rejected</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Bulk action buttons -->
+        <div class="mt-2">
+          <button class="btn btn-success btn-sm">Approve Selected</button>
+          <button class="btn btn-danger btn-sm">Reject Selected</button>
+        </div>
+      </div>
+    </div>
+    <!-- Manager Review & Filteration table -->
+  </div>
+</div>
+
+<app-footer></app-footer>
+
+

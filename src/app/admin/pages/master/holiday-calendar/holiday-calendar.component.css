@@ -1,0 +1,14 @@
+.holiday-calendar-master .form-label {
+  font-weight: 500;
+}
+
+.holiday-calendar-master table th,
+.holiday-calendar-master table td {
+  vertical-align: middle;
+}
+
+.holiday-calendar-master .pagination .page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}

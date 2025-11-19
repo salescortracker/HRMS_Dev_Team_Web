@@ -1,0 +1,81 @@
+<div class="form-container">
+   
+    <!-- Form Section -->
+    <form>
+      <!-- Row 1: Name, Title, Company -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="required">Name</label>
+          <input type="text" placeholder="Enter full name of reference" required>
+        </div>
+
+        <div class="form-group">
+          <label class="required">Title / Designation</label>
+          <input type="text" placeholder="Enter designation or title" required>
+        </div>
+
+        <div class="form-group">
+          <label class="required">Company Name</label>
+          <input type="text" placeholder="Enter company name" required>
+        </div>
+      </div>
+
+      <!-- Row 2: Email, Mobile -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="required">Email ID</label>
+          <input type="email"  placeholder="Enter email address" required>
+        </div>
+
+        <div class="form-group">
+          <label class="required">Mobile Number</label>
+          <input type="tel"  placeholder="Enter mobile number" required>
+        </div>
+         <div class="form-group">
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">Add Reference</button>
+    </form>
+
+    <!-- Table Section -->
+    <table>
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Name</th>
+          <th>Title / Designation</th>
+          <th>Company Name</th>
+          <th>Email ID</th>
+          <th>Mobile Number</th>
+          <th class="actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>John Doe</td>
+          <td>Manager</td>
+          <td>ABC Corp</td>
+          <td>john&#64;example.com</td>
+          <td>9876543210</td>
+          <td class="actions">
+            <i class="fa-solid fa-edit" title="Edit"></i>
+            <i class="fa-solid fa-trash" title="Delete"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Mary Smith</td>
+          <td>Director</td>
+          <td>XYZ Ltd</td>
+          <td>mary&#64;example.com</td>
+          <td>9123456780</td>
+          <td class="actions">
+            <i class="fa-solid fa-edit" title="Edit"></i>
+            <i class="fa-solid fa-trash" title="Delete"></i>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>

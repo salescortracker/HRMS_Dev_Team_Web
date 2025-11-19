@@ -1,0 +1,36 @@
+<div class="admin-layout">
+  <app-topbar (toggleSidebar)="toggleSidebar()"></app-topbar>
+
+  <div class="main-area d-flex">
+    <!-- Sidebar -->
+    <app-sidebar
+      [collapsed]="isSidebarCollapsed"
+      [activeMenu]="activeMenu"
+      (menuSelected)="onMenuSelected($event)">
+    </app-sidebar>
+
+    <!-- Right Section -->
+    <div class="flex-grow-1 d-flex flex-column">
+
+     <div class="submenu-wrapper" *ngIf="selectedSubmenus && selectedSubmenus.length > 0">
+  <app-submenu
+    *ngIf="selectedMenu"
+    [submenus]="selectedSubmenus"
+    [activeRoute]="activeRoute"
+    (submenuSelected)="onSubmenuSelected($event)"
+    [attr.key]="selectedMenu"> <!-- ✅ Force Angular to rebuild -->
+  </app-submenu>
+</div>
+
+
+
+      <!-- Main Content (ALWAYS visible) -->
+      <div class="content-body flex-grow-1 p-3">
+        <router-outlet></router-outlet>
+      </div>
+
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+</div>

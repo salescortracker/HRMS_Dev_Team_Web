@@ -1,0 +1,14 @@
+.project-status-master .form-label {
+  font-weight: 500;
+}
+
+.project-status-master table th,
+.project-status-master table td {
+  vertical-align: middle;
+}
+
+.project-status-master .pagination .page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}

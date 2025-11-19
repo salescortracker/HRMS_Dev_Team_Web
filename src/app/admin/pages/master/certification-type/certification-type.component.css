@@ -1,0 +1,14 @@
+.certification-type-master .form-label {
+  font-weight: 500;
+}
+
+.certification-type-master table th,
+.certification-type-master table td {
+  vertical-align: middle;
+}
+
+.certification-type-master .pagination .page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}

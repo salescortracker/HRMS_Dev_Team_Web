@@ -1,0 +1,27 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Company Events</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">More</a> &gt;
+    <span>Events</span>
+  </nav>
+</div>
+
+<div class="row g-3">
+
+  <div class="col-md-4" *ngFor="let event of events">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">{{ event.name }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ event.type }} - {{ event.date | date:'dd-MMM-yyyy' }}</h6>
+        <p class="card-text">{{ event.description }}</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<app-footer></app-footer>

@@ -1,0 +1,134 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4 payslip-template">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-semibold">Payslip Templates</h4>
+   
+  </div>
+
+  <!-- Form Section -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <form (ngSubmit)="onSubmit()" #form="ngForm" novalidate>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Template Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="template.Name" name="Name" required placeholder="Enter Template Name">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Header Text</label>
+            <input type="text" class="form-control" [(ngModel)]="template.Header" name="Header" placeholder="Optional Header">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Footer Text</label>
+            <input type="text" class="form-control" [(ngModel)]="template.Footer" name="Footer" placeholder="Optional Footer">
+          </div>
+
+          <div class="col-md-4 mt-3">
+            <label class="form-label">Include Fields</label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="template.IncludeEmployeeInfo" name="IncludeEmployeeInfo">
+              <label class="form-check-label">Employee Information</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="template.IncludeEarnings" name="IncludeEarnings">
+              <label class="form-check-label">Earnings</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="template.IncludeDeductions" name="IncludeDeductions">
+              <label class="form-check-label">Deductions</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="template.IncludeNetPay" name="IncludeNetPay">
+              <label class="form-check-label">Net Pay</label>
+            </div>
+          </div>
+
+          <div class="col-md-2 d-flex align-items-center mt-3">
+            <label class="form-check-label me-2 fw-semibold">Is Active</label>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="template.IsActive" name="IsActive">
+            </div>
+          </div>
+
+          <div class="col-md-6 mt-3 text-end">
+            <button class="btn btn-success me-2" type="submit" [disabled]="!form.valid">
+              <i class="fa-solid fa-save me-2"></i> {{ isEditMode ? 'Update' : 'Save' }}
+            </button>
+            <button class="btn btn-secondary" type="button" (click)="resetForm()">
+              <i class="fa-solid fa-rotate-left me-2"></i> Reset
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Payslip Preview -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5>Preview Payslip</h5>
+        <button class="btn btn-outline-primary btn-sm" (click)="downloadPayslip()">
+          <i class="fa-solid fa-download me-2"></i> Download PDF
+        </button>
+      </div>
+
+      <div #payslipContent class="p-4 border bg-white" style="max-width: 800px; margin: auto;">
+        <!-- Header with Logo -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <img src="/assets/images/cor-logo.png" alt="Company Logo" style="height: 60px;">
+          <h5 class="fw-bold">{{ template.Header || 'Company XYZ Pvt. Ltd.' }}</h5>
+        </div>
+        <hr>
+
+        <!-- Employee Info -->
+        <div *ngIf="template.IncludeEmployeeInfo" class="mb-3">
+          <div class="row">
+            <div class="col-md-6"><strong>Employee Name:</strong> John Doe</div>
+            <div class="col-md-6"><strong>Employee ID:</strong> EMP123</div>
+            <div class="col-md-6"><strong>Department:</strong> Development</div>
+            <div class="col-md-6"><strong>Designation:</strong> Software Engineer</div>
+          </div>
+        </div>
+
+        <!-- Earnings & Deductions -->
+        <div class="row mb-3">
+          <div class="col-md-6" *ngIf="template.IncludeEarnings">
+            <h6>Earnings</h6>
+            <table class="table table-bordered mb-0">
+              <tr><td>Basic</td><td>$2000</td></tr>
+              <tr><td>HRA</td><td>$800</td></tr>
+              <tr><td>Bonus</td><td>$200</td></tr>
+            </table>
+          </div>
+          <div class="col-md-6" *ngIf="template.IncludeDeductions">
+            <h6>Deductions</h6>
+            <table class="table table-bordered mb-0">
+              <tr><td>Tax</td><td>$500</td></tr>
+              <tr><td>PF</td><td>$200</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- Net Pay -->
+        <div *ngIf="template.IncludeNetPay" class="text-end mb-3">
+          <h5 class="fw-bold">Net Pay: $2500</h5>
+        </div>
+
+        <!-- Footer -->
+        <hr>
+        <div class="d-flex justify-content-between align-items-center">
+          <p class="mb-0">{{ template.Footer || 'Thank you for your service' }}</p>
+          <p class="mb-0">Authorized Signatory</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>

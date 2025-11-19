@@ -1,0 +1,104 @@
+<div class="card shadow-sm"> 
+  <div class="container-fluid p-4 news-management">
+
+
+<div class="card shadow-sm p-3 mb-3">
+  <h5>Add / Configure Event</h5>
+  <form>
+    <div class="row g-3">
+
+      <div class="col-md-4">
+        <label class="form-label">Event Name</label>
+        <input type="text" class="form-control" placeholder="Enter event name" required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Event Type</label>
+        <select class="form-select">
+          <option value="">Select type</option>
+          <option>Company Event</option>
+          <option>Holiday</option>
+          <option>Birthday</option>
+          <option>Work Anniversary</option>
+          <option>Optional Holiday</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-control" required>
+      </div>
+
+      <div class="col-md-12">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" placeholder="Enter event details..."></textarea>
+      </div>
+
+      <div class="col-md-12 text-end">
+        <button type="submit" class="btn btn-primary">Save Event</button>
+      </div>
+
+    </div>
+  </form>
+</div>
+
+<!-- Filter and List -->
+<div class="card shadow-sm p-3">
+  <h5>Events List</h5>
+
+  <div class="row g-3 mb-3">
+    <div class="col-md-3">
+      <input type="text" class="form-control" placeholder="Search event">
+    </div>
+    <div class="col-md-3">
+      <input type="date" class="form-control" placeholder="From Date">
+    </div>
+    <div class="col-md-3">
+      <input type="date" class="form-control" placeholder="To Date">
+    </div>
+    <div class="col-md-3">
+      <button class="btn btn-secondary w-100">Filter</button>
+    </div>
+  </div>
+
+  <table class="table table-bordered table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>S.No</th>
+        <th>Event Name</th>
+        <th>Type</th>
+        <th>Date</th>
+        <th>Description</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Annual Awards</td>
+        <td>Company Event</td>
+        <td>15-Oct-2025</td>
+        <td>Recognizing top performers</td>
+        <td class="text-center">
+          <button class="btn btn-sm btn-outline-primary me-1"><i class="fa-solid fa-pen"></i></button>
+          <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+        </td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Diwali Holiday</td>
+        <td>Holiday</td>
+        <td>02-Nov-2025</td>
+        <td>Office closed for Diwali</td>
+        <td class="text-center">
+          <button class="btn btn-sm btn-outline-primary me-1"><i class="fa-solid fa-pen"></i></button>
+          <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+</div>
+
+<!-- .find(m => m.id === e.managerId)?.name || '-'  -->

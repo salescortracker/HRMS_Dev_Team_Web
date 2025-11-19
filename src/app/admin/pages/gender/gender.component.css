@@ -1,0 +1,33 @@
+.gender-management .table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gender-management .table thead {
+  background: #f8f9fa;
+  font-weight: 600;
+}
+
+.gender-management .table-hover tbody tr:hover {
+  background-color: #fff5f5;
+  transition: 0.2s ease-in-out;
+}
+
+.sortable {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sortable i {
+  margin-left: 6px;
+  color: #888;
+}
+
+.card {
+  border-radius: 10px;
+  border: none;
+}
+
+.card.shadow-sm {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}

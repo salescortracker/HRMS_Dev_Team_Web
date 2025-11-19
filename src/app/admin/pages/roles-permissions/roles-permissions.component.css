@@ -1,0 +1,123 @@
+.menu-management {
+  font-family: "Segoe UI", sans-serif;
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+.card {
+  border-radius: 10px;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+}
+
+.badge {
+  font-size: 0.85rem;
+  padding: 0.5em 0.7em;
+}
+
+.btn {
+  border-radius: 6px;
+}
+.badge {
+  padding: 5px 10px;
+}
+.permission-table th,
+.permission-table td {
+  vertical-align: middle;
+}
+
+.expanded-row {
+  background-color: #fff8e1 !important; /* light yellow highlight */
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.table-secondary th {
+  text-transform: uppercase;
+}
+
+.text-muted.small {
+  font-style: italic;
+  color: #777;
+}
+
+.btn-outline-secondary i {
+  transition: transform 0.3s ease;
+}
+
+.fa-chevron-down {
+  transform: rotate(0deg);
+}
+
+.fa-chevron-right {
+  transform: rotate(0deg);
+}
+.permission-table th,
+.permission-table td {
+  vertical-align: middle;
+}
+
+.expanded-row {
+  background-color: #fff8e1 !important; /* light yellow highlight */
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.table-secondary th {
+  text-transform: uppercase;
+}
+
+.text-muted.small {
+  font-style: italic;
+  color: #777;
+}
+
+.btn-outline-secondary i {
+  transition: transform 0.3s ease;
+}
+
+.fa-chevron-down {
+  transform: rotate(0deg);
+}
+
+.fa-chevron-right {
+  transform: rotate(0deg);
+}
+/* Base checkbox styling */
+.permission-table input[type="checkbox"] {
+  appearance: none;                /* Remove default browser style */
+  width: 18px;
+  height: 18px;
+  border: 1px solid #dc3545;       /* Red border */
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  background-color: #fff;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover effect */
+.permission-table input[type="checkbox"]:hover {
+  box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+}
+
+/* When checked → red background + white tick */
+.permission-table input[type="checkbox"]:checked {
+  background-color: #dc3545;       /* Red fill */
+  border-color: #dc3545;
+}
+
+/* White tick inside the box when checked */
+.permission-table input[type="checkbox"]:checked::after {
+ 
+  color: #fff;
+  font-size: 12px;
+  position: absolute;
+  top: 1px;
+  left: 4px;
+  font-weight: bold;
+}

@@ -1,0 +1,20 @@
+.notification-log .card {
+  border-radius: 10px;
+}
+
+.notification-log table th,
+.notification-log table td {
+  vertical-align: middle;
+}
+
+.notification-log .table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.notification-log .text-success {
+  font-weight: 600;
+}
+
+.notification-log .text-danger {
+  font-weight: 600;
+}

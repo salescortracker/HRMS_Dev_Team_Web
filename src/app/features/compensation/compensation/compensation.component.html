@@ -1,0 +1,278 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Employee Compensation</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">Payroll</a> &gt;
+    <span>Compensation</span>
+  </nav>
+</div>
+
+<div class="tab-container p-3">
+  <!-- Tabs -->
+  <input type="radio" id="tab1" name="compTab" checked>
+  <input type="radio" id="tab2" name="compTab">
+  <input type="radio" id="tab3" name="compTab">
+  <input type="radio" id="tab4" name="compTab">
+  <input type="radio" id="tab5" name="compTab">
+  <input type="radio" id="tab6" name="compTab">
+  <input type="radio" id="tab7" name="compTab">
+
+  <div class="tab-header">
+    <label class="tab-label" for="tab1">Payslips</label>
+    <label class="tab-label" for="tab2">Salary Structure</label>
+    <label class="tab-label" for="tab3">Bonuses</label>
+    <label class="tab-label" for="tab4">Tax Documents</label>
+    <label class="tab-label" for="tab5">Benefits</label>
+    <label  class="tab-label" for="tab6">Deductions</label>
+    <label class="tab-label" for="tab7">Compensation Summary</label>
+  </div>
+
+  <!-- TAB 1: Payslips -->
+  <div id="content1" class="tab-content">
+    <div class="card p-3 mb-3">
+      <h4>Payslips</h4>
+      <div class="mb-3 d-flex gap-3">
+        <input type="month" [(ngModel)]="payslipFilterMonth" class="form-control w-25">
+        <button class="btn btn-primary" (click)="filterPayslips()">Filter</button>
+      </div>
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Gross Salary</th>
+            <th>Net Salary</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let slip of payslips">
+            <td>{{ slip.month }}</td>
+            <td>{{ slip.gross | currency }}</td>
+            <td>{{ slip.net | currency }}</td>
+            <td>{{ slip.status }}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-2" (click)="viewPayslip(slip)">
+                <i class="fa-solid fa-eye"></i> View
+              </button>
+              <button class="btn btn-sm btn-outline-success" (click)="downloadPayslip(slip)">
+                <i class="fa-solid fa-download"></i> Download
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="payslips.length === 0">
+            <td colspan="5" class="text-center text-muted">No payslips available</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 2: Salary Structure -->
+  <div id="content2" class="tab-content">
+    <div class="card p-3 mb-3">
+      <h4>Salary Structure</h4>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let comp of salaryStructure">
+            <td>{{ comp.name }}</td>
+            <td>{{ comp.amount | currency }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="btn btn-primary mt-2">Download Salary Structure</button>
+    </div>
+  </div>
+
+  <!-- TAB 3: Bonuses -->
+  <div id="content3" class="tab-content">
+    <div class="card p-3 mb-3">
+      <h4>Bonuses & Incentives</h4>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b of bonuses">
+            <td>{{ b.type }}</td>
+            <td>{{ b.amount | currency }}</td>
+            <td>{{ b.date }}</td>
+            <td>{{ b.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 4: Tax Documents -->
+  <div id="content4" class="tab-content">
+    <div class="card p-3 mb-3">
+      <h4>Tax Documents</h4>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Document Name</th>
+            <th>Financial Year</th>
+            <th>Download</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tax of taxDocs">
+            <td>{{ tax.name }}</td>
+            <td>{{ tax.year }}</td>
+            <td><button class="btn btn-sm btn-outline-primary">Download</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 5: Benefits -->
+  <div id="content5" class="tab-content">
+    <div class="card p-3 mb-3">
+      <h4>Benefits & Perks</h4>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Benefit</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b of benefits">
+            <td>{{ b.name }}</td>
+            <td>{{ b.details }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 6: Deductions -->
+  <div id="content6" class="tab-content">
+    <div class="card p-3 mb-3">
+      <h4>Deductions</h4>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of deductions">
+            <td>{{ d.type }}</td>
+            <td>{{ d.amount | currency }}</td>
+            <td>{{ d.reason }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 7: Compensation Summary -->
+  <div id="content7" class="tab-content">
+    <div class="card p-3 mb-3">
+      <h4>Yearly Compensation Summary</h4>
+      <p>Total Gross: {{ totalGross | currency }}</p>
+      <p>Total Net: {{ totalNet | currency }}</p>
+      <p>Total Bonuses: {{ totalBonus | currency }}</p>
+      <p>Total Deductions: {{ totalDeduction | currency }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Payslip Preview Modal -->
+<div class="modal fade show" tabindex="-1" [ngStyle]="{'display': showModal ? 'block' : 'none'}" *ngIf="showModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content p-3 payslip-container">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title">Payslip - {{ selectedPayslip?.month }}</h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Payslip Header -->
+        <div class="payslip-header text-center mb-3">
+          <img src="assets/logo.png" alt="Company Logo" class="company-logo">
+          <h4>Company Name</h4>
+          <p>Payslip for the period: {{ selectedPayslip?.fromDate }} to {{ selectedPayslip?.toDate }}</p>
+        </div>
+
+        <!-- Employee Details -->
+        <div class="employee-details mb-3">
+          <div><strong>Employee Name:</strong> {{ selectedPayslip?.employeeName }} ({{ selectedPayslip?.employeeCode }})</div>
+          <div><strong>Department:</strong> {{ selectedPayslip?.department }}</div>
+          <div><strong>PF No:</strong> {{ selectedPayslip?.pfNo }} | <strong>UAN No:</strong> {{ selectedPayslip?.uanNo }}</div>
+          <div><strong>Working Days:</strong> {{ selectedPayslip?.workingDays }} | <strong>Payable Days:</strong> {{ selectedPayslip?.payableDays }}</div>
+        </div>
+
+        <!-- Earnings Table -->
+        <table class="table table-sm table-bordered mb-2">
+          <thead class="table-light">
+            <tr>
+              <th>Earnings</th>
+              <th>Amount (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Basic Salary</td><td>{{ selectedPayslip?.basicSalary | currency:'INR' }}</td></tr>
+            <tr><td>HRA</td><td>{{ selectedPayslip?.hra | currency:'INR' }}</td></tr>
+            <tr><td>Medical Allowance</td><td>{{ selectedPayslip?.medicalAllowance | currency:'INR' }}</td></tr>
+            <tr><td>Special Allowance</td><td>{{ selectedPayslip?.specialAllowance | currency:'INR' }}</td></tr>
+            <tr><td>Overtime</td><td>{{ selectedPayslip?.overtime | currency:'INR' }}</td></tr>
+            <tr><td>Others</td><td>{{ selectedPayslip?.others | currency:'INR' }}</td></tr>
+            <tr><td><strong>Total Benefit</strong></td><td><strong>{{ selectedPayslip?.totalBenefit | currency:'INR' }}</strong></td></tr>
+            <tr class="table-success"><td><strong>Gross Salary</strong></td><td><strong>{{ selectedPayslip?.grossSalary | currency:'INR' }}</strong></td></tr>
+          </tbody>
+        </table>
+
+        <!-- Deductions Table -->
+        <table class="table table-sm table-bordered mb-2">
+          <thead class="table-light">
+            <tr>
+              <th>Deductions</th>
+              <th>Amount (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>TDS</td><td>{{ selectedPayslip?.tds | currency:'INR' }}</td></tr>
+            <tr><td>PF</td><td>{{ selectedPayslip?.pf | currency:'INR' }}</td></tr>
+            <tr><td>Salary Advance</td><td>{{ selectedPayslip?.salaryAdvance | currency:'INR' }}</td></tr>
+            <tr class="table-danger"><td><strong>Total Deductions</strong></td><td><strong>{{ selectedPayslip?.totalDeduction | currency:'INR' }}</strong></td></tr>
+          </tbody>
+        </table>
+
+        <!-- Net Salary -->
+        <div class="net-salary p-3 text-center border rounded">
+          <h5>Net Salary: ₹ {{ selectedPayslip?.netSalary | currency:'INR' }}</h5>
+          <h6>Earned Salary: ₹ {{ selectedPayslip?.earnedSalary | currency:'INR' }}</h6>
+        </div>
+
+        <p class="text-muted mt-2 text-center">This is a computer-generated payslip and does not require signature.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-success" (click)="downloadPayslip(selectedPayslip)">Download PDF</button>
+        <button class="btn btn-secondary" (click)="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<app-footer></app-footer>

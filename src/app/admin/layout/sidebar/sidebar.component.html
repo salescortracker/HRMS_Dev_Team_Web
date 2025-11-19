@@ -1,0 +1,58 @@
+<div class="sidebar" [class.collapsed]="collapsed">
+  <div
+    class="menu-item"
+    routerLink="/admin/dashboard"
+    [class.active]="activeMenu === 'Dashboard'"
+   >
+    <i class="fas fa-database menu-icon"></i>
+    <span *ngIf="!collapsed">Dashboard</span>
+  </div>
+
+  <div
+    class="menu-item"
+    [class.active]="activeMenu === 'Master Data'"
+    (click)="selectMenu('Master Data')">
+    <i class="fas fa-database menu-icon"></i>
+    <span *ngIf="!collapsed">Master Data</span>
+  </div>
+
+  <div
+    class="menu-item"
+    [class.active]="activeMenu === 'Configuration'"
+    (click)="selectMenu('Configuration')">
+    <i class="fas fa-cogs menu-icon"></i>
+    <span *ngIf="!collapsed">Configuration</span>
+  </div>
+
+  <div
+    class="menu-item"
+    [class.active]="activeMenu === 'Email & Notification'"
+    (click)="selectMenu('Email & Notification')">
+    <i class="fas fa-envelope menu-icon"></i>
+    <span *ngIf="!collapsed">Email & Notification</span>
+  </div>
+
+  <div
+    class="menu-item"
+    [class.active]="activeMenu === 'Payroll'"
+    (click)="selectMenu('Payroll')">
+    <i class="fas fa-money-bill menu-icon"></i>
+    <span *ngIf="!collapsed">Payroll</span>
+  </div>
+
+  <div
+    class="menu-item"
+    [class.active]="activeMenu === 'System & Security'"
+    (click)="selectMenu('System & Security')">
+    <i class="fas fa-shield-alt menu-icon"></i>
+    <span *ngIf="!collapsed">System & Security</span>
+  </div>
+
+  <div
+    class="menu-item"
+    [class.active]="activeMenu === 'Reports'"
+    (click)="selectMenu('Reports')">
+    <i class="fas fa-chart-line menu-icon"></i>
+    <span *ngIf="!collapsed">Reports</span>
+  </div>
+</div>

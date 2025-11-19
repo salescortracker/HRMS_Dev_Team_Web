@@ -1,0 +1,20 @@
+.pay-groups .card {
+  border-radius: 10px;
+}
+
+.pay-groups table th,
+.pay-groups table td {
+  vertical-align: middle;
+}
+
+.pay-groups .table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.pay-groups .text-success {
+  font-weight: 600;
+}
+
+.pay-groups .text-danger {
+  font-weight: 600;
+}

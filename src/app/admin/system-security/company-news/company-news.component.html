@@ -1,0 +1,121 @@
+<div class="card shadow-sm"> 
+  <div class="container-fluid p-4 news-management">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-semibold">Company News</h4>
+      <button class="btn btn-danger" (click)="resetForm()">
+        <i class="fa-solid fa-plus me-2"></i> Bulk Upload
+      </button>
+    </div>
+<hr/>
+
+    <!-- Form -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <form (ngSubmit)="onSubmit()" #newsForm="ngForm" novalidate>
+          <div class="row g-3">
+
+            <!-- News Title -->
+            <div class="col-md-6">
+              <label class="form-label">News Title <span class="text-danger">*</span></label>
+              <input type="text" [(ngModel)]="news.Title" name="Title" class="form-control" required placeholder="Enter news headline" />
+            </div>
+
+            <!-- Category -->
+            <div class="col-md-6">
+              <label class="form-label">Category <span class="text-danger">*</span></label>
+              <select class="form-select" [(ngModel)]="news.Category" name="Category" required>
+                <option value="">Select Category</option>
+                <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+              </select>
+            </div>
+
+            <!-- Description -->
+            <div class="col-md-12">
+              <label class="form-label">Description <span class="text-danger">*</span></label>
+              <textarea class="form-control" rows="3" [(ngModel)]="news.Description" name="Description" required placeholder="Enter news description"></textarea>
+            </div>
+
+            <!-- File Upload -->
+            <div class="col-md-6">
+              <label class="form-label">Attachment (optional)</label>
+              <input type="file" [(ngModel)]="news.Attachment" name="Attachment" class="form-control" accept=".pdf,.jpg,.png" />
+            </div>
+
+            <!-- Publish Button -->
+            <div class="col-md-6 d-flex align-items-end">
+              <button type="submit" class="btn btn-dark w-100" [disabled]="!newsForm.valid">
+                <i class="fa-solid fa-save me-2"></i> {{ isEditMode ? 'Update' : 'Publish' }}
+              </button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <!-- Filter/Search -->
+        <div class="mb-3 row g-3 align-items-end">
+          <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="Search by Title" [(ngModel)]="searchText" />
+          </div>
+          <div class="col-md-4">
+            <select class="form-select" [(ngModel)]="searchCategory">
+              <option value="">All Categories</option>
+              <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+            </select>
+          </div>
+          <div class="col-md-4 d-flex">
+            <input type="date" class="form-control me-2" [(ngModel)]="startDate" placeholder="From" />
+            <input type="date" class="form-control" [(ngModel)]="endDate" placeholder="To" />
+          </div>
+        </div>
+
+        <!-- News List Table -->
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width:50px;">S.No</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Date</th>
+              <th class="text-center">Attachment</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let n of filteredNews(); let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ n.Title }}</td>
+              <td>{{ n.Category }}</td>
+              <td>{{ n.Description | slice:0:50 }}...</td>
+              <td>{{ n.Date | date:'dd-MMM-yyyy' }}</td>
+              <td class="text-center">
+                <i *ngIf="n.Attachment" class="fa-solid fa-paperclip"></i>
+              </td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editNews(n)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteNews(n)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredNews().length === 0">
+              <td colspan="7" class="text-center text-muted">No records found</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+
+  </div>
+</div>

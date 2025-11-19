@@ -1,0 +1,65 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Company Policies</h2>
+</div>
+
+<div class="p-4">
+
+  <!-- Filter Section -->
+<div class="row mb-3">
+  <div class="col-md-3">
+    <label>Category</label>
+    <select class="form-select" [(ngModel)]="selectedCategory">
+      <option value="">All Categories</option>
+      <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+    </select>
+  </div>
+  <div class="col-md-3">
+    <label>From Date</label>
+    <input type="date" class="form-control" [(ngModel)]="fromDate">
+  </div>
+  <div class="col-md-3">
+    <label>To Date</label>
+    <input type="date" class="form-control" [(ngModel)]="toDate">
+  </div>
+  <div class="col-md-3 d-flex align-items-end">
+    <button class="btn btn-primary w-100" (click)="applyFilter()">Filter</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>S.No</th>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Effective Date</th>
+          <th>Description</th>
+          <th>Attachment</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of filteredPolicies(); let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ p.Title }}</td>
+          <td>{{ p.Category }}</td>
+          <td>{{ p.EffectiveDate | date:'dd-MMM-yyyy' }}</td>
+          <td>{{ p.Description }}</td>
+          <td>
+            <a *ngIf="p.FileName" href="{{ p.FileUrl }}" target="_blank">{{ p.FileName }}</a>
+          </td>
+        </tr>
+        <tr *ngIf="filteredPolicies().length === 0">
+          <td colspan="6" class="text-center text-muted">No policies found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+<app-footer></app-footer>

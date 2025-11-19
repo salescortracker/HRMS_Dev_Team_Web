@@ -1,0 +1,14 @@
+.policy-category-master .form-label {
+  font-weight: 500;
+}
+
+.policy-category-master table th,
+.policy-category-master table td {
+  vertical-align: middle;
+}
+
+.policy-category-master .pagination .page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}

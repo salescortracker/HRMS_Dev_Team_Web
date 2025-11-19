@@ -1,0 +1,65 @@
+.upload-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.upload-box {
+  background: #fff;
+  color: #000;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25);
+  animation: zoomIn 0.3s ease;
+}
+
+.upload-area {
+  border: 2px dashed #bbb;
+  border-radius: 12px;
+  background: #fafafa;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+.upload-area:hover {
+  border-color: #ff3b3b;
+  background: #fff3f3;
+}
+
+.btn-danger {
+  background-color: #e50914;
+  border: none;
+}
+.btn-danger:hover {
+  background-color: #b0060e;
+}
+
+.btn-dark {
+  background-color: #212121;
+  color: white;
+}
+.btn-dark:hover {
+  background-color: #000;
+}
+
+.btn-outline-dark {
+  border-color: #333;
+  color: #333;
+}
+.btn-outline-dark:hover {
+  background: #333;
+  color: #fff;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes zoomIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

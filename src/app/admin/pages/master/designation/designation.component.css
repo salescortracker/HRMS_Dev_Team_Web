@@ -1,0 +1,24 @@
+.designation-master .form-label {
+  font-weight: 500;
+}
+
+.designation-master table th,
+.designation-master table td {
+  vertical-align: middle;
+}
+
+.designation-master .pagination .page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}
+.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+.sortable .fa {
+  margin-left: 6px;
+  font-size: 0.8rem;
+  color: #888;
+}
+

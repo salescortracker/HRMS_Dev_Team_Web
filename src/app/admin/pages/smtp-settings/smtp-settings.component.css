@@ -1,0 +1,12 @@
+.smtp-settings-master .card {
+  border-radius: 10px;
+}
+
+.smtp-settings-master table th,
+.smtp-settings-master table td {
+  vertical-align: middle;
+}
+
+.smtp-settings-master .table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}

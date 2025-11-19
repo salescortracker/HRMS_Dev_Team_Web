@@ -1,0 +1,23 @@
+.push-notification-master .card {
+  border-radius: 10px;
+}
+
+.push-notification-master textarea {
+  resize: none;
+}
+
+.push-notification-master table th,
+.push-notification-master table td {
+  vertical-align: middle;
+}
+
+.push-notification-master .table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.preview-container img {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 4px;
+}

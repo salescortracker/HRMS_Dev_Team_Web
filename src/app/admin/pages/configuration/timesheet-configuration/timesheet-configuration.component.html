@@ -1,0 +1,142 @@
+<div class="card shadow-sm">
+  <div class="container-fluid p-4 timesheet-config">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-semibold">Timesheet Configuration</h4>
+    </div>
+
+    <!-- Timesheet Configuration Form -->
+    <form #timesheetForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="row g-3">
+
+            <!-- Submission Frequency -->
+            <div class="col-md-6">
+              <label class="form-label">Submission Frequency <span class="text-danger">*</span></label>
+              <select class="form-select" name="Frequency" [(ngModel)]="timesheet.Frequency" required>
+                <option value="">Select Frequency</option>
+                <option *ngFor="let freq of frequencies" [value]="freq">{{ freq }}</option>
+              </select>
+            </div>
+
+            <!-- Approval Required -->
+            <div class="col-md-6 d-flex align-items-center mt-3">
+              <label class="form-check-label me-2 fw-semibold">Approval Required</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="timesheet.ApprovalRequired" name="ApprovalRequired" />
+              </div>
+            </div>
+
+            <!-- Lock After Submission -->
+            <div class="col-md-6 d-flex align-items-center mt-3">
+              <label class="form-check-label me-2 fw-semibold">Lock After Submission</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="timesheet.LockAfterSubmit" name="LockAfterSubmit" />
+              </div>
+            </div>
+
+            <!-- Overtime Allowed -->
+            <div class="col-md-6 d-flex align-items-center mt-3">
+              <label class="form-check-label me-2 fw-semibold">Overtime Allowed</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="timesheet.OvertimeAllowed" name="OvertimeAllowed" />
+              </div>
+            </div>
+
+            <!-- Rounding Policy -->
+            <div class="col-md-6">
+              <label class="form-label">Rounding Policy</label>
+              <select class="form-select" name="RoundingPolicy" [(ngModel)]="timesheet.RoundingPolicy">
+                <option value="">Select Policy</option>
+                <option *ngFor="let policy of roundingPolicies" [value]="policy">{{ policy }}</option>
+              </select>
+            </div>
+
+            <!-- Optional Fields -->
+            <div class="col-md-6">
+              <label class="form-label">Optional Fields</label>
+              <input type="text" class="form-control" name="OptionalFields" [(ngModel)]="timesheet.OptionalFields" placeholder="Comma separated fields" />
+            </div>
+
+            <!-- Description -->
+            <div class="col-12">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" rows="2" name="Description" [(ngModel)]="timesheet.Description" placeholder="Enter policy description"></textarea>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="text-end">
+        <button class="btn btn-success me-2" type="submit" [disabled]="!timesheetForm.valid">
+          <i class="fa-solid fa-save me-2"></i>{{ isEditMode ? 'Update' : 'Save' }}
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="resetForm()">
+          <i class="fa-solid fa-rotate-left me-2"></i>Reset
+        </button>
+      </div>
+    </form>
+
+    <!-- Table -->
+    <div class="card shadow-sm mt-4">
+      <div class="card-body">
+
+        <!-- Search -->
+        <div class="d-flex justify-content-end mb-3">
+          <input type="text" class="form-control w-25" placeholder="Search..." [(ngModel)]="searchText" />
+        </div>
+
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 60px;">S.No</th>
+              <th>Frequency</th>
+              <th>Approval</th>
+              <th>Lock</th>
+              <th>Overtime</th>
+              <th>Rounding</th>
+              <th>Optional Fields</th>
+              <th>Description</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of filteredTimesheets(); let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ item.Frequency }}</td>
+              <td class="text-center">
+                <i [ngClass]="item.ApprovalRequired ? 'fa-solid fa-circle-check text-success' : 'fa-solid fa-circle-xmark text-danger'"></i>
+              </td>
+              <td class="text-center">
+                <i [ngClass]="item.LockAfterSubmit ? 'fa-solid fa-circle-check text-success' : 'fa-solid fa-circle-xmark text-danger'"></i>
+              </td>
+              <td class="text-center">
+                <i [ngClass]="item.OvertimeAllowed ? 'fa-solid fa-circle-check text-success' : 'fa-solid fa-circle-xmark text-danger'"></i>
+              </td>
+              <td>{{ item.RoundingPolicy || '-' }}</td>
+              <td>{{ item.OptionalFields || '-' }}</td>
+              <td>{{ item.Description || '-' }}</td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editTimesheet(item)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteTimesheet(i)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredTimesheets().length === 0">
+              <td colspan="9" class="text-center text-muted">No records found</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,14 @@
+.relationship-master .form-label {
+  font-weight: 500;
+}
+
+.relationship-master table th,
+.relationship-master table td {
+  vertical-align: middle;
+}
+
+.relationship-master .pagination .page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}

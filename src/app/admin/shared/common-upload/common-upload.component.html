@@ -1,0 +1,62 @@
+<div class="upload-overlay animate__animated animate__fadeIn" *ngIf="visible">
+  <div class="upload-box shadow-lg rounded-4 p-4 position-relative animate__animated animate__zoomIn">
+
+    <!-- Close button -->
+    <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
+            aria-label="Close" (click)="close()"></button>
+
+    <!-- Header -->
+    <div class="text-center mb-4">
+      <h4 class="fw-bold text-danger mb-2">{{ screenName }} - Bulk Upload</h4>
+      <p class="text-muted small mb-0">
+        Upload an Excel file to add records or download the sample format below.
+      </p>
+    </div>
+
+    <!-- Upload Area -->
+    <div class="upload-area text-center p-4 mb-4"
+         (click)="fileInput.click()"
+         (dragover)="onDragOver($event)"
+         (drop)="onFileDrop($event)">
+      <i class="fa-solid fa-cloud-arrow-up fa-3x text-danger mb-3"></i>
+      <p class="fw-semibold text-dark mb-2">Drag & drop your file here</p>
+      <p class="text-muted small mb-3">or click below to browse</p>
+
+      <input #fileInput type="file" hidden accept=".xls,.xlsx" (change)="onFileSelect($event)" />
+      <button class="btn btn-outline-dark btn-sm" (click)="fileInput.click()">Browse File</button>
+
+      <p class="text-muted small mt-3">
+        <i class="fa-solid fa-circle-info me-1"></i>
+        Allowed: <b>.xls / .xlsx</b> | Max size: <b>5 MB</b>
+      </p>
+    </div>
+
+    <!-- Selected File Info -->
+    <div *ngIf="selectedFile" class="alert alert-light border d-flex align-items-center justify-content-between">
+      <div class="text-dark">
+        <i class="fa-solid fa-file-excel me-2 text-success"></i>
+        <strong>{{ selectedFile.name }}</strong>
+        ({{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB)
+      </div>
+      <button class="btn btn-sm btn-outline-danger" (click)="removeFile()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="d-flex justify-content-between align-items-center mt-4">
+      <button class="btn btn-outline-dark" (click)="downloadTemplate()">
+        <i class="fa-solid fa-download me-2"></i> Download Template
+      </button>
+      <div class="d-flex gap-2">
+        <button class="btn btn-dark" (click)="close()">
+          <i class="fa-solid fa-xmark me-2"></i> Cancel
+        </button>
+        <button class="btn btn-danger" (click)="upload()" [disabled]="!selectedFile">
+          <i class="fa-solid fa-upload me-2"></i> Upload
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

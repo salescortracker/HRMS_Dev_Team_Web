@@ -1,0 +1,14 @@
+.location-master .form-label {
+  font-weight: 500;
+}
+
+.location-master table th,
+.location-master table td {
+  vertical-align: middle;
+}
+
+.location-master .pagination .page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}

@@ -1,0 +1,14 @@
+.attachment-type-master .form-label {
+  font-weight: 500;
+}
+
+.attachment-type-master table th,
+.attachment-type-master table td {
+  vertical-align: middle;
+}
+
+.attachment-type-master .pagination .page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}

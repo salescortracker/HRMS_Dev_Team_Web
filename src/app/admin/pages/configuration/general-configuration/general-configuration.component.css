@@ -1,0 +1,22 @@
+.general-config .form-check-input {
+  cursor: pointer;
+  width: 48px;
+  height: 24px;
+}
+
+.general-config .form-check-input:checked {
+  background-color: #198754;
+  border-color: #198754;
+}
+
+.general-config .form-label {
+  font-weight: 500;
+}
+
+.general-config .card {
+  border-radius: 10px;
+}
+
+.general-config .btn {
+  min-width: 110px;
+}

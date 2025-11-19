@@ -1,0 +1,43 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">My Team</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">More</a> &gt;
+    <span>My Team</span>
+  </nav>
+</div>
+
+<div class="tab-container">
+<div class="container mt-4">
+  <h3>My Team / Subordinates</h3>
+<div class="org-chart">
+  <ul class="org-ul">
+    <ng-container *ngFor="let emp of topLevelEmployees()">
+      <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: emp }"></ng-container>
+    </ng-container>
+  </ul>
+</div>
+
+<ng-template #recursiveList let-employee>
+  <li>
+    <div class="employee-card">
+      <strong>{{ employee.name }}</strong>
+      <span>{{ employee.role }}</span>
+    </div>
+
+    <ul *ngIf="getSubordinates(employee.id).length > 0">
+      <ng-container *ngFor="let sub of getSubordinates(employee.id)">
+        <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: sub }"></ng-container>
+      </ng-container>
+    </ul>
+  </li>
+</ng-template>
+
+
+</div>
+
+</div>
+<app-footer></app-footer>

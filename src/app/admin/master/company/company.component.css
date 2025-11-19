@@ -1,0 +1,155 @@
+.company-management {
+  background-color: #f8f9fa;
+}
+
+.company-management .form-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.company-management .table {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.company-management .table th {
+  background-color: #f1f1f1;
+}
+
+.company-management .badge {
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: 12px;
+}
+
+.company-management .btn {
+  border-radius: 6px;
+}
+
+.company-management h4 {
+  color: #222;
+}
+/* =========================
+   COMMON UPLOAD POPUP STYLES
+   ========================= */
+
+.upload-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Upload box container */
+.upload-box {
+  width: 100%;
+  max-width: 480px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  padding: 2rem;
+  position: relative;
+  animation: slideDown 0.35s ease-out;
+}
+
+/* Title section */
+.upload-box h5 {
+  font-weight: 600;
+  color: #0d6efd;
+  font-size: 1.25rem;
+}
+
+/* File upload area */
+.upload-box .border {
+  border: 2px dashed #cfd4da !important;
+  background-color: #f8f9fa !important;
+  transition: all 0.3s ease-in-out;
+}
+
+.upload-box .border:hover {
+  border-color: #0d6efd !important;
+  background-color: #eef5ff !important;
+}
+
+/* File input */
+.upload-box input[type="file"] {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 0.6rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.upload-box input[type="file"]:hover {
+  background-color: #f1f5ff;
+}
+
+/* Buttons */
+.upload-box .btn {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 0.5rem 1.2rem;
+  transition: 0.3s;
+}
+
+.upload-box .btn-primary {
+  background-color: #0d6efd;
+  border: none;
+}
+
+.upload-box .btn-primary:hover {
+  background-color: #084fc2;
+}
+
+.upload-box .btn-outline-secondary:hover {
+  background-color: #e9ecef;
+}
+
+/* Close icon button */
+.upload-box button.btn-outline-secondary i {
+  font-size: 1.2rem;
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-25px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Spinner customization */
+.spinner-border {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15rem;
+}
+
+/* Responsive behavior */
+@media (max-width: 576px) {
+  .upload-box {
+    max-width: 90%;
+    padding: 1.5rem;
+  }
+  .upload-box h5 {
+    font-size: 1.1rem;
+  }
+}
+

@@ -1,0 +1,252 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<!-- DAILY WORKING HOURS - MULTIPLE EMPLOYEE SELECTION -->
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Daily Working Hours</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">HRMS</a> &gt;
+    <span>Daily Working Hours</span>
+  </nav>
+</div>
+
+<div class="tab-container mt-4">
+  <!-- Assign Daily Working Hours Form -->
+  <div class="card p-4 mb-4 shadow-sm">
+    <h5 class="mb-3">Assign Daily Working Hours to Employees</h5>
+    <form id="dailyWorkingHoursForm">
+      <div class="row mb-3">
+        <!-- Employee Multi-select -->
+        <div class="col-md-6">
+          <label class="form-label">Select Employees <span class="text-danger">*</span></label>
+          <div class="dropdown-multiselect">
+            <input type="checkbox" id="employeeDropdown" hidden>
+            <label for="employeeDropdown" class="dropdown-label">Select Employees</label>
+            <div class="dropdown-menu">
+              <label class="dropdown-item">
+                <input type="checkbox" class="employee" value="all"> Select All
+              </label>
+              <label class="dropdown-item">
+                <input type="checkbox" class="employee" value="EMP001"> John Doe (EMP001)
+              </label>
+              <label class="dropdown-item">
+                <input type="checkbox" class="employee" value="EMP003"> Anita Sharma (EMP003)
+              </label>
+              <label class="dropdown-item">
+                <input type="checkbox" class="employee" value="EMP007"> Rahul Kumar (EMP007)
+              </label>
+              <label class="dropdown-item">
+                <input type="checkbox" class="employee" value="EMP010"> Priya Singh (EMP010)
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shift Selection -->
+        <div class="col-md-6">
+          <label class="form-label">Select Shift <span class="text-danger">*</span></label>
+          <select class="form-select" required>
+            <option value="">Select Shift</option>
+            <option>Morning Shift (09:00 - 17:30)</option>
+            <option>Evening Shift (14:00 - 22:30)</option>
+            <option>Night Shift (22:00 - 06:00)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Daily Working Hours -->
+      <h6 class="mb-3">Daily Working Hours</h6>
+       <div class="table-responsive">
+      <table class="table table-bordered align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Day</th>
+            <th>Working</th>
+            <th>Start Time <span class="text-danger">*</span></th>
+            <th>End Time <span class="text-danger">*</span></th>
+            <th>Total Hours</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Monday -->
+          <tr>
+            <td>Monday</td>
+            <td class="text-center">
+              <input type="checkbox" class="form-check-input">
+            </td>
+            <td>
+              <input type="time" class="form-control" required>
+            </td>
+            <td>
+              <input type="time" class="form-control" required>
+            </td>
+            <td>
+              <input type="text" class="form-control" placeholder="e.g., 8" readonly>
+            </td>
+          </tr>
+
+          <!-- Tuesday -->
+          <tr>
+            <td>Tuesday</td>
+            <td class="text-center">
+              <input type="checkbox" class="form-check-input">
+            </td>
+            <td>
+              <input type="time" class="form-control" required>
+            </td>
+            <td>
+              <input type="time" class="form-control" required>
+            </td>
+            <td>
+              <input type="text" class="form-control" placeholder="e.g., 8" readonly>
+            </td>
+          </tr>
+
+          <!-- Wednesday -->
+          <tr>
+            <td>Wednesday</td>
+            <td class="text-center">
+              <input type="checkbox" class="form-check-input">
+            </td>
+            <td>
+              <input type="time" class="form-control" required>
+            </td>
+            <td>
+              <input type="time" class="form-control" required>
+            </td>
+            <td>
+              <input type="text" class="form-control" placeholder="e.g., 8" readonly>
+            </td>
+          </tr>
+
+          <!-- Thursday -->
+          <tr>
+            <td>Thursday</td>
+            <td class="text-center">
+              <input type="checkbox" class="form-check-input">
+            </td>
+            <td>
+              <input type="time" class="form-control" required>
+            </td>
+            <td>
+              <input type="time" class="form-control" required>
+            </td>
+            <td>
+              <input type="text" class="form-control" placeholder="e.g., 8" readonly>
+            </td>
+          </tr>
+
+          <!-- Friday -->
+          <tr>
+            <td>Friday</td>
+            <td class="text-center">
+              <input type="checkbox" class="form-check-input">
+            </td>
+            <td>
+              <input type="time" class="form-control" required>
+            </td>
+            <td>
+              <input type="time" class="form-control" required>
+            </td>
+            <td>
+              <input type="text" class="form-control" placeholder="e.g., 8" readonly>
+            </td>
+          </tr>
+
+          <!-- Saturday -->
+          <tr>
+            <td>Saturday</td>
+            <td class="text-center">
+              <input type="checkbox" class="form-check-input">
+            </td>
+            <td>
+              <input type="time" class="form-control">
+            </td>
+            <td>
+              <input type="time" class="form-control">
+            </td>
+            <td>
+              <input type="text" class="form-control" placeholder="e.g., 0" readonly>
+            </td>
+          </tr>
+
+          <!-- Sunday -->
+          <tr>
+            <td>Sunday</td>
+            <td class="text-center">
+              <input type="checkbox" class="form-check-input">
+            </td>
+            <td>
+              <input type="time" class="form-control">
+            </td>
+            <td>
+              <input type="time" class="form-control">
+            </td>
+            <td>
+              <input type="text" class="form-control" placeholder="e.g., 0" readonly>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  
+    
+
+      <div class="row">
+        <div class="col-md-12 text-end">
+          <button type="submit" class="btn btn-primary">Save Working Hours</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Assigned Daily Working Hours List -->
+  <div class="card p-4 shadow-sm">
+    <h5 class="mb-3">Assigned Daily Working Hours</h5>
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>Employee Name</th>
+          <th>Shift</th>
+          <th>Day</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>John Doe</td>
+          <td>Morning Shift</td>
+          <td>Monday</td>
+          <td>09:00</td>
+          <td>17:30</td>
+          <td>Active</td>
+          <td>
+            <button class="btn btn-sm btn-primary">Edit</button>
+            <button class="btn btn-sm btn-danger">Delete</button>
+          </td>
+        </tr>
+        <tr>
+          <td>Anita Sharma</td>
+          <td>Evening Shift</td>
+          <td>Tuesday</td>
+          <td>14:00</td>
+          <td>22:30</td>
+          <td>Active</td>
+          <td>
+            <button class="btn btn-sm btn-primary">Edit</button>
+            <button class="btn btn-sm btn-danger">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+<app-footer></app-footer>

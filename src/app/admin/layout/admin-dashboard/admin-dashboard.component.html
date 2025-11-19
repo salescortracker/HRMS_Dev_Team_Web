@@ -1,0 +1,112 @@
+<div class="card shadow-sm">
+  
+<div class="container-fluid p-4 company-management">
+
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+   <h4 class="fw-semibold mb-0">
+  <i class="fa-solid fa-home me-2 text-danger"></i>
+ Dashboard
+</h4>
+    <button class="btn btn-outline-danger btn-sm">
+      <i class="fa-solid fa-rotate"></i> Refresh
+    </button>
+  </div>
+
+  <!-- STATS CARDS -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3" *ngFor="let s of stats">
+      <div class="stat-card shadow-sm">
+        <div class="icon" [style.backgroundColor]="s.color">
+          <i class="fa-solid" [ngClass]="s.icon"></i>
+        </div>
+        <div>
+          <h5 class="value">{{ s.value }}</h5>
+          <p class="title">{{ s.title }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-8">
+      <div class="card shadow-sm p-3">
+        <h5 class="text-secondary mb-3">Attendance vs Performance</h5>
+        <canvas id="performanceChart"></canvas>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3">
+        <h5 class="text-secondary mb-3">Department Strength</h5>
+        <canvas id="deptChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEAVE & PAYROLL SUMMARY -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm p-3">
+        <h5 class="text-secondary mb-3">Leave Summary</h5>
+        <table class="table table-sm table-borderless mb-0">
+          <thead>
+            <tr class="fw-semibold text-muted">
+              <th>Type</th>
+              <th>Used</th>
+              <th>Total</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let l of leaveSummary">
+              <td>{{ l.type }}</td>
+              <td>{{ l.used }}</td>
+              <td>{{ l.total }}</td>
+              <td>{{ l.total - l.used }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card shadow-sm p-3">
+        <h5 class="text-secondary mb-3">Payroll Overview</h5>
+        <table class="table table-sm table-borderless mb-0">
+          <thead>
+            <tr class="fw-semibold text-muted">
+              <th>Month</th>
+              <th>Status</th>
+              <th class="text-end">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of payrollSummary">
+              <td>{{ p.name }}</td>
+              <td>
+                <span class="badge" [ngClass]="p.processed ? 'bg-success' : 'bg-warning text-dark'">
+                  {{ p.processed ? 'Processed' : 'Pending' }}
+                </span>
+              </td>
+              <td class="text-end">{{ p.amount | currency:'INR' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECENT ACTIVITIES -->
+  <div class="card shadow-sm p-3">
+    <h5 class="text-secondary mb-3">Recent Activities</h5>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item" *ngFor="let a of recentActivities">
+        <i class="fa-solid fa-circle text-success me-2"></i>
+        <strong>{{ a.action }}</strong> — {{ a.user }}
+        <span class="float-end text-muted small">{{ a.time }}</span>
+      </li>
+    </ul>
+  </div>
+</div> 
+</div>

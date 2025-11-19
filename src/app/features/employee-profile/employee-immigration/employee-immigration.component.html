@@ -1,0 +1,176 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Employee Immigration</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">Employee Profile</a> &gt;
+    <span>Employee Immigration</span>
+  </nav>
+</div>
+
+<!-- TAB 8: VISA / WORK PERMIT -->
+<div class="tab-container">
+  <form>
+    <!-- Personal Details -->
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-control" placeholder="Enter full name" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Employee ID / Code</label>
+        <input type="text" class="form-control" placeholder="Enter employee ID / code">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Date of Birth</label>
+        <input type="date" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Nationality / Citizenship</label>
+        <input type="text" class="form-control" placeholder="Enter nationality or select country" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Passport Number</label>
+        <input type="text" class="form-control" placeholder="Enter passport number" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Passport Expiry Date</label>
+        <input type="date" class="form-control" required>
+      </div>
+    </div>
+
+    <!-- Visa / Work Permit Details -->
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Visa Type</label>
+        <select class="form-select" required>
+          <option value="">Select Visa Type</option>
+          <option>Work</option>
+          <option>Study</option>
+          <option>Dependent</option>
+          <option>Temporary</option>
+          <option>Permanent</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Visa Number / Permit Number</label>
+        <input type="text" class="form-control" placeholder="Enter visa or permit number" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Visa Issuing Country</label>
+        <input type="text" class="form-control" placeholder="Enter issuing country" required>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Visa Issue Date</label>
+        <input type="date" class="form-control" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Visa Expiry Date</label>
+        <input type="date" class="form-control" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Work Authorization / Permit Status</label>
+        <select class="form-select" required>
+          <option value="">Select Status</option>
+          <option>Approved</option>
+          <option>Pending</option>
+          <option>Rejected</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Employer / Sponsorship Details -->
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Employer / Sponsor Name</label>
+        <input type="text" class="form-control" placeholder="Enter employer or sponsor name" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Employer Address</label>
+        <input type="text" class="form-control" placeholder="Enter employer address" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Contact Person / HR</label>
+        <input type="text" class="form-control" placeholder="Enter HR contact name" required>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Employer Contact Email / Phone</label>
+        <input type="text" class="form-control" placeholder="Enter email or phone" required>
+      </div>
+      <div class="col-md-8">
+        <label class="form-label">Remarks / Additional Information</label>
+        <textarea class="form-control" placeholder="Any additional info (optional)"></textarea>
+      </div>
+    </div>
+
+    <!-- Upload Documents -->
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Passport Copy</label>
+        <input type="file" class="form-control" accept=".pdf,.jpg,.png">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Visa / Work Permit Copy</label>
+        <input type="file" class="form-control" accept=".pdf,.jpg,.png">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Other Supporting Documents</label>
+        <input type="file" class="form-control" accept=".pdf,.jpg,.png">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-12 text-first">
+        <button type="submit" class="btn btn-primary">Save Visa / Work Permit</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Visa / Work Permit Table -->
+  <div class="dashboard-tables full-row mt-4">
+    <div class="table-card">
+      <h3>Visa / Work Permit List</h3>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Visa Type</th>
+            <th>Visa Number</th>
+            <th>Issue Date</th>
+            <th>Expiry Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>EMP006 - Raj</td>
+            <td>Work</td>
+            <td>W1234567</td>
+            <td>2024-01-10</td>
+            <td>2025-01-09</td>
+            <td>Approved</td>
+            <td class="action-icons">
+              <i class="fa-solid fa-pen"></i>
+              <i class="fa-solid fa-trash"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>
+

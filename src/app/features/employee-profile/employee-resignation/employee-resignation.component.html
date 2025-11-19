@@ -1,0 +1,91 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Employee Resignation</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">Employee Profile</a> &gt;
+    <span>Employee Resignation</span>
+  </nav>
+</div>
+
+<div class="tab-container">
+<!-- TAB 7: RESIGNATION / EXIT -->
+ <div class="content">
+  <form>
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Resignation Type</label>
+        <select class="form-select" required>
+          <option value="">Select resignation type</option>
+          <option>Voluntary</option>
+          <option>Involuntary</option>
+          <option>Retirement</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Notice Period</label>
+        <input type="text" class="form-control" placeholder="Enter notice period in days/weeks" required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Last Working Day</label>
+        <input type="date" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <label class="form-label">Resignation Reason</label>
+        <textarea class="form-control" placeholder="Provide reason for resignation" required></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12 text-first">
+        <button type="submit" class="btn btn-primary">Submit Resignation</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Resignation Table -->
+  <div class="dashboard-tables full-row mt-4">
+    <div class="table-card">
+      <h3>Resignation / Exit List</h3>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Type</th>
+            <th>Notice Period</th>
+            <th>Last Working Day</th>
+            <th>Reason</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>EMP005 - Jane</td>
+            <td>Voluntary</td>
+            <td>30 days</td>
+            <td>2025-03-31</td>
+            <td>Personal reasons</td>
+            <td class="action-icons">
+              <i class="fa-solid fa-pen"></i>
+              <i class="fa-solid fa-trash"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+ 
+</div>
+</div>
+
+</div>
+
+<app-footer></app-footer>
+

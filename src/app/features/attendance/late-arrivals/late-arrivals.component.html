@@ -1,0 +1,162 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+
+<!-- DAILY WORKING HOURS - MULTIPLE EMPLOYEE SELECTION -->
+<div class="dashboard-header">
+  <h2 class="dashboard-title">Late Arrivals</h2>
+  <nav class="breadcrumb">
+    <a href="#">Home</a> &gt;
+    <a href="#">HRMS</a> &gt;
+    <span>Late Arrivals</span>
+  </nav>
+</div>
+
+<div class="tab-container mt-4">
+<div class="card p-4 shadow-sm">
+  <h5 class="mb-3">Early Departures</h5>
+
+  <!-- Filter Form -->
+  <form class="row g-3 mb-4">
+    <div class="col-md-4">
+      <label class="form-label">Select Employee</label>
+      <select class="form-select" required>
+        <option value="">All Employees</option>
+        <option>John Doe (EMP001)</option>
+        <option>Anita Sharma (EMP003)</option>
+        <option>Rahul Kumar (EMP007)</option>
+        <option>Priya Singh (EMP010)</option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">From Date</label>
+      <input type="date" class="form-control" required>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">To Date</label>
+      <input type="date" class="form-control" required>
+    </div>
+
+    <div class="col-md-2 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary w-100">Filter</button>
+    </div>
+  </form>
+
+  <!-- Early Departures Table -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Employee Name</th>
+          <th>Employee ID</th>
+          <th>Date</th>
+          <th>Scheduled End</th>
+          <th>Clock Out Time</th>
+          <th>Left Early By</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>John Doe</td>
+          <td>EMP001</td>
+          <td>2025-10-14</td>
+          <td>05:30 PM</td>
+          <td>05:10 PM</td>
+          <td>20 mins</td>
+          <td><span class="badge bg-warning text-dark">Early</span></td>
+          <td class="text-center">
+            <!-- View Icon -->
+            <a href="#" data-bs-toggle="modal" data-bs-target="#viewEarlyModal1" class="me-2">
+              <i class="fa-solid fa-eye text-primary"></i>
+            </a>
+            <!-- Mark Excuse Icon -->
+            <a href="#" data-bs-toggle="modal" data-bs-target="#excuseEarlyModal1">
+              <i class="fa-solid fa-pen-to-square text-success"></i>
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td>Anita Sharma</td>
+          <td>EMP003</td>
+          <td>2025-10-14</td>
+          <td>05:30 PM</td>
+          <td>05:00 PM</td>
+          <td>30 mins</td>
+          <td><span class="badge bg-warning text-dark">Early</span></td>
+          <td class="text-center">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#viewEarlyModal2" class="me-2">
+              <i class="fa-solid fa-eye text-primary"></i>
+            </a>
+            <a href="#" data-bs-toggle="modal" data-bs-target="#excuseEarlyModal2">
+              <i class="fa-solid fa-pen-to-square text-success"></i>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- VIEW EARLY DEPARTURE MODAL -->
+<div class="modal fade" id="viewEarlyModal1" tabindex="-1" aria-labelledby="viewEarlyModalLabel1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewEarlyModalLabel1">Early Departure Details - John Doe</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Employee ID:</strong> EMP001</p>
+        <p><strong>Date:</strong> 2025-10-14</p>
+        <p><strong>Scheduled End:</strong> 05:30 PM</p>
+        <p><strong>Clock Out Time:</strong> 05:10 PM</p>
+        <p><strong>Left Early By:</strong> 20 mins</p>
+        <p><strong>Status:</strong> Early</p>
+        <p><strong>Remarks:</strong> -</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MARK EXCUSE MODAL -->
+<div class="modal fade" id="excuseEarlyModal1" tabindex="-1" aria-labelledby="excuseEarlyModalLabel1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form>
+        <div class="modal-header">
+          <h5 class="modal-title" id="excuseEarlyModalLabel1">Mark Excuse - John Doe</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Reason for Excuse <span class="text-danger">*</span></label>
+            <textarea class="form-control" placeholder="Enter reason..." required></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Adjust Attendance</label>
+            <select class="form-select">
+              <option value="">Select Option</option>
+              <option>Full Excuse</option>
+              <option>Partial Excuse</option>
+              <option>None</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Save Excuse</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<app-footer></app-footer>
