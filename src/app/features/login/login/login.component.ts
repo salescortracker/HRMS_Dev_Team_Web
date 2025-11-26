@@ -56,7 +56,8 @@ export class LoginComponent {
           sessionStorage.setItem('roleId', response.user.roleId.toString());
           sessionStorage.setItem('currentUser', JSON.stringify(response.user));
             sessionStorage.setItem('roleName', response.user.roleName);
-                    sessionStorage.setItem('Name', response.user.fullName);
+          sessionStorage.setItem('Name', response.user.fullName);
+          sessionStorage.setItem('EmployeeCode', response.user.EmployeeCode);
           Swal.fire('Login Successful', response.message, 'success');
           // ✅ Navigate by role or response route
           const route =
