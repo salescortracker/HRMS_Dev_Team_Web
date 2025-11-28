@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs';
 import { map } from 'rxjs';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { EmployeeImmigrationComponent } from '../../features/employee-profile/employee-immigration/employee-immigration.component';
 // ------------ Model Interfaces ----------------
 export interface Designation {
   designationID: number;
@@ -217,6 +218,53 @@ export interface Department {
   modifiedAt?: Date;
   isDeleted?: boolean;
 }
+
+
+export interface EmployeeImmigration {
+  regionId: number;
+  companyId: number;
+  immigrationId?: number;
+
+  employeeId: number;
+  userId: number;
+
+  fullName: string;
+  dateOfBirth: string;
+  nationality: string;
+
+  passportNumber: string;
+  passportExpiryDate: string;
+
+  visaTypeId: number;
+  visaTypeName?: string;
+
+  statusId: number;
+  statusName?: string;
+
+  visaNumber: string;
+  visaIssueDate: string;
+  visaExpiryDate: string;
+  visaIssuingCountry: string;
+
+  employerName: string;
+  employerAddress: string;
+  employerContact: string;
+  contactPerson: string;
+
+  remarks: string;
+
+  passportCopyPath?: string;
+  visaCopyPath?: string;
+  otherDocumentsPath?: string;
+
+  createdBy?: string;
+  createdDate?: string;
+  modifiedBy?: string;
+  modifiedDate?: string;
+}
+
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -825,4 +873,50 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
   );
 }
+
+  // Get All
+    getAllEmployeeImmigrations(): Observable<EmployeeImmigration[]> {
+      return this.http.get<EmployeeImmigration[]>(`${this.baseUrl}/UserManagement/GetImmigration`);
+    }
+
+  getEmployeeImmigrationById(id: number) : Observable <EmployeeImmigration> {
+    return this.http.get<EmployeeImmigration>(`${this.baseUrl}/UserManagement/GetByIdImmigration/${id}`);
+  }
+
+ CreateEmployeeImmigration(formData: FormData): Observable<any> {
+  return this.http.post(`${this.baseUrl}/UserManagement/CreateImmigration`, formData, {
+    responseType: 'text'  // Add this line
+  });
+}
+
+ UpdateEmployeeImmigration(id: number, formData: FormData): Observable<any> {
+  return this.http.put(`${this.baseUrl}/UserManagement/UpdateImmigration/${id}`, formData, {
+    responseType: 'text'  // Add this line
+  });
+}
+  DeleteEmployeeImmigration(id: number, companyId: number, regionId: number): Observable <any> {
+    return this.http.delete(`${this.baseUrl}/UserManagement/DeleteImmigration/${id}`)
+  }
+// Visa Types Dropdown
+getVisaTypes(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/UserManagement/GetVisaTypes`);
+}
+
+// Status Dropdown
+getStatuses(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/UserManagement/GetStatuses`);
+}
+
+DownloadImmigrationFile(id: number, fileType: string): Observable<Blob> {
+  return this.http.get(
+    `${this.baseUrl}/UserManagement/DownloadImmigrationFile/${id}/${fileType}`,
+    { responseType: 'blob' }
+  );
+}
+getFileBaseUrl(): string {
+  return this.baseUrl + '/uploads/';
+}
+
+
+
 }
