@@ -1,0 +1,162 @@
+<div class="form-container">
+  <form [formGroup]="jobHistoryForm" (ngSubmit)="onSubmit()" style="display: flex; flex-wrap: wrap; gap: 20px;">
+
+    <!-- Employer -->
+    <div class="form-group" style="flex: 1 1 calc(33.33% - 20px);">
+      <label>Employer</label>
+      <input type="text" placeholder="Enter employer name" formControlName="employer" required>
+      <div *ngIf="jobHistoryForm.get('employer')?.touched && jobHistoryForm.get('employer')?.invalid" style="color:red; font-size:12px">
+        Employer is required and allows letters, numbers, spaces, &, -, .
+      </div>
+    </div>
+
+    <!-- Job Title -->
+    <div class="form-group" style="flex: 1 1 calc(33.33% - 20px);">
+      <label>Job Title</label>
+      <input type="text" placeholder="Enter job title/designation" formControlName="jobTitle" required>
+      <div *ngIf="jobHistoryForm.get('jobTitle')?.touched && jobHistoryForm.get('jobTitle')?.invalid" style="color:red; font-size:12px">
+        Job Title is required and allows letters, spaces, /, -
+      </div>
+    </div>
+
+    <!-- Employee Code -->
+    <div class="form-group" style="flex: 1 1 calc(33.33% - 20px);">
+      <label>Employee Code</label>
+      <input type="text" placeholder="Enter employee code" formControlName="employeeCode" required>
+      <div *ngIf="jobHistoryForm.get('employeeCode')?.touched && jobHistoryForm.get('employeeCode')?.invalid" style="color:red; font-size:12px">
+        Employee Code is required and allows alphanumeric, /, -
+      </div>
+    </div>
+
+    <!-- Tenure From -->
+    <div class="form-group" style="flex: 1 1 calc(33.33% - 20px);">
+      <label>Tenure From</label>
+      <input type="date" formControlName="fromDate" required>
+    </div>
+
+    <!-- Tenure To -->
+    <div class="form-group" style="flex: 1 1 calc(33.33% - 20px);">
+      <label>Tenure To</label>
+      <input type="date" formControlName="toDate" required>
+        <div *ngIf="jobHistoryForm.errors?.['dateRange']" style="color:red; font-size:12px">
+        To Date must be equal or after From Date
+      </div>
+    </div>
+
+    <!-- Last CTC -->
+    <div class="form-group" style="flex: 1 1 calc(33.33% - 20px);">
+      <label>Last CTC</label>
+      <input type="text" placeholder="Enter last drawn CTC" formControlName="lastCTC" required>
+      <div *ngIf="jobHistoryForm.get('lastCTC')?.touched && jobHistoryForm.get('lastCTC')?.invalid" style="color:red; font-size:12px">
+        Last CTC must be numeric
+      </div>
+    </div>
+
+    <!-- Website -->
+  <div class="form-group" style="flex: 1 1 calc(33.33% - 20px);">
+    <label>Website</label>
+    <input type="text" placeholder="Enter company website" formControlName="website">
+    <div *ngIf="jobHistoryForm.get('website')?.touched && jobHistoryForm.get('website')?.invalid" style="color:red; font-size:12px">
+      Enter a valid URL (e.g., www.example.com)
+    </div>
+  </div>
+
+
+    <!-- Reason for Leaving -->
+    <div class="form-group" style="flex: 1 1 calc(33.33% - 20px);">
+      <label>Reason for Leaving</label>
+      <textarea placeholder="Enter reason for leaving" rows="1" formControlName="reasonForLeaving" required></textarea>
+      <div *ngIf="jobHistoryForm.get('reasonForLeaving')?.touched && jobHistoryForm.get('reasonForLeaving')?.invalid" style="color:red; font-size:12px">
+        Reason is required, max 500 characters
+      </div>
+    </div>
+
+    <!-- Upload Documents -->
+    <div class="form-group" style="flex: 1 1 calc(33.33% - 20px);">
+      <label>Upload Documents</label>
+      <input type="file" (change)="onFileChange($event)">
+      <div *ngIf="fileError" style="color:red; font-size:12px">{{ fileError }}</div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="form-group" style="flex: 1 1 100%; text-align: right;">
+      <button type="submit">{{ editMode ? 'Update Job History' : 'Add Job History' }}</button>
+    </div>
+  </form>
+
+
+  <!-- SEARCH -->
+  <div class="mb-3 row g-3 align-items-end">
+    <div class="col-md-4">
+      <input type="text" class="form-control" placeholder="Search by Employer" [(ngModel)]="searchText" (ngModelChange)="onFilterChange()" />
+    </div>
+  </div>
+
+  <!-- JOB HISTORY TABLE -->
+  <div class="dashboard-tables full-row">
+    <div class="table-card">
+      <h3>Job History List</h3>
+      <table>
+        <thead>
+          <tr>
+            <th (click)="sortBy('employer')" style="cursor:pointer">
+              Employer <span *ngIf="sortColumn === 'employer'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th (click)="sortBy('jobTitle')" style="cursor:pointer">
+              Job Title <span *ngIf="sortColumn === 'jobTitle'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th>Tenure</th>
+            <th (click)="sortBy('lastCTC')" style="cursor:pointer">
+              CTC <span *ngIf="sortColumn === 'lastCTC'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th>Documents</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of filteredJobHistory(); let i = index">
+            <td>{{ item.employer }}</td>
+            <td>{{ item.jobTitle }}</td>
+            <td>{{ item.fromDate | date }} - {{ item.toDate | date }}</td>
+            <td>{{ item.lastCTC }}</td>
+         <td>
+                <a *ngIf="item.uploadDocumentPath" 
+                    style="cursor:pointer; color: #0d6efd; font-weight: 500;"
+                    (click)="viewDocument(item.uploadDocumentPath)">
+                    View
+                </a>
+              
+             </td>
+
+            <td>
+              <i class="fa-solid fa-pen" style="cursor:pointer" (click)="edit(item)"></i>
+              <i class="fa-solid fa-trash" style="cursor:pointer; margin-left: 8px;" (click)="delete(item.id)"></i>
+            </td>
+          </tr>
+
+          <tr *ngIf="filteredJobHistory().length === 0">
+            <td colspan="6" style="text-align:center; padding: 15px;">No job history records found.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- PAGINATION -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          <label>Show:
+            <select class="form-select d-inline w-auto ms-2" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+              <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+            </select>
+            entries
+          </label>
+        </div>
+        <div>
+          <button class="btn btn-outline-secondary btn-sm me-2" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+          <span>Page {{ currentPage }} of {{ totalPages }}</span>
+          <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

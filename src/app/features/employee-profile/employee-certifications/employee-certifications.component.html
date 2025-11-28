@@ -1,0 +1,155 @@
+<div class="form-container">
+
+  <form [formGroup]="certificationForm" (ngSubmit)="onSubmit()"
+        style="display:flex; flex-wrap:wrap; gap:20px;">
+
+    <!-- Certification Name -->
+    <div class="form-group" style="flex:1 1 calc(33.33% - 20px);">
+      <label>Certification Name</label>
+      <input type="text" formControlName="certificationName" placeholder="Enter certification name">
+
+      <div *ngIf="certificationForm.get('certificationName')?.touched && certificationForm.get('certificationName')?.invalid"
+           style="color:red; font-size:12px;">
+        <div *ngIf="certificationForm.get('certificationName')?.errors?.['required']">Certification name is required.</div>
+        <div *ngIf="certificationForm.get('certificationName')?.errors?.['maxlength']">Max 100 characters allowed.</div>
+        <div *ngIf="certificationForm.get('certificationName')?.errors?.['pattern']">
+          Only letters, numbers, spaces, . and - allowed.
+        </div>
+      </div>
+    </div>
+
+    <!-- Certification Type -->
+    <div class="form-group" style="flex:1 1 calc(33.33% - 20px);">
+      <label>Certification Type</label>
+      <select formControlName="certificationTypeId">
+        <option value="">Select Type</option>
+        <option *ngFor="let type of certificationTypeList" [value]="type.certificationTypeId">
+          {{ type.certificationTypeName }}
+        </option>
+      </select>
+
+      <div *ngIf="certificationForm.get('certificationTypeId')?.touched && certificationForm.get('certificationTypeId')?.invalid"
+           style="color:red; font-size:12px;">
+        <div *ngIf="certificationForm.get('certificationTypeId')?.errors?.['required']">Certification type is required.</div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group" style="flex:1 1 calc(33.33% - 20px);">
+      <label>Description</label>
+      <textarea formControlName="description" placeholder="Enter description" rows="1"></textarea>
+
+      <div *ngIf="certificationForm.get('description')?.touched && certificationForm.get('description')?.invalid"
+           style="color:red; font-size:12px;">
+        <div *ngIf="certificationForm.get('description')?.errors?.['maxlength']">Max 200 characters allowed.</div>
+      </div>
+    </div>
+
+    <!-- File Upload -->
+    <div class="form-group" style="flex:1 1 calc(33.33% - 20px);">
+      <label>Upload Document</label>
+      <input type="file" (change)="onFileChange($event)">
+
+      <div *ngIf="fileError" style="color:red; font-size:12px;">
+        {{ fileError }}
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="form-group" style="flex:1 1 100%; text-align:right;">
+      <button type="submit">
+        {{ editMode ? 'Update Certification' : 'Add Certification' }}
+      </button>
+    </div>
+
+  </form>
+
+  <!-- SEARCH -->
+  <div class="mb-3 row g-3 align-items-end mt-3">
+    <div class="col-md-4">
+      <input type="text" class="form-control" placeholder="Search by Certification Name"
+             [(ngModel)]="searchText" (ngModelChange)="onFilterChange()" />
+    </div>
+  </div>
+
+  <!-- CERTIFICATION TABLE -->
+  <div class="dashboard-tables full-row">
+    <div class="table-card">
+      <h3>Certification List</h3>
+      <table>
+        <thead>
+          <tr>
+            <th (click)="sortBy('certificationName')" style="cursor:pointer">
+              Certification Name 
+              <span *ngIf="sortColumn==='certificationName'">{{ sortDirection==='asc'?'▲':'▼' }}</span>
+            </th>
+
+            <th>Type</th>
+
+            <th>Description</th>
+
+            <th>Document</th>
+
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of filteredCertifications()">
+            <td>{{ item.certificationName }}</td>
+            <td>{{ item.certificationTypeName }}</td>
+            <td>{{ item.description }}</td>
+
+            <td>
+              <a *ngIf="item.documentPath"
+                 style="cursor:pointer; color:#0d6efd; font-weight:500;"
+                 (click)="viewDocument(item.documentPath)">
+                 View
+              </a>
+            </td>
+
+            <td>
+              <i class="fa-solid fa-pen" style="cursor:pointer" (click)="edit(item)"></i>
+              <i class="fa-solid fa-trash ms-2" style="cursor:pointer" (click)="delete(item.certificationId)"></i>
+            </td>
+          </tr>
+
+          <tr *ngIf="filteredCertifications().length === 0">
+            <td colspan="6" style="text-align:center; padding:15px;">No certification records found.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          <label>Show:
+            <select class="form-select d-inline w-auto ms-2"
+                    [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+              <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+            </select>
+            entries
+          </label>
+        </div>
+
+        <div>
+          <button class="btn btn-outline-secondary btn-sm me-2"
+                  (click)="changePage(currentPage - 1)"
+                  [disabled]="currentPage === 1">
+            Previous
+          </button>
+
+          <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+          <button class="btn btn-outline-secondary btn-sm ms-2"
+                  (click)="changePage(currentPage + 1)"
+                  [disabled]="currentPage === totalPages">
+            Next
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
