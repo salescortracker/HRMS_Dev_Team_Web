@@ -49,6 +49,7 @@
         next: (response) => {
           this.loading = false;
 
+
           if (response && response.message) {
             // ✅ Save session or token
             sessionStorage.setItem('UserId', response.user.userId.toString());
@@ -64,6 +65,22 @@
               response.user.roleName === 'Admin'
                 ? '/admin/dashboard'
                 : '/dashboard';
+        if (response && response.message) {
+          // ✅ Save session or token
+          sessionStorage.setItem('CompanyId', response.user.companyId.toString());
+          sessionStorage.setItem('RegionId', response.user.regionId.toString());
+          sessionStorage.setItem('roleId', response.user.roleId.toString());
+          sessionStorage.setItem('currentUser', JSON.stringify(response.user));
+            sessionStorage.setItem('roleName', response.user.roleName);
+          sessionStorage.setItem('Name', response.user.fullName);
+          sessionStorage.setItem('EmployeeCode', response.user.EmployeeCode);
+          Swal.fire('Login Successful', response.message, 'success');
+          // ✅ Navigate by role or response route
+          const route =
+            response.user.roleName === 'Admin'
+              ? '/admin/dashboard'
+              : '/dashboard';
+
 
             this.router.navigate([route]);
           } else {
