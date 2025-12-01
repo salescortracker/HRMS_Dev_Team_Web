@@ -5,7 +5,13 @@ import { forkJoin } from 'rxjs';
 import { map } from 'rxjs';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+
+import { EmployeeLetter } from '../layout/models/employee-letter.model';
+import { EmployeeForm } from '../layout/models/employee-forms.model';
+import { EmployeeDocument } from '../layout/models/employee-document.model';
+=======
 import { EmployeeImmigrationComponent } from '../../features/employee-profile/employee-immigration/employee-immigration.component';
+
 // ------------ Model Interfaces ----------------
 export interface Designation {
   designationID: number;
@@ -928,6 +934,77 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
   return this.http.get<any>(
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
   );
+}
+
+
+// -------------------------------------------------------------
+// 🔹 EMPLOYEE  Letters  OPERATIONS
+// -------------------------------------------------------------
+// ✅ Get Active Document Types for Dropdown
+getActiveDocumentTypes(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/UserManagement/GetActiveDocumentTypes`);
+}
+
+getEmployeeLettersByEmployeeId(employeeId: number): Observable<EmployeeLetter[]> {
+  return this.http.get<EmployeeLetter[]>(
+    `${this.baseUrl}/UserManagement/user/${employeeId}/letters`
+  );
+}
+// POST - Add new employee letter
+addEmployeeLetter(formData: FormData): Observable<any> {
+  return this.http.post(`${this.baseUrl}/UserManagement/letters`, formData);
+}
+
+// UPDATE letter (FIXED)
+updateEmployeeLetter(id: number, formData: FormData): Observable<any> {
+  return this.http.put(`${this.baseUrl}/UserManagement/letters/${id}`, formData);
+}
+
+// DELETE letter (FIXED)
+deleteEmployeeLetter(id: number): Observable<any> {
+  return this.http.delete(`${this.baseUrl}/UserManagement/letters/${id}`);
+}
+
+// -------------------------------------------------------------
+// 🔹 EMPLOYEE  Forms  OPERATIONS
+// -------------------------------------------------------------
+
+getEmployeeFormsByEmployeeId(employeeId: number): Observable<EmployeeForm[]> {
+  return this.http.get<EmployeeForm[]>(
+    `${this.baseUrl}/UserManagement/user/${employeeId}/forms`
+  );
+}
+addEmployeeForms(formData: FormData): Observable<any> {
+  return this.http.post(`${this.baseUrl}/UserManagement/forms`, formData);
+}
+
+// UPDATE letter (FIXED)
+updateEmployeeForms(id: number, formData: FormData): Observable<any> {
+  return this.http.put(`${this.baseUrl}/UserManagement/forms/${id}`, formData);
+}
+
+// DELETE letter (FIXED)
+deleteEmployeeForms(id: number): Observable<any> {
+  return this.http.delete(`${this.baseUrl}/UserManagement/forms/${id}`);
+}
+// -------------------------------------------------------------
+// 🔹 EMPLOYEE  Document  OPERATIONS
+// -------------------------------------------------------------
+getEmployeeDocumentByEmployeeId(employeeId: number): Observable<EmployeeDocument[]> {
+  return this.http.get<EmployeeDocument[]>(
+    `${this.baseUrl}/UserManagement/user/${employeeId}/documents`
+  );
+}
+addEmployeeDocument(formData: FormData): Observable<any> {
+  return this.http.post(`${this.baseUrl}/UserManagement/documents`, formData);
+}
+updateEmployeeDocument(id: number, formData: FormData): Observable<any> {
+  return this.http.put(`${this.baseUrl}/UserManagement/documents/${id}`, formData);
+}
+
+// DELETE letter (FIXED)
+deleteEmployeeDocument(id: number): Observable<any> {
+  return this.http.delete(`${this.baseUrl}/UserManagement/documents/${id}`);
 }
   
   // Get All
