@@ -59,6 +59,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { EmployeeLettersComponent } from './features/employee-profile/employee-letters/employee-letters.component';
+import { EmployeeFormsComponent } from './features/employee-profile/employee-forms/employee-forms.component';
+import { EmployeeDocumentComponent } from './features/employee-profile/employee-document/employee-document.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -113,7 +116,10 @@ import { ReactiveFormsModule } from '@angular/forms';
     MyEventsComponent,
     CompensationComponent,
     RecruitmentProcessComponent,
-    CommonUploadComponent
+    CommonUploadComponent,
+    EmployeeLettersComponent,
+    EmployeeFormsComponent,
+    EmployeeDocumentComponent
   ],
   imports: [
     BrowserModule,ReactiveFormsModule,
