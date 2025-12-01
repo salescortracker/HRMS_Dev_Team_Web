@@ -1,0 +1,93 @@
+/* -------------------- Table Styling -------------------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+table th,
+table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+table th {
+  background: #000; /* black headers */
+  color: #fff;
+  font-weight: 600;
+}
+
+tbody tr:hover {
+  background: #ffebeb;
+}
+
+/* -------------------- Action Icons -------------------- */
+.action-icons i.fa-pen {
+  color: #000 !important; /* black edit icon */
+  cursor: pointer;
+  margin: 0 5px;
+  transition: color 0.3s;
+}
+
+.action-icons i.fa-pen:hover {
+  color: #333 !important; /* dark gray on hover */
+}
+
+.action-icons i.fa-trash {
+  color: #000 !important; /* black delete icon */
+  cursor: pointer;
+  margin: 0 5px;
+  transition: color 0.3s;
+}
+
+.action-icons i.fa-trash:hover {
+  color: #901f1f !important; /* dark red on hover */
+}
+
+/* -------------------- "View" Button Styling -------------------- */
+button.view-btn {
+  background: #b02828; /* red */
+  color: #fff;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button.view-btn:hover {
+  background: #901f1f; /* darker red on hover */
+}
+
+/* -------------------- Form Inputs -------------------- */
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+/* Form Labels */
+.form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+/* -------------------- Card / Container -------------------- */
+.form-container {
+  margin: auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}

@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams,HttpErrorResponse  } from '@angular/common/http';
-
-import { forkJoin } from 'rxjs';
-import { map } from 'rxjs';
-import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Observable, throwError, forkJoin, map } from 'rxjs';
+
+// ------------ Model Interfaces ----------------//
 
 import { EmployeeLetter } from '../layout/models/employee-letter.model';
 import { EmployeeForm } from '../layout/models/employee-forms.model';
 import { EmployeeDocument } from '../layout/models/employee-document.model';
-=======
 import { EmployeeImmigrationComponent } from '../../features/employee-profile/employee-immigration/employee-immigration.component';
 
 // ------------ Model Interfaces ----------------
@@ -223,6 +221,64 @@ export interface Department {
   modifiedBy?: string;
   modifiedAt?: Date;
   isDeleted?: boolean;
+}
+//---------------------------------BANK DETAILS-----------------------------------------//
+export interface BankDetails {
+  bankDetailsId: number;
+  employeeId: number;
+  regionId?: number;
+  userId?: number;
+  companyId?: number;
+  bankName: string;
+  branchName: string;
+  accountHolderName: string;
+  accountNumber: string;
+  accountTypeId: number;
+  ifsccode?: string;
+  micrcode?: string;
+  upiid?: string;
+}
+ // ------------------------------DD LIST-----------------------------------//
+ export interface EmployeeDdlist {
+ ddlistId: number;
+  ddnumber: string;
+  dddate: string;
+  bankName: string;
+  branchName: string;
+  amount: number;
+  payeeName: string;
+  ddcopyFilePath?: string;
+  companyId: number;
+  regionId: number;
+  employeeId: number;
+}
+
+
+//---------------------------------W4 (usa)------------------------------//
+
+export interface W4Details {
+  w4Id: number;
+  employeeId: number;
+  firstName: string;
+  middleInitial?: string;
+  lastName: string;
+  ssn: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  filingStatus: string;
+  multipleJobsOrSpouse?: boolean;
+  totalDependents?: number;
+  dependentAmounts?: number;
+  otherIncome?: number;
+  deductions?: number;
+  extraWithholding?: number;
+  employeeSignature: string;
+  formDate: string; // DateOnly -> string
+  regionId?: number;
+  userId?: number;
+  companyId?: number;
 }
 export interface EmployeeJobHistoryDto {
   id: number;
@@ -935,6 +991,60 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
   );
 }
+//--------------------------------BANK - DETAILS-----------------------------------//
+getBankDetails(): Observable<BankDetails[]> {
+  return this.http.get<BankDetails[]>(`${this.baseUrl}/UserManagement/GetAllBankDetails`);
+}
+
+getBankDetailById(id: number): Observable<BankDetails> {
+  return this.http.get<BankDetails>(`${this.baseUrl}/UserManagement/GetBankDetailsById/${id}`);
+}
+
+createBankDetail(bank: FormData | BankDetails): Observable<BankDetails> {
+  return this.http.post<BankDetails>(`${this.baseUrl}/UserManagement/CreateBankDetails`, bank);
+}
+
+updateBankDetail(bank: FormData | BankDetails): Observable<BankDetails> {
+  return this.http.put<BankDetails>(`${this.baseUrl}/UserManagement/UpdateBankDetails`, bank);
+}
+
+deleteBankDetail(id: number): Observable<void> {
+  return this.http.delete<void>(`${this.baseUrl}/UserManagement/DeleteBankDetails/${id}`);
+}
+
+ 
+   
+//------------------------------DD LIST -----------------------------------------//
+
+getAllDdlist(): Observable<EmployeeDdlist[]> {
+  return this.http.get<EmployeeDdlist[]>(`${this.baseUrl}/UserManagement/GetAllDdlist`);
+}
+
+createDdlist(dd: EmployeeDdlist): Observable<EmployeeDdlist> {
+  return this.http.post<EmployeeDdlist>(`${this.baseUrl}/UserManagement/CreateDdlist`, dd);
+}
+
+updateDdlist(dd: EmployeeDdlist): Observable<EmployeeDdlist> {
+  return this.http.put<EmployeeDdlist>(`${this.baseUrl}/UserManagement/UpdateDdlist`, dd);
+}
+
+deleteDdlist(id: number): Observable<void> {
+  return this.http.delete<void>(`${this.baseUrl}/UserManagement/DeleteDdlist/${id}`);
+}
+
+/// -------------------- DD COPY UPLOAD / DOWNLOAD --------------------
+
+// Upload DD Copy
+uploadDDCopy(formData: FormData): Observable<{ fileName: string }> {
+  return this.http.post<{ fileName: string }>(
+    `${this.baseUrl}/UserManagement/UploadDDCopy`,
+    formData
+  );
+}
+
+// Download DD Copy (not mandatory for View button)
+downloadDDCopy(fileName: string): Observable<Blob> {
+  return this.http.get(`${this.baseUrl}/UserManagement/DownloadDDCopy/${fileName}`, { responseType: 'blob' });
 
 
 // -------------------------------------------------------------
@@ -1155,4 +1265,28 @@ deleteCertification(id: number): Observable<any> {
 }
 
 
+}
+
+
+  //-------------------------------------W4 usa ---------------------------------//
+
+  getW4List(): Observable<W4Details[]> {
+    return this.http.get<W4Details[]>(`${this.baseUrl}/UserManagement/GetAllW4s`);
+  }
+
+  getW4ById(id: number): Observable<W4Details> {
+    return this.http.get<W4Details>(`${this.baseUrl}/UserManagement/GetW4ById/${id}`);
+  }
+
+  createW4(w4: W4Details): Observable<W4Details> {
+    return this.http.post<W4Details>(`${this.baseUrl}/UserManagement/CreateW4`, w4, this.getHeaders());
+  }
+
+  updateW4(w4: W4Details): Observable<W4Details> {
+    return this.http.put<W4Details>(`${this.baseUrl}/UserManagement/UpdateW4`, w4, this.getHeaders());
+  }
+
+  deleteW4(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/UserManagement/DeleteW4/${id}`);
+  }
 }
