@@ -1,0 +1,170 @@
+<!-- TAB 5: DD -->
+<div id="content2" class="tab-content">
+
+  <!-- DD Form -->
+  <form [formGroup]="ddForm" (ngSubmit)="saveDD()">
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">DD Number</label>
+        <input type="text" class="form-control" formControlName="ddnumber" placeholder="Enter DD number">
+        <div *ngIf="ddForm.get('ddnumber')?.invalid && ddForm.get('ddnumber')?.touched" class="text-danger">
+          DD Number is required and max 20 characters
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">DD Date</label>
+        <input type="date" class="form-control" formControlName="dddate">
+        <div *ngIf="ddForm.get('dddate')?.invalid && ddForm.get('dddate')?.touched" class="text-danger">
+          Valid DD Date is required and cannot be a future date
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Bank Name</label>
+        <input type="text" class="form-control" formControlName="bankName" placeholder="Enter bank name">
+        <div *ngIf="ddForm.get('bankName')?.invalid && ddForm.get('bankName')?.touched" class="text-danger">
+          Bank Name is required
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Branch Name</label>
+        <input type="text" class="form-control" formControlName="branchName" placeholder="Enter branch name">
+        <div *ngIf="ddForm.get('branchName')?.invalid && ddForm.get('branchName')?.touched" class="text-danger">
+          Branch Name is required
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Amount (INR)</label>
+        <input type="number" class="form-control" formControlName="amount" placeholder="Enter amount in INR">
+        <div *ngIf="ddForm.get('amount')?.invalid && ddForm.get('amount')?.touched" class="text-danger">
+          Amount must be greater than zero
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Payee Name</label>
+        <input type="text" class="form-control" formControlName="payeeName" placeholder="Enter payee name">
+        <div *ngIf="ddForm.get('payeeName')?.invalid && ddForm.get('payeeName')?.touched" class="text-danger">
+          Payee Name is required
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Upload DD Copy</label>
+        <input type="file" class="form-control" accept=".pdf,.jpg,.png" (change)="onFileSelected($event)">
+        <div *ngIf="fileError" class="text-danger">{{ fileError }}</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12 text-end">
+        <button type="submit" class="btn btn-danger">
+          {{ ddForm.value.ddlistId ? 'Update' : 'Save' }} DD Details
+        </button>
+        <button type="button" class="btn btn-secondary ms-2" (click)="resetForm()">
+          Reset
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <!-- DD List Table -->
+  <div class="dashboard-tables full-row mt-4">
+    <div class="table-card">
+      <h3>DD List</h3>
+
+      <!-- Search and Page Size -->
+      <div class="d-flex justify-content-between mb-2">
+        <input type="text" class="form-control w-auto" placeholder="Search..." [(ngModel)]="searchText">
+        <select class="form-select w-auto" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+          <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+        </select>
+      </div>
+
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th (click)="sortBy('ddnumber')" style="cursor:pointer">
+              DD Number
+              <span *ngIf="sortColumn==='ddnumber'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th (click)="sortBy('dddate')" style="cursor:pointer">
+              DD Date
+              <span *ngIf="sortColumn==='dddate'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th (click)="sortBy('bankName')" style="cursor:pointer">
+              Bank
+              <span *ngIf="sortColumn==='bankName'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th (click)="sortBy('branchName')" style="cursor:pointer">
+              Branch
+              <span *ngIf="sortColumn==='branchName'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th (click)="sortBy('amount')" style="cursor:pointer">
+              Amount
+              <span *ngIf="sortColumn==='amount'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th (click)="sortBy('payeeName')" style="cursor:pointer">
+              Payee
+              <span *ngIf="sortColumn==='payeeName'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th>Document</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let dd of filteredDDs(); let i = index">
+            <td>{{ dd.ddnumber }}</td>
+            <td>{{ dd.dddate | date:'yyyy-MM-dd' }}</td>
+            <td>{{ dd.bankName }}</td>
+            <td>{{ dd.branchName }}</td>
+            <td>₹{{ dd.amount | number }}</td>
+            <td>{{ dd.payeeName }}</td>
+
+            <td>
+              <button
+                *ngIf="dd.ddcopyFilePath"
+                class="btn btn-sm btn-outline-primary"
+                (click)="viewDocument(dd.ddcopyFilePath)">
+                View
+              </button>
+              <span *ngIf="!dd.ddcopyFilePath">—</span>
+            </td>
+
+            <td class="action-icons">
+              <i class="fa-solid fa-pen text-primary cursor-pointer me-2" (click)="editDD(dd)"></i>
+              <i class="fa-solid fa-trash text-danger cursor-pointer" (click)="deleteDD(dd, i)"></i>
+            </td>
+          </tr>
+
+          <tr *ngIf="filteredDDs().length === 0">
+            <td colspan="8" class="text-center">No DD records found.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination Controls -->
+      <div class="d-flex justify-content-between mt-2">
+        <div>
+          Page {{ currentPage }} of {{ totalPages }}
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-sm btn-outline-secondary" (click)="changePage(1)" [disabled]="currentPage===1">First</button>
+          <button class="btn btn-sm btn-outline-secondary" (click)="changePage(currentPage-1)" [disabled]="currentPage===1">Prev</button>
+          <button class="btn btn-sm btn-outline-secondary" (click)="changePage(currentPage+1)" [disabled]="currentPage===totalPages">Next</button>
+          <button class="btn btn-sm btn-outline-secondary" (click)="changePage(totalPages)" [disabled]="currentPage===totalPages">Last</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
