@@ -1,0 +1,192 @@
+<div class="form-container">
+ <div class="form-container">
+  <form [formGroup]="educationForm" (ngSubmit)="onSubmit()" style="display:flex; flex-wrap:wrap; gap:20px;">
+
+    <!-- Qualification -->
+    <div class="form-group" style="flex:1 1 calc(33.33% - 20px);">
+      <label>Qualification / Degree</label>
+      <input type="text" formControlName="qualification" placeholder="Enter qualification">
+
+      <div *ngIf="educationForm.get('qualification')?.touched && educationForm.get('qualification')?.invalid"
+           style="color:red; font-size:12px;">
+        <div *ngIf="educationForm.get('qualification')?.errors?.['required']">Qualification is required.</div>
+        <div *ngIf="educationForm.get('qualification')?.errors?.['maxlength']">Max 100 characters allowed.</div>
+        <div *ngIf="educationForm.get('qualification')?.errors?.['pattern']">Only letters, numbers, spaces, . and - allowed.</div>
+      </div>
+    </div>
+
+    <!-- Specialization -->
+    <div class="form-group" style="flex:1 1 calc(33.33% - 20px);">
+      <label>Specialization / Major</label>
+      <input type="text" formControlName="specialization" placeholder="Enter specialization">
+
+      <div *ngIf="educationForm.get('specialization')?.touched && educationForm.get('specialization')?.invalid"
+           style="color:red; font-size:12px;">
+        <div *ngIf="educationForm.get('specialization')?.errors?.['required']">Specialization is required.</div>
+        <div *ngIf="educationForm.get('specialization')?.errors?.['maxlength']">Max 100 characters allowed.</div>
+      </div>
+    </div>
+
+    <!-- Institution -->
+    <div class="form-group" style="flex:1 1 calc(33.33% - 20px);">
+      <label>Institution / University</label>
+      <input type="text" formControlName="institution" placeholder="Enter institution">
+
+      <div *ngIf="educationForm.get('institution')?.touched && educationForm.get('institution')?.invalid"
+           style="color:red; font-size:12px;">
+        <div *ngIf="educationForm.get('institution')?.errors?.['required']">Institution is required.</div>
+        <div *ngIf="educationForm.get('institution')?.errors?.['maxlength']">Max 150 characters allowed.</div>
+      </div>
+    </div>
+
+    <!-- Board -->
+    <div class="form-group" style="flex:1 1 calc(33.33% - 20px);">
+      <label>Board</label>
+      <input type="text" formControlName="board" placeholder="Enter board">
+
+      <div *ngIf="educationForm.get('board')?.touched && educationForm.get('board')?.invalid"
+           style="color:red; font-size:12px;">
+        <div *ngIf="educationForm.get('board')?.errors?.['maxlength']">Max 100 characters allowed.</div>
+      </div>
+    </div>
+
+    <!-- Start Date -->
+    <div class="form-group" style="flex:1 1 calc(33.33% - 20px);">
+      <label>Start Date</label>
+      <input type="date" formControlName="startDate">
+
+      <div *ngIf="educationForm.get('startDate')?.touched && educationForm.get('startDate')?.invalid"
+           style="color:red; font-size:12px;">
+        <div *ngIf="educationForm.get('startDate')?.errors?.['required']">Start date is required.</div>
+      </div>
+    </div>
+
+    <!-- End Date -->
+    <div class="form-group" style="flex:1 1 calc(33.33% - 20px);">
+      <label>End Date / Year of Passing</label>
+      <input type="date" formControlName="endDate">
+
+      <div *ngIf="educationForm.get('endDate')?.touched && educationForm.get('endDate')?.invalid"
+           style="color:red; font-size:12px;">
+        <div *ngIf="educationForm.get('endDate')?.errors?.['required']">End date is required.</div>
+      </div>
+
+      <!-- date validation -->
+      <div *ngIf="educationForm.errors?.['dateRange'] && educationForm.get('endDate')?.touched"
+           style="color:red; font-size:12px;">
+        End Date must be equal or after Start Date.
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="form-group" style="flex:1 1 calc(33.33% - 20px);">
+      <label>Percentage / CGPA / Grade</label>
+      <input type="text" formControlName="result" placeholder="Enter percentage/CGPA/grade">
+
+      <div *ngIf="educationForm.get('result')?.touched && educationForm.get('result')?.invalid"
+           style="color:red; font-size:12px;">
+        <div *ngIf="educationForm.get('result')?.errors?.['required']">Result is required.</div>
+        <div *ngIf="educationForm.get('result')?.errors?.['maxlength']">Max 20 characters allowed.</div>
+      </div>
+    </div>
+
+    <!-- Mode of Study -->
+    <div class="form-group" style="flex:1 1 calc(33.33% - 20px);">
+      <label>Mode of Study</label>
+      <select formControlName="modeOfStudyId">
+        <option value="">Select Mode</option>
+        <option *ngFor="let mode of modeOfStudyList" [value]="mode.modeOfStudyId">
+          {{ mode.modeName }}
+        </option>
+      </select>
+
+      <div *ngIf="educationForm.get('modeOfStudyId')?.touched && educationForm.get('modeOfStudyId')?.invalid"
+           style="color:red; font-size:12px;">
+        <div *ngIf="educationForm.get('modeOfStudyId')?.errors?.['required']">Mode of Study is required.</div>
+      </div>
+    </div>
+
+    <!-- File Upload -->
+    <div class="form-group" style="flex:1 1 calc(33.33% - 20px);">
+      <label>Certificate / Document Upload</label>
+      <input type="file" (change)="onFileChange($event)">
+
+      <div *ngIf="fileError" style="color:red; font-size:12px;">
+        {{ fileError }}
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="form-group" style="flex:1 1 100%; text-align:right;">
+      <button type="submit">
+        {{ editMode ? 'Update Education' : 'Add Education' }}
+      </button>
+    </div>
+
+  </form>
+
+
+  <!-- SEARCH -->
+  <div class="mb-3 row g-3 align-items-end mt-3">
+    <div class="col-md-4">
+      <input type="text" class="form-control" placeholder="Search by Qualification" [(ngModel)]="searchText" (ngModelChange)="onFilterChange()" />
+    </div>
+  </div>
+
+  <!-- EDUCATION TABLE -->
+  <div class="dashboard-tables full-row">
+    <div class="table-card">
+      <h3>Education List</h3>
+      <table>
+        <thead>
+          <tr>
+            <th (click)="sortBy('qualification')" style="cursor:pointer">
+              Qualification <span *ngIf="sortColumn==='qualification'">{{sortDirection==='asc'?'▲':'▼'}}</span>
+            </th>
+            <th>Specialization</th>
+            <th>Institution</th>
+            <th>Year of Passing</th>
+            <th>Percentage / CGPA</th>
+            <th>Documents</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of filteredEducation(); let i=index">
+            <td>{{ item.qualification }}</td>
+            <td>{{ item.specialization }}</td>
+            <td>{{ item.institution }}</td>
+            <td>{{ item.endDate | date:'yyyy' }}</td>
+            <td>{{ item.result }}</td>
+            <td>  <a *ngIf="item.certificateFilePath" style="cursor:pointer; color:#0d6efd; font-weight:500;" (click)="viewDocument(item.certificateFilePath)">View</a></td>
+            <td>
+              <i class="fa-solid fa-pen" style="cursor:pointer" (click)="edit(item)"></i>
+              <i class="fa-solid fa-trash ms-2" style="cursor:pointer" (click)="delete(item.educationId)"></i>
+            
+            </td>
+          </tr>
+
+          <tr *ngIf="filteredEducation().length===0">
+            <td colspan="6" style="text-align:center; padding:15px;">No education records found.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          <label>Show:
+            <select class="form-select d-inline w-auto ms-2" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+              <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{size}}</option>
+            </select> entries
+          </label>
+        </div>
+        <div>
+          <button class="btn btn-outline-secondary btn-sm me-2" (click)="changePage(currentPage-1)" [disabled]="currentPage===1">Previous</button>
+          <span>Page {{currentPage}} of {{totalPages}}</span>
+          <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changePage(currentPage+1)" [disabled]="currentPage===totalPages">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -23,7 +23,7 @@ export class SidebarComponent {
   loadMenus(roleId: number): void {
     this.menuService.getMenusByRoleId(roleId).subscribe({
       next: (menus: MenuRoleDto[]) => {
-        debugger;
+      
         this.menuItems =this.sortMenuItems(this.mapToMenuItems(menus));
       },
       error: (err) => console.error('Error loading menus', err)

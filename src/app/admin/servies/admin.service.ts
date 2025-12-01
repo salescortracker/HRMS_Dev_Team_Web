@@ -4,6 +4,13 @@ import { catchError } from 'rxjs/operators';
 import { Observable, throwError, forkJoin, map } from 'rxjs';
 
 // ------------ Model Interfaces ----------------//
+
+import { EmployeeLetter } from '../layout/models/employee-letter.model';
+import { EmployeeForm } from '../layout/models/employee-forms.model';
+import { EmployeeDocument } from '../layout/models/employee-document.model';
+import { EmployeeImmigrationComponent } from '../../features/employee-profile/employee-immigration/employee-immigration.component';
+
+// ------------ Model Interfaces ----------------
 export interface Designation {
   designationID: number;
   companyId: number;
@@ -273,12 +280,115 @@ export interface W4Details {
   userId?: number;
   companyId?: number;
 }
+export interface EmployeeJobHistoryDto {
+  id: number;
+  employer: string;
+  jobTitle: string;
+  fromDate: string;
+  toDate: string;
+  lastCTC: number;
+  website: string;
+  employeeCode: string;
+  reasonForLeaving: string;
+  uploadDocumentPath?: string;
+  companyId: number;
+  regionId: number;
+  userId: number;
+  createdBy: number;
+  createdAt: string;
+  modifiedBy?: number;
+  modifiedAt?: string;
+}
+
+export interface EmployeeEducationDto {
+  educationId: number;
+  userId: number;
+  companyId: number;
+  regionId: number;
+  modeOfStudyId: number;
+  qualification: string;
+  specialization: string;
+  institution: string;
+  board: string;
+  startDate: string;
+  endDate: string;
+  result: string;
+  certificateFilePath?: string;
+}
+export interface EmployeeCertificationDto {
+  certificationId: number;
+  companyId: number;
+  regionId: number;
+  userId: number;
+
+  certificationName: string;
+  certificationTypeId: number;
+  // optional friendly name (we'll populate it client-side)
+  certificationTypeName?: string;
+
+  description?: string;
+  documentPath?: string;
+  documentFile?: File | null;
+
+  createdBy?: number;
+  createdDate?: string;
+  modifiedBy?: number | null;
+  modifiedDate?: string | null;
+}
+
+
+
+export interface EmployeeImmigration {
+  regionId: number;
+  companyId: number;
+  immigrationId?: number;
+
+  employeeId: number;
+  userId: number;
+
+  fullName: string;
+  dateOfBirth: string;
+  nationality: string;
+
+  passportNumber: string;
+  passportExpiryDate: string;
+
+  visaTypeId: number;
+  visaTypeName?: string;
+
+  statusId: number;
+  statusName?: string;
+
+  visaNumber: string;
+  visaIssueDate: string;
+  visaExpiryDate: string;
+  visaIssuingCountry: string;
+
+  employerName: string;
+  employerAddress: string;
+  employerContact: string;
+  contactPerson: string;
+
+  remarks: string;
+
+  passportCopyPath?: string;
+  visaCopyPath?: string;
+  otherDocumentsPath?: string;
+
+  createdBy?: string;
+  createdDate?: string;
+  modifiedBy?: string;
+  modifiedDate?: string;
+}
+
+
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
-  private baseUrl = 'https://localhost:44370/api'; // 🔹 Change this to your actual API URL
+  private baseUrl = 'https://localhost:44320/api'; // 🔹 Change this to your actual API URL
 
   constructor(private http: HttpClient) {}
   // -------------------------------------------------------------
@@ -654,9 +764,9 @@ deleteRelationship(id: number) {
   return this.http.delete<any>(`${this.baseUrl}/relationship/${id}`);
 }
  // Certification Type APIs
-  getCertificationTypes(): Observable<CertificationType[]> {
-    return this.http.get<CertificationType[]>(`${this.baseUrl}/CertificationType`);
-  }
+  // getCertificationTypes(): Observable<CertificationType[]> {
+  //   return this.http.get<CertificationType[]>(`${this.baseUrl}/CertificationType`);
+  // }
 
   createCertificationType(data: CertificationType): Observable<any> {
     return this.http.post(`${this.baseUrl}/CertificationType`, data);
@@ -935,6 +1045,226 @@ uploadDDCopy(formData: FormData): Observable<{ fileName: string }> {
 // Download DD Copy (not mandatory for View button)
 downloadDDCopy(fileName: string): Observable<Blob> {
   return this.http.get(`${this.baseUrl}/UserManagement/DownloadDDCopy/${fileName}`, { responseType: 'blob' });
+
+
+// -------------------------------------------------------------
+// 🔹 EMPLOYEE  Letters  OPERATIONS
+// -------------------------------------------------------------
+// ✅ Get Active Document Types for Dropdown
+getActiveDocumentTypes(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/UserManagement/GetActiveDocumentTypes`);
+}
+
+getEmployeeLettersByEmployeeId(employeeId: number): Observable<EmployeeLetter[]> {
+  return this.http.get<EmployeeLetter[]>(
+    `${this.baseUrl}/UserManagement/user/${employeeId}/letters`
+  );
+}
+// POST - Add new employee letter
+addEmployeeLetter(formData: FormData): Observable<any> {
+  return this.http.post(`${this.baseUrl}/UserManagement/letters`, formData);
+}
+
+// UPDATE letter (FIXED)
+updateEmployeeLetter(id: number, formData: FormData): Observable<any> {
+  return this.http.put(`${this.baseUrl}/UserManagement/letters/${id}`, formData);
+}
+
+// DELETE letter (FIXED)
+deleteEmployeeLetter(id: number): Observable<any> {
+  return this.http.delete(`${this.baseUrl}/UserManagement/letters/${id}`);
+}
+
+// -------------------------------------------------------------
+// 🔹 EMPLOYEE  Forms  OPERATIONS
+// -------------------------------------------------------------
+
+getEmployeeFormsByEmployeeId(employeeId: number): Observable<EmployeeForm[]> {
+  return this.http.get<EmployeeForm[]>(
+    `${this.baseUrl}/UserManagement/user/${employeeId}/forms`
+  );
+}
+addEmployeeForms(formData: FormData): Observable<any> {
+  return this.http.post(`${this.baseUrl}/UserManagement/forms`, formData);
+}
+
+// UPDATE letter (FIXED)
+updateEmployeeForms(id: number, formData: FormData): Observable<any> {
+  return this.http.put(`${this.baseUrl}/UserManagement/forms/${id}`, formData);
+}
+
+// DELETE letter (FIXED)
+deleteEmployeeForms(id: number): Observable<any> {
+  return this.http.delete(`${this.baseUrl}/UserManagement/forms/${id}`);
+}
+// -------------------------------------------------------------
+// 🔹 EMPLOYEE  Document  OPERATIONS
+// -------------------------------------------------------------
+getEmployeeDocumentByEmployeeId(employeeId: number): Observable<EmployeeDocument[]> {
+  return this.http.get<EmployeeDocument[]>(
+    `${this.baseUrl}/UserManagement/user/${employeeId}/documents`
+  );
+}
+addEmployeeDocument(formData: FormData): Observable<any> {
+  return this.http.post(`${this.baseUrl}/UserManagement/documents`, formData);
+}
+updateEmployeeDocument(id: number, formData: FormData): Observable<any> {
+  return this.http.put(`${this.baseUrl}/UserManagement/documents/${id}`, formData);
+}
+
+// DELETE letter (FIXED)
+deleteEmployeeDocument(id: number): Observable<any> {
+  return this.http.delete(`${this.baseUrl}/UserManagement/documents/${id}`);
+}
+  
+  // Get All
+    getAllEmployeeImmigrations(): Observable<EmployeeImmigration[]> {
+      return this.http.get<EmployeeImmigration[]>(`${this.baseUrl}/UserManagement/GetImmigration`);
+    }
+
+  getEmployeeImmigrationById(id: number) : Observable <EmployeeImmigration> {
+    return this.http.get<EmployeeImmigration>(`${this.baseUrl}/UserManagement/GetByIdImmigration/${id}`);
+  }
+
+ CreateEmployeeImmigration(formData: FormData): Observable<any> {
+  return this.http.post(`${this.baseUrl}/UserManagement/CreateImmigration`, formData, {
+    responseType: 'text'  // Add this line
+  });
+}
+
+ UpdateEmployeeImmigration(id: number, formData: FormData): Observable<any> {
+  return this.http.put(`${this.baseUrl}/UserManagement/UpdateImmigration/${id}`, formData, {
+    responseType: 'text'  // Add this line
+  });
+}
+  DeleteEmployeeImmigration(id: number, companyId: number, regionId: number): Observable <any> {
+    return this.http.delete(`${this.baseUrl}/UserManagement/DeleteImmigration/${id}`)
+  }
+// Visa Types Dropdown
+getVisaTypes(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/UserManagement/GetVisaTypes`);
+}
+
+// Status Dropdown
+getStatuses(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/UserManagement/GetStatuses`);
+}
+
+DownloadImmigrationFile(id: number, fileType: string): Observable<Blob> {
+  return this.http.get(
+    `${this.baseUrl}/UserManagement/DownloadImmigrationFile/${id}/${fileType}`,
+    { responseType: 'blob' }
+  );
+}
+getFileBaseUrl(): string {
+  return this.baseUrl + '/uploads/';
+}
+
+
+
+// -------------------------------------------------------------
+// 🔹 EMPLOYEE JOB HISTORY OPERATIONS
+// -------------------------------------------------------------
+
+
+// Get ALL job history records
+getAllJobHistory(params?: any): Observable<EmployeeJobHistoryDto[]> {
+  return this.getAll<EmployeeJobHistoryDto>('UserManagement/GetAllJobHistory', params);
+}
+
+
+getJobHistoryByEmployeeId(employeeId: number): Observable<EmployeeJobHistoryDto[]> {
+  return this.http.get<EmployeeJobHistoryDto[]>(
+    `${this.baseUrl}/UserManagement/user/${employeeId}/jobhistory`
+  );
+}
+
+
+// Get a single job history by ID
+getJobHistoryById(id: number): Observable<EmployeeJobHistoryDto> {
+  return this.getById<EmployeeJobHistoryDto>('UserManagement/GetJobHistoryById', id);
+}
+
+
+
+addJobHistory(formData: FormData): Observable<any> {
+  return this.http.post(`${this.baseUrl}/UserManagement/jobhistory`, formData);
+}
+
+
+
+// Update job history (with file upload)
+updateJobHistory(id: number, model: any): Observable<any> {
+  const formData = new FormData();
+
+  Object.keys(model).forEach(key => {
+    if (key === 'uploadDocument' && model[key]) {
+      formData.append('UploadDocument', model[key]);
+    } else {
+      formData.append(key, model[key]);
+    }
+  });
+
+  return this.http.put(`${this.baseUrl}/UserManagement/jobhistory/${id}`, formData);
+}
+
+
+// Delete job history
+deleteJobHistory(id: number): Observable<void> {
+  return this.http.delete<void>(`${this.baseUrl}/UserManagement/jobhistory/${id}`);
+}
+
+//-----------Education Details APIs -----------------//
+
+  // Get education by userId
+ getEducationByUserId(userId: number): Observable<EmployeeEducationDto[]> {
+    return this.http.get<EmployeeEducationDto[]>(`${this.baseUrl}/UserManagement/user/${userId}/education`);
+}
+
+  // Add new education
+  addEducation(formData: FormData): Observable<any> {
+    return this.http.post(`${this.baseUrl}/UserManagement/education`, formData);
+  }
+
+  // Update education
+  updateEducation(id: number, formData: FormData): Observable<any> {
+    return this.http.put(`${this.baseUrl}/UserManagement/education/${id}`, formData);
+  }
+
+  // Delete education
+  deleteEducation(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/UserManagement/education/${id}`);
+  }
+
+  // Mode of Study
+  getModeOfStudy(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/UserManagement/modeofstudy`);
+  }
+// ================= CERTIFICATION APIs =================
+
+getCertificationTypes(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/UserManagement/certificationtypes`);
+}
+
+getCertificationsByUserId(userId: number): Observable<EmployeeCertificationDto[]> {
+  return this.http.get<EmployeeCertificationDto[]>(
+    `${this.baseUrl}/UserManagement/user/${userId}/certifications`
+  );
+}
+
+addCertification(formData: FormData): Observable<any> {
+  return this.http.post(`${this.baseUrl}/UserManagement/certifications`, formData);
+}
+
+updateCertification(id: number, formData: FormData): Observable<any> {
+  return this.http.put(`${this.baseUrl}/UserManagement/certifications/${id}`, formData);
+}
+
+deleteCertification(id: number): Observable<any> {
+  return this.http.delete(`${this.baseUrl}/UserManagement/certifications/${id}`);
+}
+
+
 }
 
 
