@@ -1,54 +1,70 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { AdminService } from '../../../admin/servies/admin.service';
-import Swal from 'sweetalert2';
-@Component({
-  selector: 'app-login',
-  standalone: false,
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
-})
-export class LoginComponent {
-  username: string = '';
-  password: string = '';
-  errorMessage: string = '';
-  loading: boolean = false;
-  users = [
-    { role: 'HR', username: 'hr_user', password: 'Hr@123', route: '/dashboard' },
-    { role: 'Manager', username: 'manager_user', password: 'Mg@123', route: '/dashboard' },
-    { role: 'Admin', username: 'admin_user', password: 'Admin@123', route: '/admin/dashboard' },
-     { role: 'SuperAdmin', username: 'superadmin_user', password: 'Superadmin@123', route: '/dashboard' },
-    { role: 'Finance', username: 'finance_user', password: 'Fn@123', route: '/dashboard' },
-    { role: 'Employee', username: 'emp_user', password: 'emp@123', route: '/dashboard' }
-  ];
+  import { Component } from '@angular/core';
+  import { Router } from '@angular/router';
+  import { AdminService } from '../../../admin/servies/admin.service';
+  import Swal from 'sweetalert2';
+  @Component({
+    selector: 'app-login',
+    standalone: false,
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.css'
+  })
+  export class LoginComponent {
+    username: string = '';
+    password: string = '';
+    errorMessage: string = '';
+    loading: boolean = false;
+    users = [
+      { role: 'HR', username: 'hr_user', password: 'Hr@123', route: '/dashboard' },
+      { role: 'Manager', username: 'manager_user', password: 'Mg@123', route: '/dashboard' },
+      { role: 'Admin', username: 'admin_user', password: 'Admin@123', route: '/admin/dashboard' },
+      { role: 'SuperAdmin', username: 'superadmin_user', password: 'Superadmin@123', route: '/dashboard' },
+      { role: 'Finance', username: 'finance_user', password: 'Fn@123', route: '/dashboard' },
+      { role: 'Employee', username: 'emp_user', password: 'emp@123', route: '/dashboard' }
+    ];
 
-  constructor(private router: Router,private loginService: AdminService) {}
+    constructor(private router: Router,private loginService: AdminService) {}
 
-  // login() {
-  //   const user = this.users.find(u => u.username === this.username && u.password === this.password);
-  //   if (user) {
-  //     sessionStorage.setItem("CompanyId","1"); // Set a default CompanyId
-  //     sessionStorage.setItem("regionId","1"); // Set a default regionId
-  //     localStorage.setItem('currentUser', JSON.stringify(user)); // store user info
-  //     this.router.navigate([user.route]);
-  //   } else {
-  //     this.errorMessage = 'Invalid username or password';
-  //   }
-  // }
-  login() {
-    this.errorMessage = '';
+    // login() {
+    //   const user = this.users.find(u => u.username === this.username && u.password === this.password);
+    //   if (user) {
+    //     sessionStorage.setItem("CompanyId","1"); // Set a default CompanyId
+    //     sessionStorage.setItem("regionId","1"); // Set a default regionId
+    //     localStorage.setItem('currentUser', JSON.stringify(user)); // store user info
+    //     this.router.navigate([user.route]);
+    //   } else {
+    //     this.errorMessage = 'Invalid username or password';
+    //   }
+    // }
+    login() {
+      this.errorMessage = '';
 
-    if (!this.username || !this.password) {
-      this.errorMessage = 'Please enter username and password';
-      return;
-    }
+      if (!this.username || !this.password) {
+        this.errorMessage = 'Please enter username and password';
+        return;
+      }
 
-    this.loading = true;
+      this.loading = true;
 
-    this.loginService.login(this.username, this.password).subscribe({
-      next: (response) => {
-        this.loading = false;
+      this.loginService.login(this.username, this.password).subscribe({
+        next: (response) => {
+          this.loading = false;
 
+
+          if (response && response.message) {
+            // ✅ Save session or token
+            sessionStorage.setItem('UserId', response.user.userId.toString());
+            sessionStorage.setItem('CompanyId', response.user.companyId.toString());
+            sessionStorage.setItem('RegionId', response.user.regionId.toString());
+            sessionStorage.setItem('roleId', response.user.roleId.toString());
+            sessionStorage.setItem('currentUser', JSON.stringify(response.user));
+              sessionStorage.setItem('roleName', response.user.roleName);
+                      sessionStorage.setItem('Name', response.user.fullName);
+            Swal.fire('Login Successful', response.message, 'success');
+            // ✅ Navigate by role or response route
+            const route =
+              response.user.roleName === 'Admin'
+                ? '/admin/dashboard'
+                : '/dashboard';
         if (response && response.message) {
           // ✅ Save session or token
           sessionStorage.setItem('CompanyId', response.user.companyId.toString());
@@ -57,7 +73,8 @@ export class LoginComponent {
          sessionStorage.setItem('UserId', response.user.userId.toString());
           sessionStorage.setItem('currentUser', JSON.stringify(response.user));
             sessionStorage.setItem('roleName', response.user.roleName);
-                    sessionStorage.setItem('Name', response.user.fullName);
+          sessionStorage.setItem('Name', response.user.fullName);
+          sessionStorage.setItem('EmployeeCode', response.user.EmployeeCode);
           Swal.fire('Login Successful', response.message, 'success');
           // ✅ Navigate by role or response route
           const route =
@@ -65,17 +82,18 @@ export class LoginComponent {
               ? '/admin/dashboard'
               : '/dashboard';
 
-          this.router.navigate([route]);
-        } else {
-          this.errorMessage = 'Invalid username or password';
+
+            this.router.navigate([route]);
+          } else {
+            this.errorMessage = 'Invalid username or password';
+          }
+        },
+        error: (error) => {
+          this.loading = false;
+          console.error('Login failed:', error);
+          this.errorMessage = 'Server error. Please try again.';
         }
-      },
-      error: (error) => {
-        this.loading = false;
-        console.error('Login failed:', error);
-        this.errorMessage = 'Server error. Please try again.';
-      }
-    });
+      });
+    }
+    
   }
-  
-}
