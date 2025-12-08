@@ -51,6 +51,7 @@ export class LoginComponent {
 
         if (response && response.message) {
           // ✅ Save session or token
+          sessionStorage.setItem("userid",response.user.userid)
           sessionStorage.setItem('CompanyId', response.user.companyId.toString());
           sessionStorage.setItem('RegionId', response.user.regionId.toString());
           sessionStorage.setItem('roleId', response.user.roleId.toString());

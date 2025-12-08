@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs';
 import { map } from 'rxjs';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { EmployeePersonal } from '../layout/models/employee-personal.model';
 // ------------ Model Interfaces ----------------
 export interface Designation {
   designationID: number;
@@ -982,5 +983,23 @@ deleteEmergencyContact(id: number): Observable<void> {
   deleteReference(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/UserManagement/references/${id}`);
   }
+
+
+  getMaritalStatus(): Observable<EmployeePersonal[]> {
+    return this.http.get<EmployeePersonal[]>(
+      `${this.baseUrl}/UserManagement/marital-statuses/active/names`
+    );
+  }
+
+  getAllPersonal(): Observable<EmployeePersonal[]> {
+  // Endpoint: GET /api/<controller>/personal
+  return this.http.get<EmployeePersonal[]>(`${this.baseUrl}/UserManagement/personal`);
+}
+
+// ADD personal details (multipart/form-data)
+addPersonal(formData: FormData): Observable<any> {
+  // Don't set Content-Type header here — browser will set multipart boundary automatically.
+  return this.http.post(`${this.baseUrl}/UserManagement/personal`, formData);
+}
 
 }
