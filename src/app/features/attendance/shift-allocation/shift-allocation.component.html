@@ -1,7 +1,6 @@
 <app-header></app-header>
 <app-sidebar></app-sidebar>
 
-<!-- EMPLOYEE SHIFT ASSIGNMENT SCREEN -->
 <div class="dashboard-header">
   <h2 class="dashboard-title">Shift Allocation</h2>
   <nav class="breadcrumb">
@@ -12,67 +11,76 @@
 </div>
 
 <div class="tab-container t-4">
-  <!-- Employee Shift Form -->
+
+  <!-- FORM -->
   <div class="card p-4 mb-4 shadow-sm">
-    <h5 class="mb-3">Assign Shift</h5>
-    <form id="employeeShiftForm">
+    <h5 class="mb-3">{{ editMode ? 'Edit Shift Assignment' : 'Assign Shift' }}</h5>
+
+    <form [formGroup]="shiftForm" (ngSubmit)="onSubmit()">
+
       <div class="row mb-3">
+        <!-- Employee -->
         <div class="col-md-4">
           <label class="form-label">Employee Name <span class="text-danger">*</span></label>
-          <select class="form-select" required>
+          <select class="form-select" formControlName="userID" (change)="onEmployeeChange()">
             <option value="">Select Employee</option>
-            <option>John Doe (EMP001)</option>
-            <option>Anita Sharma (EMP003)</option>
-            <option>Rahul Kumar (EMP007)</option>
+            <option *ngFor="let emp of employees" [value]="emp.userID">
+              {{ emp.fullName }} ({{ emp.employeeCode }})
+            </option>
           </select>
         </div>
 
+        <!-- Employee Code -->
         <div class="col-md-4">
-          <label class="form-label">Employee Code / ID</label>
-          <input type="text" class="form-control" placeholder="Auto-filled or enter manually">
+          <label class="form-label">Employee Code</label>
+          <input type="text" class="form-control" formControlName="employeeCode" [disabled]="true">
         </div>
 
+        <!-- Shift -->
         <div class="col-md-4">
           <label class="form-label">Shift <span class="text-danger">*</span></label>
-          <select class="form-select" required>
+          <select class="form-select" formControlName="shiftID">
             <option value="">Select Shift</option>
-            <option>Morning Shift (09:00 - 17:30)</option>
-            <option>Evening Shift (14:00 - 22:30)</option>
-            <option>Night Shift (22:00 - 06:00)</option>
+            <option *ngFor="let s of shifts" [value]="s.shiftID">
+              {{ s.shiftName }} ({{ s.shiftStartTime }} - {{ s.shiftEndTime }})
+            </option>
           </select>
         </div>
       </div>
 
       <div class="row mb-3">
+        <!-- Start Date -->
         <div class="col-md-4">
           <label class="form-label">Start Date <span class="text-danger">*</span></label>
-          <input type="date" class="form-control" required>
+          <input type="date" class="form-control" formControlName="startDate" [min]="todayStr">
         </div>
 
+        <!-- End Date -->
         <div class="col-md-4">
           <label class="form-label">End Date</label>
-          <input type="date" class="form-control">
+          <input type="date" class="form-control" formControlName="endDate">
         </div>
 
+        <!-- Active -->
         <div class="col-md-4 d-flex align-items-end">
           <div class="form-check mt-2">
-            <input class="form-check-input" type="checkbox" id="isActiveShift" checked>
-            <label class="form-check-label" for="isActiveShift">Active Assignment</label>
+            <input class="form-check-input" type="checkbox" formControlName="isActive">
+            <label class="form-check-label">Active Assignment</label>
           </div>
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-md-12 text-first">
-          <button type="submit" class="btn btn-primary">Assign Shift</button>
-        </div>
-      </div>
+      <button class="btn btn-primary">
+        {{ editMode ? 'Update Shift' : 'Assign Shift' }}
+      </button>
+
     </form>
   </div>
 
-  <!-- Assigned Shifts List -->
+  <!-- LIST -->
   <div class="card p-4 shadow-sm">
     <h5 class="mb-3">Employee Assigned Shifts</h5>
+
     <table class="table table-bordered table-hover">
       <thead class="table-light">
         <tr>
@@ -85,33 +93,24 @@
           <th>Actions</th>
         </tr>
       </thead>
+
       <tbody>
-        <tr>
-          <td>John Doe</td>
-          <td>EMP001</td>
-          <td>Morning Shift (09:00 - 17:30)</td>
-          <td>2025-10-01</td>
-          <td>2025-12-31</td>
-          <td>Active</td>
-         <td class="action-icons">
-              <i class="fa-solid fa-pen"></i>
-              <i class="fa-solid fa-trash"></i>
-            </td>
-        </tr>
-        <tr>
-          <td>Anita Sharma</td>
-          <td>EMP003</td>
-          <td>Evening Shift (14:00 - 22:30)</td>
-          <td>2025-10-10</td>
-          <td>2025-11-30</td>
-          <td>Active</td>
+        <tr *ngFor="let a of allocations" [class.table-success]="getStatus(a) === 'Active'">
+          <td>{{ a.fullName}}</td>
+          <td>{{ a.employeeCode }}</td>
+          <td>{{ a.shiftName }}</td>
+          <td>{{ a.startDate | date:'dd-MM-yyyy' }}</td>
+          <td>{{ a.endDate ? (a.endDate | date:'dd-MM-yyyy') : '—' }}</td>
+          <td>{{ getStatus(a) }}</td>
           <td class="action-icons">
-              <i class="fa-solid fa-pen"></i>
-              <i class="fa-solid fa-trash"></i>
-            </td>
+            <i class="fa-solid fa-pen" (click)="onEdit(a)"></i>
+            <i class="fa-solid fa-trash" (click)="onDelete(a.shiftAllocationId)"></i>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
+
 </div>
+
 <app-footer></app-footer>
