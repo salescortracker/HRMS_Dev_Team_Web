@@ -218,6 +218,47 @@ export interface Department {
   isDeleted?: boolean;
 }
 
+
+export interface UserReadDto {
+    userID: number;
+  employeeCode: string;
+  fullName: string;
+  email: string;
+  status: string;
+  companyID: number;
+  regionID: number;
+}
+
+export interface ShiftMasterDto {
+  shiftID: number;
+  shiftName: string;
+  shiftStartTime?: string; // e.g. "09:00:00" or ISO time string
+  shiftEndTime?: string;
+  graceTime?: number;
+  isActive?: boolean;
+  companyID?: number;
+  regionID?: number;
+}
+
+export interface ShiftAllocationDto {
+  shiftAllocationId?: number;
+  userID: number;
+  employeeCode: string;
+  fullName: string;
+  companyID?: number;
+  regionID?: number;
+  shiftID: number;
+  shiftName?: string;
+  startDate: string; // "yyyy-MM-dd" - keep ISO for binding
+  endDate?: string | null;
+  isActive: boolean;
+  createdBy?: number;
+  createdDate?: string;
+  modifiedBy?: number;
+  modifiedDate?: string;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -825,4 +866,63 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
   );
 }
+
+
+// -------------------------------
+  // SHIFT MASTER
+  // -------------------------------
+  getAllShifts(): Observable<ShiftMasterDto[]> {
+    return this.http.get<ShiftMasterDto[]>(`${this.baseUrl}/UserManagement/GetAllShifts`);
+  }
+
+  getShiftById(shiftId: number): Observable<ShiftMasterDto> {
+    return this.http.get<ShiftMasterDto>(`${this.baseUrl}/UserManagement/GetShiftById/${shiftId}`);
+  }
+
+  addShift(model: ShiftMasterDto): Observable<any> {
+    return this.http.post(`${this.baseUrl}/UserManagement/AddShift`, model);
+  }
+
+  updateShift(model: ShiftMasterDto): Observable<any> {
+    return this.http.put(`${this.baseUrl}/UserManagement/UpdateShift`, model);
+  }
+
+  deleteShift(shiftId: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/UserManagement/DeleteShift/${shiftId}`);
+  }
+
+  activateShift(shiftId: number): Observable<any> {
+    return this.http.put(`${this.baseUrl}/UserManagement/ActivateShift/${shiftId}`, {});
+  }
+
+  deactivateShift(shiftId: number): Observable<any> {
+    return this.http.put(`${this.baseUrl}/UserManagement/DeactivateShift/${shiftId}`, {});
+  }
+
+  // -------------------------------
+  // SHIFT ALLOCATION
+  // -------------------------------
+  getAllAllocations(): Observable<ShiftAllocationDto[]> {
+    return this.http.get<ShiftAllocationDto[]>(`${this.baseUrl}/UserManagement/GetAllAllocations`);
+  }
+
+  getAllocationById(id: number): Observable<ShiftAllocationDto> {
+    return this.http.get<ShiftAllocationDto>(`${this.baseUrl}/UserManagement/GetAllocationById/${id}`);
+  }
+
+  allocateShift(model: ShiftAllocationDto): Observable<any> {
+    debugger;
+    return this.http.post(`${this.baseUrl}/UserManagement/AllocateShift`, model);
+  }
+
+  updateAllocation(model: ShiftAllocationDto): Observable<any> {
+    return this.http.put(`${this.baseUrl}/UserManagement/UpdateAllocation`, model);
+  }
+
+  deleteAllocation(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/UserManagement/DeleteAllocation/${id}`);
+  }
+
+
+
 }
