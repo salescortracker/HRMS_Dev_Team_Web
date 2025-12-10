@@ -1,0 +1,145 @@
+<!-- ================= EMPLOYEE KPI SUBMISSION ================= -->
+<div class="tab-container">
+  <div id="content1" class="tab-content" style="display:block">
+
+    <form [formGroup]="kpiForm" (ngSubmit)="submitKpi()">
+
+      <!-- EMPLOYEE INFO -->
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Employee Name / ID</label>
+          <input formControlName="EmployeeNameId" type="text" class="form-control" placeholder="Employee Name / ID">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Reporting Manager ID</label>
+          <input formControlName="ReportingManagerId" type="text" class="form-control" placeholder="Manager ID">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Designation</label>
+          <input formControlName="Designation" type="text" class="form-control" placeholder="Designation">
+        </div>
+      </div>
+
+      <!-- OTHER INFO -->
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Department ID</label>
+          <input formControlName="DepartmentId" type="text" class="form-control" placeholder="Department ID">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Date of Joining</label>
+          <input formControlName="DateOfJoining" type="date" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Probation Status</label>
+          <select formControlName="ProbationStatus" class="form-select">
+            <option value="">Select</option>
+            <option>On Probation</option>
+            <option>Confirmed</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PERFORMANCE CYCLE -->
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Performance Cycle</label>
+          <select formControlName="PerformanceCycle" class="form-select">
+            <option value="">Select Cycle</option>
+            <option>Annual</option>
+            <option>Half-Yearly</option>
+            <option>Quarterly</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Applicable Start Date</label>
+          <input formControlName="ApplicableStartDate" type="date" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Applicable End Date</label>
+          <input formControlName="ApplicableEndDate" type="date" class="form-control">
+        </div>
+      </div>
+
+      <!-- PROGRESS -->
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Progress Type</label>
+          <select formControlName="ProgressType" class="form-select">
+            <option value="">Select</option>
+            <option>Monthly</option>
+            <option>Quarterly</option>
+            <option>Yearly</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Appraisal Year</label>
+          <select formControlName="AppraisalYear" class="form-select">
+            <option value="">Select Year</option>
+            <option>2025</option>
+            <option>2024</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Document Evidence</label>
+          <input type="file" (change)="onFileSelected($event)" class="form-control">
+        </div>
+      </div>
+
+      <!-- KPI TABLE -->
+      <div class="dashboard-tables full-row mt-2">
+        <div class="table-card">
+          <h3>KPIs & Completed Tasks</h3>
+
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>KPI / Objective</th>
+                <th>Weightage (%)</th>
+                <th>Target</th>
+                <th>Project / Task Completed</th>
+                <th>Self Rating (1-5)</th>
+                <th>Remarks</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody formArrayName="KpiItems">
+              <tr *ngFor="let item of kpiItems.controls; let i = index" [formGroupName]="i">
+                <td><input formControlName="KpiObjective" type="text" class="form-control"></td>
+                <td><input formControlName="Weightage" type="number" class="form-control"></td>
+                <td><input formControlName="Target" type="text" class="form-control"></td>
+                <td><input formControlName="TaskCompleted" type="text" class="form-control"></td>
+                <td><input formControlName="SelfRating" type="number" min="1" max="5" class="form-control"></td>
+                <td><textarea formControlName="Remarks" class="form-control"></textarea></td>
+                <td>
+                  <button type="button" class="btn btn-danger btn-sm" (click)="removeKpiItem(i)">Remove</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <button type="button" class="btn btn-primary" (click)="addKpiItem()">Add KPI</button>
+        </div>
+      </div>
+
+      <!-- SELF REVIEW -->
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <label class="form-label">Self Review Summary</label>
+          <textarea formControlName="SelfReviewSummary" rows="4" class="form-control"
+            placeholder="Write your self-review summary here..."></textarea>
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="row mt-3">
+        <div class="col-md-12 text-end">
+          <button type="submit" class="btn btn-primary">Submit Performance</button>
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+</div>
