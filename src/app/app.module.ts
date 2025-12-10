@@ -59,6 +59,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { EmployeeKpiSubmissionComponent } from './features/performance/employee-kpi-submission/employee-kpi-submission.component';
+import { ManagerKpiReviewComponent } from './features/performance/manager-kpi-review/manager-kpi-review.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -113,7 +115,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     MyEventsComponent,
     CompensationComponent,
     RecruitmentProcessComponent,
-    CommonUploadComponent
+    CommonUploadComponent,
+    EmployeeKpiSubmissionComponent,
+    ManagerKpiReviewComponent
   ],
   imports: [
     BrowserModule,ReactiveFormsModule,
