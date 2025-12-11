@@ -1,0 +1,102 @@
+<div class="calendar-container">
+
+  <!-- Header -->
+  <div class="calendar-header">
+    <div>
+      <button (click)="prevMonth()" *ngIf="selectedView==='month'">&lt;</button>
+      <span>{{ currentYear }} - {{ (currentMonth + 1) | number:'2.0' }}</span>
+      <button (click)="nextMonth()" *ngIf="selectedView==='month'">&gt;</button>
+    </div>
+
+    <div>
+      <label>Employee:</label>
+      <select [(ngModel)]="selectedEmployee" (change)="generateMonthDates(currentYear, currentMonth)">
+        <option *ngFor="let emp of employees" [ngValue]="emp.userId">{{ emp.employeeName }}</option>
+      </select>
+    </div>
+
+    <div>
+      <label>View:</label>
+      <select [(ngModel)]="selectedView">
+        <option value="month">Month</option>
+        <option value="week">Week</option>
+        <option value="day">Day</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Month View -->
+  <div *ngIf="selectedView==='month'" class="month-view">
+    <div class="day-name" *ngFor="let day of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']">{{ day }}</div>
+
+    <ng-container *ngFor="let week of weeks">
+      <div class="day-cell"
+           *ngFor="let day of week"
+           [class.today]="isToday(day)"
+           [class.weekend]="isWeekendForDay(day)"
+           [class.has-leave]="hasLeave(day)"
+           (mouseenter)="onCellMouseEnter($event, day)"
+           (mousemove)="onCellMouseMove($event)"
+           (mouseleave)="onCellMouseLeave()">
+
+        <div class="date">{{ day }}</div>
+
+        <!-- show small weekly-off dot -->
+        <div *ngIf="isWeekendForDay(day)" class="weekly-off-dot" title="Weekly Off"></div>
+
+        <!-- leave badges (show leaveType and status) -->
+        <div class="leave-badges">
+          <div *ngFor="let l of getDayLeavesByNumber(day)" class="leave-badge" [ngClass]="getStatusClass(l.status)" (click)="onLeaveClick(l)">
+            <span class="lt">{{ l.leaveTypeName }}</span>
+            <span class="st">({{ l.status }})</span>
+          </div>
+        </div>
+
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Week View -->
+  <div *ngIf="selectedView==='week'" class="week-view">
+    <div class="week-column" *ngFor="let d of getWeekDates(currentDate)">
+      <div class="day-name">{{ d.day }}</div>
+      <div class="date">{{ d.dateStr.split('-')[2] }}</div>
+
+      <div *ngFor="let l of getDayLeaves(d.dateStr)" class="leave-row">
+        <span class="dot" [ngClass]="getStatusClass(l.status)"></span>
+        <strong>{{ l.leaveTypeName }}</strong> - {{ l.employeeName }} ({{ l.status }})
+      </div>
+
+      <div *ngIf="getDayLeaves(d.dateStr).length === 0" class="no-leave">No leaves</div>
+    </div>
+  </div>
+
+  <!-- Day View -->
+  <div *ngIf="selectedView==='day'" class="day-view">
+    <h3>{{ currentDate | date:'fullDate' }}</h3>
+
+    <div *ngFor="let l of getDayLeaves(currentDate.toISOString().substring(0,10))" class="day-leave-row">
+      <div class="dot" [ngClass]="getStatusClass(l.status)"></div>
+      <div class="day-leave-details">
+        <strong>{{ l.employeeName }}</strong> — {{ l.leaveTypeName }}
+        <div>From: {{ l.startDate }} To: {{ l.endDate }}</div>
+        <div>Total Days: {{ l.totalDays }} — Status: <b>{{ l.status }}</b></div>
+      </div>
+    </div>
+
+    <div *ngIf="getDayLeaves(currentDate.toISOString().substring(0,10)).length === 0">No leaves</div>
+  </div>
+
+  <!-- Tooltip -->
+  <div class="tooltip-card" *ngIf="tooltipVisible" [style.left.px]="tooltipX" [style.top.px]="tooltipY">
+    <div *ngFor="let t of tooltipLeaves" class="tooltip-item">
+      <b>{{ t.employeeName }}</b><br/>
+      {{ t.leaveTypeName }}<br/>
+      {{ t.startDate }} → {{ t.endDate }}<br/>
+      Days: {{ t.totalDays }}<br/>
+      Status: <span [ngClass]="getStatusClass(t.status)">{{ t.status }}</span>
+      <hr *ngIf="tooltipLeaves.indexOf(t) !== tooltipLeaves.length - 1"/>
+    </div>
+  </div>
+
+</div>
