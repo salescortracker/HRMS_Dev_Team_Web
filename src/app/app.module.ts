@@ -59,6 +59,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ApplyLeaveComponent } from './features/leave/apply-leave/apply-leave.component';
+import { LeaveApprovalsComponent } from './features/leave/leave-approvals/leave-approvals.component';
+import { LeaveCalendarComponent } from './features/leave/leave-calendar/leave-calendar.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -113,7 +117,11 @@ import { ReactiveFormsModule } from '@angular/forms';
     MyEventsComponent,
     CompensationComponent,
     RecruitmentProcessComponent,
-    CommonUploadComponent
+    CommonUploadComponent,
+    ApplyLeaveComponent,
+    LeaveApprovalsComponent,
+    LeaveCalendarComponent
+  
   ],
   imports: [
     BrowserModule,ReactiveFormsModule,
