@@ -48,10 +48,10 @@ export class LoginComponent {
     this.loginService.login(this.username, this.password).subscribe({
       next: (response) => {
         this.loading = false;
-
         if (response && response.message) {
           // ✅ Save session or token
-          sessionStorage.setItem('CompanyId', response.user.companyId.toString());
+          
+           sessionStorage.setItem('CompanyId', response.user.companyId.toString());
           sessionStorage.setItem('RegionId', response.user.regionId.toString());
           sessionStorage.setItem('roleId', response.user.roleId.toString());
           sessionStorage.setItem('currentUser', JSON.stringify(response.user));
@@ -65,6 +65,7 @@ export class LoginComponent {
               : '/dashboard';
 
           this.router.navigate([route]);
+         
         } else {
           this.errorMessage = 'Invalid username or password';
         }
