@@ -229,34 +229,47 @@ export class ShiftAllocationComponent implements OnInit {
     if (!this.editMode) {
       this.svc.allocateShift(dto).subscribe({
         next: (response) => {
+          const msg = typeof response === 'string'
+            ? response
+            : response?.message || 'Shift assigned successfully';
+
           Swal.fire({
             icon: 'success',
             title: 'Success!',
-            text: 'Shift assigned successfully',
+            text: msg,
             timer: 2000,
             showConfirmButton: false
           });
+
           this.resetForm();
           this.loadAllocations();
         },
         error: (err) => {
-          console.error('Create Error:', err);
-          let msg = 'Failed to create allocation';
-          if (typeof err?.error === 'string') {
-            msg = err.error;
-          } else if (err?.error?.message) {
-            msg = err.error.message;
-          } else if (err?.error) {
-            msg = JSON.stringify(err.error);
+          console.warn('API returned error but may be text:', err);
+
+          // Backend sometimes returns success inside error.text
+          if (err?.error?.text) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success!',
+              text: err.error.text,
+              timer: 2000,
+              showConfirmButton: false
+            });
+
+            this.resetForm();
+            this.loadAllocations();
+            return;
           }
+
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: msg
+            text: 'Failed to create shift allocation'
           });
-          this.loadAllocations();
         }
       });
+
       return;
     }
 
