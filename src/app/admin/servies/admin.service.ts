@@ -217,6 +217,52 @@ export interface Department {
   modifiedAt?: Date;
   isDeleted?: boolean;
 }
+//------------------------------------MISSED_PUNCH_REQUESTS_MODELS--------------------------------------------//
+export interface MissedType {
+  missedTypeID: number;
+  missedType: string;
+}
+
+export interface MissedPunchRequest {
+  missedPunchRequestID: number;
+  employeeID: number;
+  managerID: number;
+  companyID: number;
+  regionID?: number | null;
+  missedDate: string; // DateTime in backend
+  missedTypeID?: number | null;
+  missedType?: string | null;
+  correctClockIn?: string | null;
+  correctClockOut?: string | null;
+  reason: string;
+  managerRemarks?: string | null;
+  status: string;
+}
+
+// DTO to submit a request
+export interface SubmitRequestDto {
+  employeeID: number;
+  missedDate: string;
+  missedTypeID: number;
+  correctClockIn?: string | null;
+  correctClockOut?: string | null;
+  reason: string;
+  companyID: number;
+  regionID?: number | null;
+}
+// DTO to approve/reject request
+export interface MissedPunchAction {
+  requestId: number;
+  managerId: number;
+  status: string; // "Approved" | "Rejected"
+  managerRemarks?: string | null;
+}
+
+
+//-------------------------------------------END OF MISSED_PUNCH_REQUESTS_MODELS----------------------------------------------.//
+
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -825,4 +871,64 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
   );
 }
+//-------------------------------MISSED_PUNCH_REQUEST------------------------------------//
+ // -------------------- GET Missed Types --------------------
+//   getMissedTypes(): Observable<MissedType[]> {
+//     return this.http.get<MissedType[]>(`${this.baseUrl}/UserManagement/GetMissedTypes`)
+//       .pipe(catchError(this.handleError));
+//   }
+
+//   // -------------------- MY REQUESTS --------------------
+//   getMyRequests(employeeId: number): Observable<MissedPunchRequest[]> {
+//     const params = new HttpParams().set('employeeId', employeeId.toString());
+//     return this.http.get<MissedPunchRequest[]>(`${this.baseUrl}/UserManagement/GetMyRequests`, { params })
+//       .pipe(catchError(this.handleError));
+//   }
+
+//   // -------------------- PENDING APPROVALS --------------------
+//   getPendingApprovals(managerId: number): Observable<MissedPunchRequest[]> {
+//     const params = new HttpParams().set('userId', managerId.toString());
+//     return this.http.get<MissedPunchRequest[]>(`${this.baseUrl}/UserManagement/GetPendingRequests`, { params })
+//       .pipe(catchError(this.handleError));
+//   }
+
+//   // -------------------- SUBMIT NEW REQUEST --------------------
+// submitRequest(data: MissedPunchRequest): Observable<any> {
+//   return this.http.post(`${this.baseUrl}/UserManagement/SubmitRequest`, data)
+//     .pipe(catchError(this.handleError));
+// }
+
+//   // -------------------- TAKE ACTION (APPROVE / REJECT) --------------------
+//   takeAction(data: MissedPunchAction): Observable<any> {
+//     return this.http.post(`${this.baseUrl}/UserManagement/TakeAction`, data)
+//       .pipe(catchError(this.handleError));
+//   }
+
+ // NEW (correct)
+// To this:
+getMissedTypes() {
+  return this.http.get<MissedType[]>(`${this.baseUrl}/UserManagement/GetMissedTypes`);
+}
+getMyRequests(employeeID: number): Observable<MissedPunchRequest[]> {
+  return this.http.get<MissedPunchRequest[]>(`${this.baseUrl}/UserManagement/GetMyRequests?employeeId=${employeeID}`)
+    .pipe(catchError(this.handleError));
+}
+
+getPendingApprovals(managerID: number): Observable<MissedPunchRequest[]> {
+  return this.http.get<MissedPunchRequest[]>(`${this.baseUrl}/UserManagement/GetPendingRequests?userId=${managerID}`)
+    .pipe(catchError(this.handleError));
+}
+
+submitRequest(dto: SubmitRequestDto): Observable<any> {
+  return this.http.post(`${this.baseUrl}/UserManagement/SubmitRequest`, dto)
+    .pipe(catchError(this.handleError));
+}
+
+takeAction(action: MissedPunchAction): Observable<any> {
+  return this.http.post(`${this.baseUrl}/UserManagement/TakeAction`, action)
+    .pipe(catchError(this.handleError));
+}
+
+
+ 
 }

@@ -11,10 +11,8 @@
 </div>
 
 <div class="tab-container mt-4">
-
-  <!-- Tab Controls -->
-  <input type="radio" id="tab1" name="tab" checked>
-  <input type="radio" id="tab2" name="tab">
+  <input type="radio" id="tab1" name="tab" checked (change)="loadMyRequests()">
+  <input type="radio" id="tab2" name="tab" (change)="loadPendingApprovals()">
 
   <div class="tab-header">
     <label class="tab-label" for="tab1">My Requests</label>
@@ -25,50 +23,48 @@
   <div id="content1" class="tab-content">
     <div class="card p-4 shadow-sm mb-4">
       <h5 class="mb-3">Submit Missed Punch Request</h5>
-
-      <form>
+      <form [formGroup]="requestForm" (ngSubmit)="submitRequest()">
         <div class="row mb-3">
           <div class="col-md-6">
-            <label class="form-label">Date of Missed Punch <span class="text-danger">*</span></label>
-            <input type="date" class="form-control" required>
+            <label class="form-label">Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" formControlName="MissedDate" required>
           </div>
-
           <div class="col-md-6">
             <label class="form-label">Missed Type <span class="text-danger">*</span></label>
-            <select class="form-select" required>
-              <option value="">Select Type</option>
-              <option>Missed Clock In</option>
-              <option>Missed Clock Out</option>
-              <option>Both In & Out</option>
+            <select class="form-select" formControlName="MissedTypeID" required>
+              <option [ngValue]="null">Select Type</option>
+              <option *ngFor="let type of missedTypes" [ngValue]="type.missedTypeID">
+                {{ type.missedType }}
+              </option>
             </select>
           </div>
         </div>
-
         <div class="row mb-3">
           <div class="col-md-6">
-            <label class="form-label">Correct Clock In Time</label>
-            <input type="time" class="form-control" placeholder="Enter clock in time">
+            <label class="form-label">Clock In</label>
+            <input type="time" class="form-control" formControlName="CorrectClockIn">
           </div>
           <div class="col-md-6">
-            <label class="form-label">Correct Clock Out Time</label>
-            <input type="time" class="form-control" placeholder="Enter clock out time">
+            <label class="form-label">Clock Out</label>
+            <input type="time" class="form-control" formControlName="CorrectClockOut">
           </div>
         </div>
-
         <div class="row mb-3">
           <div class="col-md-12">
-            <label class="form-label">Reason / Remarks <span class="text-danger">*</span></label>
-            <textarea class="form-control" rows="3" placeholder="Explain the reason for missed punch" required></textarea>
+            <label class="form-label">Reason <span class="text-danger">*</span></label>
+            <textarea class="form-control" rows="3" formControlName="Reason"></textarea>
           </div>
         </div>
-
-        <div class="text-start">
-          <button type="submit" class="btn btn-primary">Submit Request</button>
-        </div>
+       <div class="text-start">
+  <button type="submit" class="btn btn-primary" [disabled]="requestForm.invalid || isSubmitting">
+    Submit Request
+  </button>
+  <!-- Spinner -->
+  <div *ngIf="isSubmitting" class="loader" style="margin-left: 10px;"></div>
+</div>
       </form>
     </div>
 
-    <!-- My Requests List -->
     <div class="card p-4 shadow-sm">
       <h5 class="mb-3">My Missed Punch Requests</h5>
       <div class="table-responsive">
@@ -85,35 +81,48 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>2025-10-14</td>
-              <td>Missed Clock In</td>
-              <td>09:15</td>
-              <td>18:00</td>
-              <td>Forgot to punch in due to system delay</td>
-              <td><span class="badge bg-warning text-dark">Pending</span></td>
+            <tr *ngFor="let req of pagedMyRequests">
+              <td>{{ req.missedDate | date:'yyyy-MM-dd' }}</td>
+              <td>{{ req.missedType || '-' }}</td>
+              <td>{{ req.correctClockIn ? (req.correctClockIn | date:'HH:mm') : '-' }}</td>
+              <td>{{ req.correctClockOut ? (req.correctClockOut | date:'HH:mm') : '-' }}</td>
+              <td>{{ req.reason || '-' }}</td>
+              <td>
+                <span class="badge"
+                      [ngClass]="{
+                        'bg-warning text-dark': req.status==='Pending',
+                        'bg-success': req.status==='Approved',
+                        'bg-danger': req.status==='Rejected'
+                      }">
+                  {{ req.status || '-' }}
+                </span>
+              </td>
               <td class="text-center">
-                <a href="#" data-bs-toggle="modal" data-bs-target="#viewMissedModal">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#viewMissedModal" (click)="selectRequest(req)">
                   <i class="fa-solid fa-eye text-primary"></i>
                 </a>
               </td>
             </tr>
-            <tr>
-              <td>2025-10-10</td>
-              <td>Both In & Out</td>
-              <td>09:00</td>
-              <td>18:30</td>
-              <td>System error during punch</td>
-              <td><span class="badge bg-success">Approved</span></td>
-              <td class="text-center">
-                <a href="#" data-bs-toggle="modal" data-bs-target="#viewMissedModal">
-                  <i class="fa-solid fa-eye text-primary"></i>
-                </a>
-              </td>
+            <tr *ngIf="myRequests.length === 0">
+              <td colspan="7" class="text-center">No requests found</td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      <nav *ngIf="myRequests.length > pageSize">
+        <ul class="pagination justify-content-center mt-3">
+          <li class="page-item" [class.disabled]="myRequestsPage===1">
+            <a class="page-link" (click)="changePageMyRequests(myRequestsPage-1)">Previous</a>
+          </li>
+          <li class="page-item" *ngFor="let p of [].constructor(totalMyRequestsPages()); let i = index" [class.active]="myRequestsPage===i+1">
+            <a class="page-link" (click)="changePageMyRequests(i+1)">{{ i+1 }}</a>
+          </li>
+          <li class="page-item" [class.disabled]="myRequestsPage===totalMyRequestsPages()">
+            <a class="page-link" (click)="changePageMyRequests(myRequestsPage+1)">Next</a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 
@@ -121,94 +130,89 @@
   <div id="content2" class="tab-content">
     <div class="card p-4 shadow-sm">
       <h5 class="mb-3">Pending Missed Punch Approvals</h5>
-
       <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle">
           <thead class="table-light">
             <tr>
-              <th><input type="checkbox"></th>
-              <th>Employee Name</th>
+              <th>Select</th>
+              <th>Employee</th>
               <th>Date</th>
               <th>Missed Type</th>
               <th>Clock In</th>
               <th>Clock Out</th>
               <th>Reason</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>Comments</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td><input type="checkbox"></td>
-              <td>John Doe</td>
-              <td>2025-10-14</td>
-              <td>Missed Clock In</td>
-              <td>09:15</td>
-              <td>18:00</td>
-              <td>Forgot to punch in due to network delay</td>
-              <td><span class="badge bg-warning text-dark">Pending</span></td>
-              <td>
-                <a href="#" data-bs-toggle="modal" data-bs-target="#approveModal">
-                  <i class="fa-solid fa-check text-success me-2"></i>
-                </a>
-                <a href="#" data-bs-toggle="modal" data-bs-target="#approveModal">
-                  <i class="fa-solid fa-xmark text-danger"></i>
-                </a>
+            <tr *ngFor="let req of pagedPendingApprovals">
+              <td class="text-center">
+                <input type="checkbox"
+                       [disabled]="req.status !== 'Pending'"
+                       [checked]="pendingSelections[req.missedPunchRequestID].selected"
+                       (change)="toggleSelection(req)">
               </td>
+              <td>{{ req.employeeID }}</td>
+              <td>{{ req.missedDate | date:'yyyy-MM-dd' }}</td>
+              <td>{{ req.missedType || '-' }}</td>
+              <td>{{ req.correctClockIn ? (req.correctClockIn | date:'HH:mm') : '-' }}</td>
+              <td>{{ req.correctClockOut ? (req.correctClockOut | date:'HH:mm') : '-' }}</td>
+              <td>{{ req.reason || '-' }}</td>
+              <td>
+                <input type="text"
+                       class="form-control form-control-sm"
+                       [disabled]="req.status !== 'Pending'"
+                       [value]="pendingSelections[req.missedPunchRequestID].comment"
+                       (input)="updateComment(req, $any($event.target).value)">
+              </td>
+            </tr>
+            <tr *ngIf="pendingApprovals.length === 0">
+              <td colspan="8" class="text-center">No pending approvals</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div class="text-end mt-3">
-        <button class="btn btn-success btn-sm me-2">Approve Selected</button>
-        <button class="btn btn-danger btn-sm">Reject Selected</button>
+      <div class="mt-3 text-end">
+        <button class="btn btn-success me-2" (click)="bulkAction('Approved')">Approve Selected</button>
+        <button class="btn btn-danger" (click)="bulkAction('Rejected')">Reject Selected</button>
       </div>
+
+      <nav *ngIf="pendingApprovals.length > pageSize">
+        <ul class="pagination justify-content-center mt-3">
+          <li class="page-item" [class.disabled]="pendingApprovalsPage===1">
+            <a class="page-link" (click)="changePagePendingApprovals(pendingApprovalsPage-1)">Previous</a>
+          </li>
+          <li class="page-item" *ngFor="let p of [].constructor(totalPendingApprovalsPages()); let i = index" [class.active]="pendingApprovalsPage===i+1">
+            <a class="page-link" (click)="changePagePendingApprovals(i+1)">{{ i+1 }}</a>
+          </li>
+          <li class="page-item" [class.disabled]="pendingApprovalsPage===totalPendingApprovalsPages()">
+            <a class="page-link" (click)="changePagePendingApprovals(pendingApprovalsPage+1)">Next</a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </div>
 
-<!-- VIEW MODAL -->
-<div class="modal fade" id="viewMissedModal" tabindex="-1" aria-labelledby="viewMissedModalLabel" aria-hidden="true">
+<!-- View Modal -->
+<div class="modal fade" id="viewMissedModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
-    <div class="modal-content">
+    <div class="modal-content" *ngIf="selectedRequest">
       <div class="modal-header">
         <h5 class="modal-title">Missed Punch Request Details</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p><strong>Date:</strong> 2025-10-14</p>
-        <p><strong>Missed Type:</strong> Missed Clock In</p>
-        <p><strong>Clock In:</strong> 09:15</p>
-        <p><strong>Clock Out:</strong> 18:00</p>
-        <p><strong>Reason:</strong> Forgot to punch in due to network delay</p>
-        <p><strong>Status:</strong> Pending</p>
+        <p><strong>Date:</strong> {{ selectedRequest.missedDate | date:'yyyy-MM-dd' }}</p>
+        <p><strong>Missed Type:</strong> {{ selectedRequest.missedType }}</p>
+        <p><strong>Clock In:</strong> {{ selectedRequest.correctClockIn ? (selectedRequest.correctClockIn | date:'HH:mm') : '-' }}</p>
+        <p><strong>Clock Out:</strong> {{ selectedRequest.correctClockOut ? (selectedRequest.correctClockOut | date:'HH:mm') : '-' }}</p>
+        <p><strong>Reason:</strong> {{ selectedRequest.reason }}</p>
+        <p><strong>Status:</strong> {{ selectedRequest.status }}</p>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- APPROVAL MODAL -->
-<div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Approve / Reject Request</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p><strong>Employee:</strong> John Doe</p>
-        <p><strong>Date:</strong> 2025-10-14</p>
-        <p><strong>Missed Type:</strong> Missed Clock In</p>
-        <label class="form-label">Manager Remarks</label>
-        <textarea class="form-control" rows="3" placeholder="Enter your remarks"></textarea>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-success">Approve</button>
-        <button class="btn btn-danger">Reject</button>
       </div>
     </div>
   </div>
