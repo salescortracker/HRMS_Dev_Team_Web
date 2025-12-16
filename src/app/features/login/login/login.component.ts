@@ -54,6 +54,7 @@ export class LoginComponent {
           sessionStorage.setItem('UserId', response.user.userId.toString());
           sessionStorage.setItem('CompanyId', response.user.companyId.toString());
           sessionStorage.setItem('RegionId', response.user.regionId.toString());
+          sessionStorage.setItem('DepartmentId', response.user.departmentId.toString());
           sessionStorage.setItem('roleId', response.user.roleId.toString());
           sessionStorage.setItem('currentUser', JSON.stringify(response.user));
             sessionStorage.setItem('roleName', response.user.roleName);

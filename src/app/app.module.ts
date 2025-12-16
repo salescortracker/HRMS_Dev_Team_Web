@@ -61,6 +61,9 @@ import { CommonUploadComponent } from './shared/common-upload/common-upload.comp
 import { ReactiveFormsModule } from '@angular/forms';
 import { EmployeeKpiSubmissionComponent } from './features/performance/employee-kpi-submission/employee-kpi-submission.component';
 import { ManagerKpiReviewComponent } from './features/performance/manager-kpi-review/manager-kpi-review.component';
+import { CreateExpensesComponent } from './features/expenses/create-expenses/create-expenses.component';
+import { ApproveExpensesComponent } from './features/expenses/approve-expenses/approve-expenses.component';
+import { AllExpensesComponent } from './features/expenses/all-expenses/all-expenses.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -117,7 +120,10 @@ import { ManagerKpiReviewComponent } from './features/performance/manager-kpi-re
     RecruitmentProcessComponent,
     CommonUploadComponent,
     EmployeeKpiSubmissionComponent,
-    ManagerKpiReviewComponent
+    ManagerKpiReviewComponent,
+    CreateExpensesComponent,
+    ApproveExpensesComponent,
+    AllExpensesComponent
   ],
   imports: [
     BrowserModule,ReactiveFormsModule,

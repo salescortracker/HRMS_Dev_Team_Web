@@ -1,0 +1,228 @@
+<!-- ================= CREATE EXPENSE FORM ================= -->
+<form [formGroup]="expenseForm" (ngSubmit)="submitExpense()">
+
+  <!-- ROW 1 -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">
+        Project / Engagement <span class="text-danger">*</span>
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="projectName"
+        placeholder="Enter project">
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">
+        Location <span class="text-danger">*</span>
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="location"
+        placeholder="Enter location">
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">
+        Country <span class="text-danger">*</span>
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="country"
+        placeholder="Enter country">
+    </div>
+  </div>
+
+  <!-- ROW 2 -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">
+        Category <span class="text-danger">*</span>
+      </label>
+      <select
+        class="form-select"
+        formControlName="expenseCategoryId"
+        (change)="onCategoryChange($event)">
+        <option value="">Select category</option>
+        <option *ngFor="let cat of categories" [value]="cat.expenseCategoryID">
+          {{ cat.expenseCategoryName }}
+        </option>
+      </select>
+
+      <small *ngIf="categoryLimit" class="text-muted">
+        Max allowed:
+        {{ categoryLimit.perTransactionLimit }}
+        {{ categoryLimit.currencyCode }}
+      </small>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Department</label>
+      <input
+        type="number"
+        class="form-control"
+        formControlName="departmentId"
+        readonly>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">
+        Amount <span class="text-danger">*</span>
+      </label>
+      <div class="d-flex">
+        <select
+          class="form-select me-2"
+          formControlName="currencyCode"
+          style="max-width:120px">
+          <option value="INR">INR</option>
+          <option value="USD">USD</option>
+          <option value="MYR">MYR</option>
+          <option value="EUR">EUR</option>
+        </select>
+
+        <input
+          type="number"
+          class="form-control"
+          formControlName="amount"
+          placeholder="Enter amount">
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3 -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">
+        Date <span class="text-danger">*</span>
+      </label>
+      <input
+        type="date"
+        class="form-control"
+        formControlName="expenseDate">
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">
+        Reason <span class="text-danger">*</span>
+      </label>
+      <textarea
+        rows="2"
+        class="form-control"
+        formControlName="reason"
+        placeholder="Enter reason"></textarea>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">
+        Upload Receipt <span class="text-danger">*</span>
+      </label>
+      <input
+        type="file"
+        class="form-control"
+        (change)="onFileChange($event)">
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="text-end mt-3">
+    <button type="submit" class="btn btn-primary">
+      Create Expense
+    </button>
+  </div>
+</form>
+
+<!-- ================= SUBMITTED EXPENSES ================= -->
+<div class="table-card mt-4">
+  <h3>Submitted Expenses</h3>
+
+  <table class="table table-bordered table-hover">
+    <thead class="table-light">
+      <tr>
+        <th (click)="sortBy('projectName')" class="sortable">Project</th>
+        <th (click)="sortBy('expenseCategoryName')" class="sortable">Category</th>
+        <th (click)="sortBy('location')" class="sortable">Location</th>
+        <th (click)="sortBy('amount')" class="sortable">Amount</th>
+        <th (click)="sortBy('expenseDate')" class="sortable">Date</th>
+        <th>Reason</th>
+        <th>Receipt</th>
+        <th (click)="sortBy('status')" class="sortable">Status</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of pagedExpenses">
+        <td>{{ item.projectName }}</td>
+        <td>{{ item.expenseCategoryName }}</td>
+        <td>{{ item.location }}</td>
+        <td>{{ item.amount }} {{ item.currencyCode }}</td>
+        <td>{{ item.expenseDate | date }}</td>
+        <td>{{ item.reason }}</td>
+       <td>
+      <a *ngIf="item.receiptPath" 
+        style="cursor:pointer; color: #0d6efd; font-weight: 500;"
+        (click)="viewReceipt(item.receiptPath)">
+        View
+      </a>
+       </td>
+
+        <td>
+          <span
+            class="badge"
+            [ngClass]="{
+              'bg-warning': item.status === 'Pending',
+              'bg-success': item.status === 'Approved',
+              'bg-danger': item.status === 'Rejected'
+            }">
+            {{ item.status }}
+          </span>
+        </td>
+      </tr>
+
+      <tr *ngIf="pagedExpenses.length === 0">
+        <td colspan="8" class="text-center text-muted">
+          No expenses found
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- PAGINATION -->
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <div>
+      Show
+      <select
+        class="form-select d-inline w-auto ms-2"
+        [(ngModel)]="pageSize"
+        (change)="changePageSize(pageSize)">
+        <option *ngFor="let s of pageSizeOptions" [value]="s">
+          {{ s }}
+        </option>
+      </select>
+      entries
+    </div>
+
+    <div>
+      <button
+        class="btn btn-outline-secondary btn-sm me-2"
+        (click)="changePage(currentPage - 1)"
+        [disabled]="currentPage === 1">
+        Prev
+      </button>
+
+      <span class="fw-semibold">
+        Page {{ currentPage }} of {{ totalPages }}
+      </span>
+
+      <button
+        class="btn btn-outline-secondary btn-sm ms-2"
+        (click)="changePage(currentPage + 1)"
+        [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
+  </div>
+</div>
