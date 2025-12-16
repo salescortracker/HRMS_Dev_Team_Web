@@ -59,11 +59,23 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { ReactiveFormsModule } from '@angular/forms';
+
 import { EmployeeKpiSubmissionComponent } from './features/performance/employee-kpi-submission/employee-kpi-submission.component';
 import { ManagerKpiReviewComponent } from './features/performance/manager-kpi-review/manager-kpi-review.component';
 import { CreateExpensesComponent } from './features/expenses/create-expenses/create-expenses.component';
 import { ApproveExpensesComponent } from './features/expenses/approve-expenses/approve-expenses.component';
 import { AllExpensesComponent } from './features/expenses/all-expenses/all-expenses.component';
+
+import { BankDetailsComponent } from './features/employee-profile/employee-finance-tabs/bank-details/bank-details.component';
+import { DdListComponent } from './features/employee-profile/employee-finance-tabs/dd-list/dd-list.component';
+import { W4Component } from './features/employee-profile/employee-finance-tabs/w4/w4.component';
+import { EmployeeLettersComponent } from './features/employee-profile/employee-letters/employee-letters.component';
+import { EmployeeFormsComponent } from './features/employee-profile/employee-forms/employee-forms.component';
+import { EmployeeDocumentComponent } from './features/employee-profile/employee-document/employee-document.component';
+import { EmployeeJobhistoryComponent } from './features/employee-profile/employee-jobhistory/employee-jobhistory.component';
+import { EmployeeEducationComponent } from './features/employee-profile/employee-education/employee-education.component';
+import { EmployeeCertificationsComponent } from './features/employee-profile/employee-certifications/employee-certifications.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -119,11 +131,23 @@ import { AllExpensesComponent } from './features/expenses/all-expenses/all-expen
     CompensationComponent,
     RecruitmentProcessComponent,
     CommonUploadComponent,
+
     EmployeeKpiSubmissionComponent,
     ManagerKpiReviewComponent,
     CreateExpensesComponent,
     ApproveExpensesComponent,
     AllExpensesComponent
+
+    BankDetailsComponent,
+    DdListComponent,
+    W4Component
+    EmployeeLettersComponent,
+    EmployeeFormsComponent,
+    EmployeeDocumentComponent
+    EmployeeJobhistoryComponent,
+    EmployeeEducationComponent,
+    EmployeeCertificationsComponent
+
   ],
   imports: [
     BrowserModule,ReactiveFormsModule,
