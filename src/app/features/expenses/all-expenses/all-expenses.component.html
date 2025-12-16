@@ -1,0 +1,137 @@
+<h3 class="mb-3">All Expenses</h3>
+
+<!-- ================= FILTERS ================= -->
+<form [formGroup]="filtersForm" class="row mb-3 g-2">
+
+  <div class="col-md-3">
+    <input
+      formControlName="project"
+      placeholder="Project"
+      class="form-control" />
+  </div>
+
+  <div class="col-md-3">
+    <select formControlName="categoryId" class="form-select">
+      <option value="">All Categories</option>
+      <option
+        *ngFor="let cat of categories"
+        [value]="cat.expenseCategoryID">
+        {{ cat.expenseCategoryName }}
+      </option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <select formControlName="country" class="form-select">
+      <option value="">All Countries</option>
+      <option *ngFor="let c of countries" [value]="c">
+        {{ c | titlecase }}
+      </option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <select formControlName="status" class="form-select">
+      <option value="">All Status</option>
+      <option *ngFor="let s of statuses" [value]="s">
+        {{ s }}
+      </option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <button
+      type="button"
+      class="btn btn-secondary w-100"
+      (click)="applyFilters()">
+      Filter
+    </button>
+  </div>
+</form>
+
+<!-- ================= TABLE ================= -->
+<div class="table-responsive">
+  <table class="table table-bordered table-hover align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th (click)="sortBy('projectName')" style="cursor:pointer">
+          Project
+        </th>
+
+        <th (click)="sortBy('expenseCategoryName')" style="cursor:pointer">
+          Category
+        </th>
+
+        <th (click)="sortBy('country')" style="cursor:pointer">
+          Country
+        </th>
+
+        <th (click)="sortBy('amount')" style="cursor:pointer">
+          Amount
+        </th>
+
+        <th (click)="sortBy('expenseDate')" style="cursor:pointer">
+          Date
+        </th>
+
+        <th (click)="sortBy('status')" style="cursor:pointer">
+          Status
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let e of pagedExpenses">
+        <td>{{ e.projectName }}</td>
+        <td>{{ e.expenseCategoryName }}</td>
+        <td>{{ e.country }}</td>
+        <td>{{ e.amount | number:'1.2-2' }} {{ e.currencyCode }}</td>
+        <td>{{ e.expenseDate | date:'yyyy-MM-dd' }}</td>
+        <td>{{ e.status }}</td>
+      </tr>
+
+      <tr *ngIf="noRecordsFound">
+        <td colspan="6" class="text-center text-muted">
+          No expenses found
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ================= PAGINATION ================= -->
+<div class="d-flex justify-content-between align-items-center mt-3">
+
+  <div>
+    <label>
+      Show
+      <select
+        class="form-select d-inline w-auto ms-2"
+        [(ngModel)]="pageSize"
+        (change)="changePageSize(pageSize)">
+        <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+          {{ size }}
+        </option>
+      </select>
+      entries
+    </label>
+  </div>
+
+  <div>
+    <button
+      class="btn btn-outline-secondary btn-sm me-2"
+      (click)="changePage(currentPage - 1)"
+      [disabled]="currentPage === 1">
+      Previous
+    </button>
+
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+    <button
+      class="btn btn-outline-secondary btn-sm ms-2"
+      (click)="changePage(currentPage + 1)"
+      [disabled]="currentPage === totalPages">
+      Next
+    </button>
+  </div>
+</div>

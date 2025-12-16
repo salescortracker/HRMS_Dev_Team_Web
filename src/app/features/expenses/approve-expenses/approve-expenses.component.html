@@ -1,0 +1,195 @@
+<h3 class="mb-3">Expense Approval Requests</h3>
+
+<!-- ================= FILTERS ================= -->
+<form [formGroup]="filtersForm" class="row mb-3 g-2">
+  <div class="col-md-3">
+    <input
+      formControlName="project"
+      placeholder="Project"
+      class="form-control" />
+  </div>
+
+  <div class="col-md-3">
+    <select formControlName="categoryId" class="form-select">
+      <option value="">All Categories</option>
+      <option
+        *ngFor="let cat of categories"
+        [value]="cat.expenseCategoryID">
+        {{ cat.expenseCategoryName }}
+      </option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <select formControlName="country" class="form-select">
+      <option value="">All Countries</option>
+      <option *ngFor="let c of countries" [value]="c">
+        {{ c | titlecase }}
+      </option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <select formControlName="status" class="form-select">
+      <option value="">All Status</option>
+      <option *ngFor="let s of statuses" [value]="s">
+        {{ s }}
+      </option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <button
+      type="button"
+      class="btn btn-secondary w-100"
+      (click)="applyFilters()">
+      Filter
+    </button>
+  </div>
+</form>
+
+<!-- ================= TABLE ================= -->
+<div class="table-responsive">
+  <table class="table table-bordered table-hover align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th width="40">
+          <input type="checkbox" (change)="toggleAll($event)" />
+        </th>
+
+        <th (click)="sortBy('projectName')" style="cursor:pointer">
+          Project
+          <span *ngIf="sortColumn === 'projectName'">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+
+        <th (click)="sortBy('expenseCategoryName')" style="cursor:pointer">
+          Category
+          <span *ngIf="sortColumn === 'expenseCategoryName'">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+
+        <th (click)="sortBy('country')" style="cursor:pointer">
+          Country
+          <span *ngIf="sortColumn === 'country'">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+
+        <th (click)="sortBy('amount')" style="cursor:pointer">
+          Amount
+          <span *ngIf="sortColumn === 'amount'">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+
+        <th (click)="sortBy('expenseDate')" style="cursor:pointer">
+          Date
+          <span *ngIf="sortColumn === 'expenseDate'">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+
+        <th (click)="sortBy('userFullName')" style="cursor:pointer">
+          Submitted By
+          <span *ngIf="sortColumn === 'userFullName'">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+
+        <th>Status</th>
+      </tr>
+    </thead>
+<tbody>
+  <!-- DATA ROWS -->
+  <tr *ngFor="let e of pagedExpenses; let i = index">
+    <td>
+      <input
+        *ngIf="e.status === 'Pending'"
+        type="checkbox"
+        [(ngModel)]="e.checked" />
+    </td>
+
+    <td>{{ e.projectName }}</td>
+    <td>{{ e.expenseCategoryName }}</td>
+    <td>{{ e.country }}</td>
+    <td>{{ e.amount | number:'1.2-2' }}</td>
+    <td>{{ e.expenseDate | date:'yyyy-MM-dd' }}</td>
+    <td>{{ e.userFullName }}</td>
+
+    <td>
+      <span
+        class="badge"
+        [ngClass]="{
+          'bg-warning text-dark': e.status === 'Pending',
+          'bg-success': e.status === 'Approved',
+          'bg-danger': e.status === 'Rejected'
+        }">
+        {{ e.status }}
+      </span>
+    </td>
+  </tr>
+
+  <!-- NO RECORDS -->
+  <tr *ngIf="noRecordsFound">
+    <td colspan="8" class="text-center text-muted">
+      No expense requests found
+    </td>
+  </tr>
+</tbody>
+
+  </table>
+</div>
+<!-- ================= ACTION BUTTONS ================= -->
+<div class="mt-3 text-end">
+  <button
+    class="btn btn-success btn-sm me-2"
+    (click)="approveRejectExpenses('Approved')">
+    Approve Selected
+  </button>
+
+  <button
+    class="btn btn-danger btn-sm"
+    (click)="approveRejectExpenses('Rejected')">
+    Reject Selected
+  </button>
+</div>
+
+<!-- ================= PAGINATION ================= -->
+<div class="d-flex justify-content-between align-items-center mt-3">
+  <div>
+    <label>
+      Show
+      <select
+        class="form-select d-inline w-auto ms-2"
+        [(ngModel)]="pageSize"
+        (change)="changePageSize(pageSize)">
+        <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+          {{ size }}
+        </option>
+      </select>
+      entries
+    </label>
+  </div>
+
+  <div>
+    <button
+      class="btn btn-outline-secondary btn-sm me-2"
+      (click)="changePage(currentPage - 1)"
+      [disabled]="currentPage === 1">
+      Previous
+    </button>
+
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+    <button
+      class="btn btn-outline-secondary btn-sm ms-2"
+      (click)="changePage(currentPage + 1)"
+      [disabled]="currentPage === totalPages">
+      Next
+    </button>
+  </div>
+</div>
+

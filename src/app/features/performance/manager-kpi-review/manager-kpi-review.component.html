@@ -1,0 +1,67 @@
+<div class="dashboard-tables full-row mt-2">
+  <div class="table-card">
+    <h3>Manager Approval & Feedback</h3>
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Select</th>
+          <th>Status</th>
+          <th>Employee Name</th>
+          <th>Employee ID</th>
+          <th>Year</th>
+          <th>KPI / Objective</th>
+          <th>Weightage (%)</th>
+          <th>Target</th>
+          <th>Task Completed</th>
+          <th>Self Rating</th>
+          <th>Manager Rating</th>
+          <th>Average KPI Rating</th>
+          <th>Manager Comments</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of reviewList">
+          <td>
+            <input type="checkbox" *ngIf="r.status === 'Pending'" [(ngModel)]="r.isSelected">
+          </td>
+          <td>
+            <span class="badge" [ngClass]="{
+              'bg-warning': r.status === 'Pending',
+              'bg-success': r.status === 'Approved',
+              'bg-danger': r.status === 'Rejected'
+            }">{{ r.status }}</span>
+          </td>
+          <td>{{ r.employeeName }}</td>
+          <td>{{ r.employeeId }}</td>
+          <td>{{ r.appraisalYear }}</td>
+          <td>{{ r.kpiObjective }}</td>
+          <td>{{ r.weightage }}</td>
+          <td>{{ r.target }}</td>
+          <td>{{ r.taskCompleted }}</td>
+          <td>{{ r.selfRating }}</td>
+          <td>
+            <input type="number" class="form-control" min="1" max="5" [(ngModel)]="r.managerRating" (change)="calculateAvg(r)" [disabled]="r.status !== 'Pending'">
+          </td>
+         <td>
+  <input class="form-control" [value]="r.avgRating" [disabled]="r.status !== 'Pending'">
+</td>
+
+          <td>
+            <textarea class="form-control" [(ngModel)]="r.managerComments" [disabled]="r.status !== 'Pending'"></textarea>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="alert alert-info">
+      <strong>Note:</strong> This appraisal supports <b>multi-level approval</b>.
+      HR will normalize and finalize ratings after manager review.
+    </div>
+
+    <div class="mt-2">
+      <button class="btn btn-success btn-sm" (click)="updateStatus('Approved')">Approve Selected</button>
+      <button class="btn btn-danger btn-sm" (click)="updateStatus('Rejected')">Reject Selected</button>
+    </div>
+  </div>
+</div>
