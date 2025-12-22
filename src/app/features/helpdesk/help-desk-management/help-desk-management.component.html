@@ -23,25 +23,25 @@
 
   <!-- TAB 1: Raise Ticket -->
   <div id="content1" class="tab-content">
-    <form>
+    <form #raiseTicketForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
       <div class="row mb-3">
         <div class="col-md-4">
           <label class="form-label">Employee Name / ID</label>
-          <input type="text" class="form-control" placeholder="Auto-filled Employee Name / ID" readonly>
+          <input type="text" class="form-control" [value]="employeeId" placeholder="Auto-filled Employee Name / ID" readonly>
         </div>
         <div class="col-md-4">
           <label class="form-label">Department</label>
-          <input type="text" class="form-control" placeholder="Auto-filled Department" readonly>
+          <input type="text" class="form-control" [value]="departmentName"name="departmentID" placeholder="Auto-filled Department" readonly >
         </div>
         <div class="col-md-4">
           <label class="form-label">Category <span class="text-danger">*</span></label>
-          <select class="form-select" required>
+          <select class="form-select" [(ngModel)]="raiseTicket.categoryId" name="categoryID" required>
             <option value="">Select Category</option>
-            <option>IT Support</option>
-            <option>Payroll</option>
-            <option>Leave/Attendance</option>
-            <option>HR Query</option>
-            <option>Other</option>
+            <option value="1">IT Support</option>
+            <option value="2">Payroll</option>
+            <option value="3">Leave/Attendance</option>
+            <option value="4">HR Query</option>
+            <option value="5">Other</option>
           </select>
         </div>
       </div>
@@ -49,16 +49,16 @@
       <div class="row mb-3">
         <div class="col-md-6">
           <label class="form-label">Issue Subject <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" placeholder="Enter subject" required>
+          <input type="text" class="form-control" [(ngModel)]="raiseTicket.subjectIssue" placeholder="Enter subject" name="subjectIssue" required>
         </div>
         <div class="col-md-6">
           <label class="form-label">Priority <span class="text-danger">*</span></label>
-          <select class="form-select" required>
+          <select class="form-select" [(ngModel)]="raiseTicket.priority" name="priority" required>
             <option value="">Select Priority</option>
-            <option>Low</option>
-            <option>Medium</option>
-            <option>High</option>
-            <option>Critical</option>
+            <option value="1">Low</option>
+            <option value="2">Medium</option>
+            <option value="3">High</option>
+            <option value="4">Critical</option>
           </select>
         </div>
       </div>
@@ -66,7 +66,7 @@
       <div class="row mb-3">
         <div class="col-md-12">
           <label class="form-label">Description <span class="text-danger">*</span></label>
-          <textarea class="form-control" rows="4" placeholder="Describe your issue in detail" required></textarea>
+          <textarea class="form-control" rows="4"[(ngModel)]="raiseTicket.description" name="description" placeholder="Describe your issue in detail" required></textarea>
         </div>
       </div>
 
@@ -75,9 +75,16 @@
           <label class="form-label">Attachment (optional)</label>
           <input type="file" class="form-control" accept=".pdf,.docx,.jpg,.png">
         </div>
-        <div class="col-md-6 text-end align-self-end">
-          <button type="submit" class="btn btn-primary">Submit Ticket</button>
-        </div>
+        <!-- Action Buttons -->
+      <div class="col-md-6 text-end align-self-end">
+        <button class="btn btn-success me-2" type="submit" [disabled]="!raiseTicketForm.valid">
+          <i class="fa-solid fa-save me-2"></i>{{ isEditMode ? 'Update' : 'Submit' }}
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="resetForm()">
+          <i class="fa-solid fa-rotate-left me-2"></i>Reset
+        </button>
+      </div>
+        
       </div>
     </form>
      <!-- List of Raised Tickets -->
@@ -100,42 +107,23 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>#TK2001</td>
-          <td>IT Support</td>
-          <td>System not booting</td>
-          <td><span class="priority high">High</span></td>
-          <td><span class="status open">Open</span></td>
-          <td>15-Oct-2025</td>
-          <td>
-            <button class="btn btn-edit">Edit</button>
-            <button class="btn btn-delete">Delete</button>
+        <tr *ngFor="let ticket of raiseTicketList">
+          <td>#TK{{ ticket.raiseTicketId }}</td>
+          <td>{{ categoryLabels[ticket.categoryId] }}</td>
+          <td>{{ ticket.subjectIssue }}</td>
+          <td><span class="priority {{ priorityLabels[ticket.priority] | lowercase }}">{{ priorityLabels[ticket.priority] }}</span></td>
+          <td><span class="status {{ ticket.status | lowercase }}">{{ ticket.status }}</span></td>
+          <td>{{ ticket.createdDate | date:'dd-MMM-yyyy' }}</td>
+          <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editTicket(ticket)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteTicket(ticket)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
           </td>
         </tr>
-        <tr>
-          <td>#TK2002</td>
-          <td>Payroll</td>
-          <td>Salary not credited</td>
-          <td><span class="priority critical">Critical</span></td>
-          <td><span class="status progress">In Progress</span></td>
-          <td>14-Oct-2025</td>
-          <td>
-            <button class="btn btn-edit">Edit</button>
-            <button class="btn btn-delete">Delete</button>
-          </td>
-        </tr>
-        <tr>
-          <td>#TK2003</td>
-          <td>HR Query</td>
-          <td>Leave balance incorrect</td>
-          <td><span class="priority medium">Medium</span></td>
-          <td><span class="status resolved">Resolved</span></td>
-          <td>10-Oct-2025</td>
-          <td>
-            <button class="btn btn-edit">Edit</button>
-            <button class="btn btn-delete">Delete</button>
-          </td>
-        </tr>
+        
       </tbody>
     </table>
   </div>
@@ -148,42 +136,44 @@
   <div class="card">
     <h3 class="section-title">My Tickets</h3>
 
-    <!-- Filter Bar -->
-    <form class="filter-container mb-3">
-      <div class="row">
-        <div class="col-md-3">
-          <label class="form-label">Category</label>
-          <select class="form-select">
-            <option value="">All Categories</option>
-            <option>IT Support</option>
-            <option>Payroll</option>
-            <option>HR Query</option>
-            <option>Leave/Attendance</option>
-            <option>Other</option>
-          </select>
-        </div>
+    <!-- Filter Section -->
+     <form class="filter-container mb-3" (ngSubmit)="applyFilters()">
+  <div class="row">
+    <div class="col-md-3">
+      <label class="form-label">Category</label>
+      <select class="form-select" [(ngModel)]="selectedCategory" name="categoryFilter">
+        <option value="">All Categories</option>
+        <option>IT Support</option>
+        <option>Payroll</option>
+        <option>HR Query</option>
+        <option>Leave/Attendance</option>
+        <option>Other</option>
+      </select>
+    </div>
 
-        <div class="col-md-3">
-          <label class="form-label">Status</label>
-          <select class="form-select">
-            <option value="">All Status</option>
-            <option>Open</option>
-            <option>In Progress</option>
-            <option>Resolved</option>
-            <option>Closed</option>
-          </select>
-        </div>
+    <div class="col-md-3">
+      <label class="form-label">Status</label>
+      <select class="form-select" [(ngModel)]="selectedStatus" name="statusFilter">
+        <option value="">All Status</option>
+        <option>Open</option>
+        <option>In Progress</option>
+        <option>Resolved</option>
+        <option>Closed</option>
+      </select>
+    </div>
 
-        <div class="col-md-3">
-          <label class="form-label">Date Range</label>
-          <input type="date" class="form-control">
-        </div>
+    <div class="col-md-3">
+      <label class="form-label">Date Range</label>
+      <input type="date" class="form-control" [(ngModel)]="selectedDate" name="dateFilter">
+    </div>
 
-        <div class="col-md-3 d-flex align-items-end">
-          <button type="submit" class="btn btn-primary w-100">Filter</button>
-        </div>
-      </div>
-    </form>
+    <div class="col-md-3 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary ms-2">Filter</button>
+      <button type="button" class="btn btn-secondary ms-2" (click)="clearFilters()">Clear</button>
+
+    </div>
+  </div>
+</form>
 
     <!-- Ticket Table -->
     <table class="table table-bordered table-striped">
@@ -199,32 +189,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>#TK2004</td>
-          <td>IT Support</td>
-          <td>Email not syncing</td>
-          <td><span class="priority medium">Medium</span></td>
-          <td><span class="status progress">In Progress</span></td>
-          <td>10-Oct-2025</td>
-          <td>15-Oct-2025</td>
-        </tr>
-        <tr>
-          <td>#TK2005</td>
-          <td>Payroll</td>
-          <td>Reimbursement not processed</td>
-          <td><span class="priority high">High</span></td>
-          <td><span class="status open">Open</span></td>
-          <td>12-Oct-2025</td>
-          <td>14-Oct-2025</td>
-        </tr>
-        <tr>
-          <td>#TK2006</td>
-          <td>HR Query</td>
-          <td>Leave balance incorrect</td>
-          <td><span class="priority low">Low</span></td>
-          <td><span class="status resolved">Resolved</span></td>
-          <td>05-Oct-2025</td>
-          <td>10-Oct-2025</td>
+        <tbody>
+        <tr *ngFor="let ticket of pagedRaiseTickets">
+          <td>#TK{{ ticket.raiseTicketId }}</td>
+          <td>{{ categoryLabels[ticket.categoryId] }}</td>
+          <td>{{ ticket.subjectIssue }}</td>
+          <td><span class="priority {{ priorityLabels[ticket.priority] | lowercase }}">{{ priorityLabels[ticket.priority] }}</span></td>
+          <td><span class="status {{ ticket.status | lowercase }}">{{ ticket.status }}</span></td>
+          <td>{{ ticket.createdDate | date:'dd-MMM-yyyy' }}</td>
+          <td>{{ ticket.modifiedAt | date:'dd-MMM-yyyy' }}</td>
         </tr>
       </tbody>
     </table>
@@ -239,7 +212,7 @@
     <h3 class="section-title">Approve Tickets</h3>
 
     <!-- Filter Section -->
-    <form class="filter-container mb-3">
+    <!-- <form class="filter-container mb-3" (ngSubmit)="applyFilters()">
       <div class="row">
         <div class="col-md-3">
           <label class="form-label">Employee Name</label>
@@ -277,61 +250,91 @@
       <div class="text-end mt-2">
         <button type="submit" class="btn btn-primary">Filter</button>
       </div>
-    </form>
+    </form> -->
+
+    <form class="filter-container mb-3">
+  <div class="row">
+    <div class="col-md-3">
+      <label class="form-label">Employee</label>
+      <input type="text" [(ngModel)]="selectedApprovalEmployee" (ngModelChange)="applyApprovalFilters()" class="form-control" placeholder="All Employees">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Status</label>
+      <select class="form-select" [(ngModel)]="selectedApprovalStatus" (change)="applyApprovalFilters()">
+        <option value="">All Status</option>
+        <option>Open</option>
+        <option>In Progress</option>
+        <option>Resolved</option>
+        <option>Closed</option>
+        <option>Rejected</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Category</label>
+      <select class="form-select" [(ngModel)]="selectedApprovalCategory" (change)="applyApprovalFilters()">
+        <option value="">All Categories</option>
+        <option *ngFor="let c of (categoryLabels | keyvalue)" [value]="c.value">{{ c.value }}</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Date</label>
+      <input type="date" [(ngModel)]="selectedApprovalDate" (change)="applyApprovalFilters()" class="form-control">
+    </div>
+  </div>
+</form>
 
     <!-- Ticket Table for Approval -->
     <table class="table table-bordered table-striped">
-      <thead>
-        <tr>
-          <th><input type="checkbox"></th>
-          <th>Ticket ID</th>
-          <th>Employee</th>
-          <th>Category</th>
-          <th>Subject</th>
-          <th>Status</th>
-          <th>Priority</th>
-          <th>Raised On</th>
-          <th>Manager Comments</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><input type="checkbox"></td>
-          <td>#TK3001</td>
-          <td>John Doe</td>
-          <td>IT Support</td>
-          <td>System not booting</td>
-          <td><span class="status open">Open</span></td>
-          <td><span class="priority high">High</span></td>
-          <td>10-Oct-2025</td>
-          <td><textarea class="form-control" rows="1" placeholder="Add remarks..."></textarea></td>
-        </tr>
+    <thead>
+      <tr>
+        
+        <th><input type="checkbox" (change)="toggleAll($event)"></th>
+        <th>Ticket ID</th>
+        <th>Employee</th>
+        <th>Category</th>
+        <th>Subject</th>
+        <th>Status</th>
+        <th>Priority</th>
+        <th>Raised On</th>
+        <th>Manager Comments</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let r of tickets">
+        <td><input type="checkbox"
+                   [checked]="selectedIds.has(r.raiseTicketApprovalId)"
+                   (change)="toggleOne(r.raiseTicketApprovalId, $event)"></td>
+        <td>#TK{{ r.raiseTicketId }}</td>
+        <td>{{ r.employeeId }}</td> <!-- swap to employeeName if available in ticket API -->
+        <td>{{ r.categoryName }}</td>
+        <td>{{ r.subjectIssue }}</td>
+        <td>{{ r.status }}</td>
+        <td>{{ r.priorityLabel }}</td>
+        <td>{{ r.createdDate | date:'dd-MMM-yyyy' }}</td>
+        <td>
+          <textarea class="form-control" rows="1"
+          [value]="perRowComments.get(r.raiseTicketApprovalId) || ''"
+          (input)="updateComment(r.raiseTicketApprovalId, $event)"
+          placeholder="Add remarks..."></textarea>
+        </td>
+        <td>
+          <select class="form-select"
+        [value]="perRowStatuses.get(r.raiseTicketApprovalId) || ''"
+        (change)="updateTicketStatus(r.raiseTicketApprovalId, $event)">
+            <option value="">(default)</option>
+            <option>Open</option>
+            <option>In Progress</option>
+            <option>Resolved</option>
+            <option>Rejected</option>
+            <option>Closed</option>
+          </select>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-        <tr>
-          <td><input type="checkbox"></td>
-          <td>#TK3002</td>
-          <td>Mary Thomas</td>
-          <td>Payroll</td>
-          <td>Salary not credited</td>
-          <td><span class="status progress">In Progress</span></td>
-          <td><span class="priority medium">Medium</span></td>
-          <td>12-Oct-2025</td>
-          <td><textarea class="form-control" rows="1" placeholder="Add remarks..."></textarea></td>
-        </tr>
 
-        <tr>
-          <td><input type="checkbox"></td>
-          <td>#TK3003</td>
-          <td>Rajesh Kumar</td>
-          <td>Leave/Attendance</td>
-          <td>Attendance missing</td>
-          <td><span class="status resolved">Resolved</span></td>
-          <td><span class="priority low">Low</span></td>
-          <td>05-Oct-2025</td>
-          <td><textarea class="form-control" rows="1" placeholder="Add remarks..."></textarea></td>
-        </tr>
-      </tbody>
-    </table>
+     
 
     <!-- Action Buttons -->
     <div class="action-buttons text-end mt-3">

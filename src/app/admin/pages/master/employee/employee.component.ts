@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-interface Employee {
+ interface Employee {
   employeeId: number;
   firstName: string;
   lastName: string;

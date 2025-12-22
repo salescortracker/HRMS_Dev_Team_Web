@@ -55,7 +55,7 @@ import { MyCalendarComponent } from './features/my-calendar/my-calendar/my-calen
 import { MyEventsComponent } from './features/events/my-events/my-events.component';
 import { CompensationComponent } from './features/compensation/compensation/compensation.component';
 import { RecruitmentProcessComponent } from './features/recruitment/recruitment-process/recruitment-process.component'; 
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { ReactiveFormsModule } from '@angular/forms';

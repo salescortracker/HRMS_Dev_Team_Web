@@ -218,6 +218,57 @@ export interface Department {
   isDeleted?: boolean;
 }
 
+export interface RaiseTicket {
+  raiseTicketId: number;
+  regionID: number;
+  companyID: number;
+  employeeID: number;
+  departmentID: number;
+  categoryId: number;
+  subjectIssue: string;
+  status: string;
+  description: string;
+  priority: number;
+  uploadPicPath?: string;
+   createdBy?: number;
+  createdDate?: Date;
+  modifiedBy?: number;
+  modifiedAt?: Date;
+  isDeleted?: boolean;
+}
+
+export interface RaiseTicketApproval {
+  raiseTicketApprovalId: number;
+  raiseTicketId: number;
+  managerStatus?: number;
+  managerComments?: string;
+  managerId: number;
+}
+
+
+
+export interface ApprovalRow {
+  raiseTicketApprovalId: number;
+  raiseTicketId: number;
+  managerStatus?: number;
+  managerComments?: string;
+  status?: string;
+  raisedOn?: string;
+
+  // From RaiseTicket
+  employeeId: number;
+  categoryId: number;
+  subjectIssue?: string;
+  priority?: number;
+  createdDate?: string;
+
+  // UI extras
+  employeeName?: string;
+  categoryName?: string;
+  priorityLabel?: string;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -825,4 +876,52 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
   );
 }
+
+
+// ------------------ Raise Ticket ------------------//
+
+getAllRaiseTickets(companyId: any, regionId: any,employeeId:any): Observable<RaiseTicket[]> {
+   let params = new HttpParams()
+      .set('CompanyID', companyId.toString())
+      .set('RegionID', regionId.toString())
+      .set('EmployeeID', employeeId.toString());
+
+      console.log('Params in getAllRaiseTickets:', params.toString());
+    return this.http.get<RaiseTicket[]>(`${this.baseUrl}/UserManagement/GetAllTickets`, {
+    params
+  });
+  }
+ 
+getRaiseTicketById(id: number): Observable<RaiseTicket> {
+    return this.http.get<RaiseTicket>(`${this.baseUrl}/UserManagement/GetTicketById/${id}`);
+  }
+
+  createTicket(ticket: RaiseTicket): Observable<RaiseTicket> {
+    return this.http.post<RaiseTicket>(`${this.baseUrl}/UserManagement/CreateTickets`, ticket);
+  }
+
+  updateRaiseTicket(id: number, ticket: RaiseTicket): Observable<RaiseTicket> {
+    return this.http.put<RaiseTicket>(`${this.baseUrl}/UserManagement/UpdateTicket/${id}`, ticket);
+  }
+
+  deleteRaiseTicket(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/UserManagement/DeleteTicket/${id}`);
+  }
+
+  // ------------------ Raise Ticket Approval ------------------//
+
+  getApprovals(): Observable<RaiseTicketApproval[]> {
+    return this.http.get<RaiseTicketApproval[]>(`${this.baseUrl}/UserManagement/GetApprovalTickets`);
+  }
+
+  updateApproval(id: number, approval: RaiseTicketApproval): Observable<RaiseTicketApproval> {
+    return this.http.put<RaiseTicketApproval>(`${this.baseUrl}/UserManagement/UpdateApprovalTicket/${id}`, approval);
+  }
+  bulkApprove(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/UserManagement/bulk-approve`, payload);
+  }
+  bulkReject(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/UserManagement/bulk-reject`, payload);
+  }
+
 }
