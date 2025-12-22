@@ -1241,3 +1241,97 @@ button:hover {
       font-size: 14px;
       color: #555;
     }
+
+    /* Profile Image */
+.profile-image-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.profile-image {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ddd;
+}
+
+/* Buttons Under Image */
+.image-actions {
+  margin-top: 10px;
+}
+
+.btn-sm {
+  background: #0d6efd;
+  color: white;
+  border: none;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+/* CAMERA MODAL */
+.camera-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2000;
+}
+
+video {
+  width: 300px;
+  height: auto;
+  border-radius: 10px;
+}
+
+.camera-buttons {
+  margin-top: 20px;
+}
+
+.upload-overlay {
+  position: absolute;
+  top: 40%;
+  left: 85px;   
+  transform: translateY(-50%);
+  width: 10mm; 
+  height: 10mm;
+  background: rgba(10, 10, 10, 0.6);
+  border-radius: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.3s ease, transform 0.2s ease;
+  border: 2px solid rgb(144, 144, 144);
+  z-index: 10;
+  pointer-events: none;
+}
+
+ 
+
+/* Show on hover */
+.profile-photo:hover .upload-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.upload-overlay:hover {
+  transform: translateY(-50%) scale(1.1);
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.upload-overlay i {
+  color: white;
+  font-size: 16px;
+}
+
+

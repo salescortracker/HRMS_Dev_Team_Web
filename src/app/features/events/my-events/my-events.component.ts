@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { EventService } from '../../../admin/configuration/events-configuration/events-configuration/event-service.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-my-events',
@@ -6,12 +8,28 @@ import { Component } from '@angular/core';
   templateUrl: './my-events.component.html',
   styleUrl: './my-events.component.css'
 })
-export class MyEventsComponent {
-events = [
-  { name: 'Annual Awards', type: 'Company Event', date: new Date('2025-10-15'), description: 'Recognizing top performers.' },
-  { name: 'Diwali Holiday', type: 'Holiday', date: new Date('2025-11-02'), description: 'Office closed for Diwali.' },
-  { name: 'HR Policy Update', type: 'Announcement', date: new Date('2025-10-10'), description: 'New HR policy released.' },
-  { name: 'Team Outing', type: 'Event', date: new Date('2025-10-20'), description: 'Annual team bonding event.' },
-];
+export class MyEventsComponent implements OnInit {
 
+  events: any[] = [];
+
+  constructor(private eventService: EventService) {}
+
+  ngOnInit(): void {
+    this.loadEvents();
+  }
+
+  loadEvents() {
+    const companyId = sessionStorage.getItem('CompanyId') ?? '0';
+    const regionId = sessionStorage.getItem('RegionId') ?? '0';
+    const userId = sessionStorage.getItem('UserId') ?? '0';
+
+    this.eventService.getEvents(companyId, regionId, userId).subscribe({
+      next: (res) => {
+        this.events = res;
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to load events', 'error');
+      }
+    });
+  }
 }

@@ -1,100 +1,137 @@
- <app-header></app-header>
- <app-sidebar></app-sidebar>
- <div class="main-body">
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+<div class="main-body">
   <div class="dashboard-header">
-  <h2 class="dashboard-title">Employee Profile</h2>
-  <nav class="breadcrumb">
-    <a href="#"> Home</a> &gt; 
-     <a href="#"> Employee Profile</a> &gt; 
-    <span>Profile</span>
-  </nav>
-</div>
+    <h2 class="dashboard-title">Employee Profile</h2>
+    <nav class="breadcrumb">
+      <a href="#"> Home</a> &gt; 
+      <a href="#"> Employee Profile</a> &gt; 
+      <span>Profile</span>
+    </nav>
+  </div>
+
   <div class="dashboard">
-<!-- Header -->
-  
-  <!-- Content -->
-   <div class="content">
-    <div class="profile-section">
-      <!-- Profile Header -->
-      <div class="profile-header">
-        <i class="fa-solid fa-user-circle"></i>
-        <div class="profile-info">
-          <h2>John Doe</h2>
-          <p>Software Engineer - IT Department</p>
+    <div class="content" *ngIf="profile">
+      <div class="profile-section">
+        <div class="profile-header">
+          <div class="profile-photo">
+  <ng-container *ngIf="profileImage; else defaultProfile">
+   <img
+  [src]="profileImage"
+  class="profile-image"
+  (click)="viewProfileImage()"
+  style="cursor: pointer"
+/>
+
+  </ng-container>
+
+  <ng-template #defaultProfile>
+    <i class="fa-solid fa-user-circle fa-4x"></i>
+  </ng-template>
+
+  <div class="upload-overlay" (click)="openImageOptions()">
+    <i class="fa-solid fa-camera fa-4x"></i>
+  </div>
+
+<input type="file"
+       accept="image/*"
+       capture="environment"
+       #cameraInput
+       (change)="onPhotoSelected($event)"
+       hidden />
+
+<input type="file"
+       accept="image/*"
+       #galleryInput
+       (change)="onPhotoSelected($event)"
+       hidden />
+
+
+</div>
+
+           <div class="profile-info">
+            <h2>{{ profile.fullName }}</h2>
+            <p>{{ profile.rolename   }} - {{ profile.reportingManager }}</p>
+          </div>
+        </div>
+
+        <div class="profile-details">
+          <div class="detail-box">
+            <i class="fa-solid fa-id-badge"></i>
+            <div><span>Employee Code</span><p>{{ profile.employeeCode }}</p></div>
+          </div>
+          <div class="detail-box">
+            <i class="fa-solid fa-envelope"></i>
+            <div><span>Email</span><p>{{ profile.email }}</p></div>
+          </div>
+          <div class="detail-box">
+            <i class="fa-solid fa-phone"></i>
+            <div><span>Phone</span><p>{{ profile.phone }}</p></div>
+          </div>
+          <div class="detail-box">
+            <i class="fa-solid fa-layer-group"></i>
+            <div><span>Band / Grade</span><p>{{ profile.bandGrade }}</p></div>
+          </div>
+          <div class="detail-box">
+            <i class="fa-solid fa-id-card"></i>
+            <div><span>ESIC</span><p>{{ profile.esicNumber }}</p></div>
+          </div>
+          <div class="detail-box">
+            <i class="fa-solid fa-piggy-bank"></i>
+            <div><span>PF Number</span><p>{{ profile.pfNumber }}</p></div>
+          </div>
+          <div class="detail-box">
+            <i class="fa-solid fa-hashtag"></i>
+            <div><span>UAN</span><p>{{ profile.uan }}</p></div>
+          </div>
+          <div class="detail-box">
+            <i class="fa-solid fa-user-tie"></i>
+            <div><span>Reporting Manager</span><p>{{ profile.reportingManager }}</p></div>
+          </div>
+          <div class="detail-box">
+            <i class="fa-solid fa-calendar-check"></i>
+            <div><span>Date of Joining</span><p>{{ profile.dateOfJoining | date:'dd MMM yyyy' }}</p></div>
+          </div>
+          <div class="detail-box">
+            <i class="fa-solid fa-briefcase"></i>
+            <div><span>Employment Type</span><p>{{ profile.employeeType }}</p></div>
+          </div>
+          <div class="detail-box">
+            <i class="fa-solid fa-user-check"></i>
+            <div><span>Service Status</span><p>{{ profile.serviceStatus }}</p></div>
+          </div>
+          <div class="detail-box">
+            <i class="fa-solid fa-location-dot"></i>
+            <div><span>Location</span><p>{{ profile.location }}</p></div>
+          </div>
+          <div class="detail-box">
+            <i class="fa-solid fa-clock"></i>
+            <div><span>Shift</span><p>{{ profile.shiftName }}</p></div>
+          </div>
+          <div class="detail-box">
+            <i class="fa-brands fa-skype"></i>
+            <div><span>Skype ID</span><p>{{ profile.skypeId }}</p></div>
+          </div>
         </div>
       </div>
+    </div>
 
-      <!-- Profile Details -->
-      <div class="profile-details">
-        <div class="detail-box">
-          <i class="fa-solid fa-id-badge"></i>
-          <div><span>Employee Code</span><p>EMP12345</p></div>
-        </div>
-        <div class="detail-box">
-          <i class="fa-solid fa-envelope"></i>
-          <div><span>Email</span><p>john.doe&#64;example.com</p></div>
-        </div>
-        <div class="detail-box">
-          <i class="fa-solid fa-phone"></i>
-          <div><span>Phone</span><p>+1 234 567 890</p></div>
-        </div>
-        <div class="detail-box">
-          <i class="fa-solid fa-layer-group"></i>
-          <div><span>Band / Grade</span><p>Band 4 - Senior</p></div>
-        </div>
-        <div class="detail-box">
-          <i class="fa-solid fa-id-card"></i>
-          <div><span>ESIC</span><p>ESIC998877</p></div>
-        </div>
-        <div class="detail-box">
-          <i class="fa-solid fa-piggy-bank"></i>
-          <div><span>PF Number</span><p>PF445566</p></div>
-        </div>
-        <div class="detail-box">
-          <i class="fa-solid fa-hashtag"></i>
-          <div><span>UAN</span><p>UAN778899</p></div>
-        </div>
-        <div class="detail-box">
-          <i class="fa-solid fa-user-tie"></i>
-          <div><span>Reporting Manager</span><p>Michael Smith</p></div>
-        </div>
-        <div class="detail-box">
-          <i class="fa-solid fa-calendar-check"></i>
-          <div><span>Date of Joining</span><p>15 Jan 2020</p></div>
-        </div>
-        <div class="detail-box">
-          <i class="fa-solid fa-briefcase"></i>
-          <div><span>Employment Type</span><p>Full-Time</p></div>
-        </div>
-        <div class="detail-box">
-          <i class="fa-solid fa-user-check"></i>
-          <div><span>Service Status</span><p>Active</p></div>
-        </div>
-        <div class="detail-box">
-          <i class="fa-solid fa-location-dot"></i>
-          <div><span>Location</span><p>New York, USA</p></div>
-        </div>
-        <div class="detail-box">
-          <i class="fa-solid fa-clock"></i>
-          <div><span>Shift</span><p>Day Shift</p></div>
-        </div>
-        <div class="detail-box">
-          <i class="fa-brands fa-skype"></i>
-          <div><span>Skype ID</span><p>john.doe.skype</p></div>
-        </div>
+    <div *ngIf="!profile" class="text-center p-4">
+      <p>Loading profile...</p>
+    </div>
+
+    <div class="chatbot-toggle"><i class="fa fa-comments"></i></div>
+    <div class="chatbot">
+      <div class="chatbot-header">HRMS Chatbot</div>
+      <div class="chatbot-messages">
+        <p><b>Bot:</b> Hi! How can I help you today?</p>
+      </div>
+      <div class="chatbot-input">
+        <input type="text" placeholder="Type your message...">
+        <button><i class="fa fa-paper-plane"></i></button>
       </div>
     </div>
   </div>
-  <!-- Chatbot -->
-  <div class="chatbot-toggle"><i class="fa fa-comments"></i></div>
-  <div class="chatbot">
-    <div class="chatbot-header">HRMS Chatbot</div>
-    <div class="chatbot-messages">
-      <p><b>Bot:</b> Hi! How can I help you today?</p>
-    </div>
-    <div class="chatbot-input">
-      <input type="text" placeholder="Type your message...">
-      <button><i class="fa fa-paper-plane"></i></button>
-    </div>
-  </div></div>
-  <app-footer></app-footer>
+</div>
+
+<app-footer></app-footer>

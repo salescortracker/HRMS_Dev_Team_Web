@@ -384,6 +384,85 @@ export interface EmployeeImmigration {
 
 
 
+
+export interface UserReadDto {
+    userID: number;
+  employeeCode: string;
+  fullName: string;
+  email: string;
+  status: string;
+  companyID: number;
+  regionID: number;
+}
+
+export interface ShiftMasterDto {
+  shiftID: number;
+  shiftName: string;
+  shiftStartTime?: string; // e.g. "09:00:00" or ISO time string
+  shiftEndTime?: string;
+  graceTime?: number;
+  isActive?: boolean;
+  companyID?: number;
+  regionID?: number;
+}
+
+export interface ShiftAllocationDto {
+  shiftAllocationId?: number;
+  userID: number;
+  employeeCode: string;
+  fullName: string;
+  companyID?: number;
+  regionID?: number;
+  shiftID: number;
+  shiftName?: string;
+  startDate: string; // "yyyy-MM-dd" - keep ISO for binding
+  endDate?: string | null;
+  isActive: boolean;
+  createdBy?: number;
+  createdDate?: string;
+  modifiedBy?: number;
+  modifiedDate?: string;
+}
+export interface DigitalCard {
+  userID: number;
+  fullName: string;
+  email: string;
+  employeeCode: string;
+  roleName: string;
+  companyName: string;
+  regionName: string;
+  location: string;
+  mobileNumber: string | null;
+  personalEmail: string | null;
+  linkedInProfile: string | null;
+  githubProfile: string | null;  // ✅ Added
+  profileImagePath?: string;
+}
+
+export interface EmployeeProfile {
+  profilePictureBase64: string;
+  employeeCode: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  bandGrade: string;
+  esicNumber: string;
+  pfNumber: string;
+  uan: string;
+  reportingManager: string;
+  dateOfJoining: string;
+  employeeType: string;
+  serviceStatus: string;
+  rolename : string;   
+  departmentName: string;
+  location: string;
+  shiftName: string;
+  skypeId: string;
+    profilePicture?: string;
+
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -991,6 +1070,78 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
   );
 }
+
+
+
+// -------------------------------
+  // SHIFT MASTER
+  // -------------------------------
+  getAllShifts(): Observable<ShiftMasterDto[]> {
+    return this.http.get<ShiftMasterDto[]>(`${this.baseUrl}/UserManagement/GetAllShifts`);
+  }
+
+  getShiftById(shiftId: number): Observable<ShiftMasterDto> {
+    return this.http.get<ShiftMasterDto>(`${this.baseUrl}/UserManagement/GetShiftById/${shiftId}`);
+  }
+
+  addShift(model: ShiftMasterDto): Observable<any> {
+    return this.http.post(`${this.baseUrl}/UserManagement/AddShift`, model);
+  }
+
+  updateShift(model: ShiftMasterDto): Observable<any> {
+    return this.http.put(`${this.baseUrl}/UserManagement/UpdateShift`, model);
+  }
+
+  deleteShift(shiftId: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/UserManagement/DeleteShift/${shiftId}`);
+  }
+
+  activateShift(shiftId: number): Observable<any> {
+    return this.http.put(`${this.baseUrl}/UserManagement/ActivateShift/${shiftId}`, {});
+  }
+
+  deactivateShift(shiftId: number): Observable<any> {
+    return this.http.put(`${this.baseUrl}/UserManagement/DeactivateShift/${shiftId}`, {});
+  }
+
+  // -------------------------------
+  // SHIFT ALLOCATION
+  // -------------------------------
+  getAllAllocations(): Observable<ShiftAllocationDto[]> {
+    return this.http.get<ShiftAllocationDto[]>(`${this.baseUrl}/UserManagement/GetAllAllocations`);
+  }
+
+  getAllocationById(id: number): Observable<ShiftAllocationDto> {
+    return this.http.get<ShiftAllocationDto>(`${this.baseUrl}/UserManagement/GetAllocationById/${id}`);
+  }
+
+  allocateShift(model: ShiftAllocationDto): Observable<any> {
+    debugger;
+    return this.http.post(`${this.baseUrl}/UserManagement/AllocateShift`, model);
+  }
+
+  updateAllocation(model: ShiftAllocationDto): Observable<any> {
+    return this.http.put(`${this.baseUrl}/UserManagement/UpdateAllocation`, model,  { responseType: 'text' as 'json' }  );
+  }
+
+  deleteAllocation(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/UserManagement/DeleteAllocation/${id}`);
+  }
+// ===================================================================
+  getDigitalCard(userId: number): Observable<any> {
+    
+    return this.http.get<any>(`${this.baseUrl}/UserManagement/GetDigitalCard/${userId}`);
+  }
+  // ===================================================================
+   getProfile(userId: number): Observable<EmployeeProfile> {
+ 
+    return this.http.get<EmployeeProfile>(`${this.baseUrl}/UserManagement/GetProfile/${userId}`);
+  }
+
+uploadProfileImage(formData: FormData): Observable<any> {
+  return this.http.post<any>(
+    `${this.baseUrl}/UserManagement/UploadProfileImage`,
+
 //--------------------------------BANK - DETAILS-----------------------------------//
 getBankDetails(): Observable<BankDetails[]> {
   return this.http.get<BankDetails[]>(`${this.baseUrl}/UserManagement/GetAllBankDetails`);
@@ -1038,9 +1189,11 @@ deleteDdlist(id: number): Observable<void> {
 uploadDDCopy(formData: FormData): Observable<{ fileName: string }> {
   return this.http.post<{ fileName: string }>(
     `${this.baseUrl}/UserManagement/UploadDDCopy`,
+
     formData
   );
 }
+
 
 // Download DD Copy (not mandatory for View button)
 downloadDDCopy(fileName: string): Observable<Blob> {
@@ -1063,6 +1216,7 @@ getEmployeeLettersByEmployeeId(employeeId: number): Observable<EmployeeLetter[]>
 // POST - Add new employee letter
 addEmployeeLetter(formData: FormData): Observable<any> {
   return this.http.post(`${this.baseUrl}/UserManagement/letters`, formData);
+
 }
 
 // UPDATE letter (FIXED)
