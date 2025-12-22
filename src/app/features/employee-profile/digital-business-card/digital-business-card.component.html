@@ -12,20 +12,20 @@
 
 <div class="business-card-wrapper" *ngIf="profile">
 
-  <!-- ⭐ WRAPPER FOR PDF DOWNLOAD -->
   <div id="card-section">
 
     <div class="business-card">
 
       <!-- Profile Icon or Image -->
       <div class="profile-icon-container">
-        <ng-container *ngIf="profile.profilePictureBase64; else defaultIcon">
-          <img
-            [src]="'data:image/png;base64,' + profile.profilePictureBase64"
-            class="profile-icon"
-            alt="Profile Image"
-          />
-        </ng-container>
+        <ng-container *ngIf="profile?.profileImagePath; else defaultIcon">
+  <img
+    [src]="'https://localhost:44370/' + profile.profileImagePath"
+    class="profile-icon"
+    alt="Profile Image"
+  />
+</ng-container>
+
 
         <ng-template #defaultIcon>
           <i class="fa-solid fa-user-circle profile-icon"></i>
@@ -34,7 +34,6 @@
   <i class="fa-solid fa-camera"></i>
 </div>
 
-<!-- CAMERA INPUT -->
 <input 
   type="file" 
   accept="image/*" 
@@ -48,7 +47,6 @@
 
       </div>
 
-      <!-- Card Content -->
       <div class="card-content">
         <div class="header">
           <div>
@@ -73,11 +71,10 @@
         </div>
       </div>
       
-    </div> <!-- END business-card -->
+    </div> 
 
-  </div> <!-- END id="card-section" -->
+  </div>
 
-  <!-- Download Buttons -->
   <div class="download-buttons">
     <button id="download-image" title="Download as Image" (click)="downloadImage()"> 
       <i class="fa-solid fa-download"></i> Download Image </button>

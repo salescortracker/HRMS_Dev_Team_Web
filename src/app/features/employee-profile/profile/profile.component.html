@@ -11,14 +11,18 @@
   </div>
 
   <div class="dashboard">
-    <!-- Content -->
     <div class="content" *ngIf="profile">
       <div class="profile-section">
-        <!-- Profile Header -->
         <div class="profile-header">
           <div class="profile-photo">
   <ng-container *ngIf="profileImage; else defaultProfile">
-    <img [src]="profileImage" class="profile-image" />
+   <img
+  [src]="profileImage"
+  class="profile-image"
+  (click)="viewProfileImage()"
+  style="cursor: pointer"
+/>
+
   </ng-container>
 
   <ng-template #defaultProfile>
@@ -29,15 +33,19 @@
     <i class="fa-solid fa-camera fa-4x"></i>
   </div>
 
-  <!-- CAMERA -->
-<input type="file" accept="image/*" capture="environment"
-       #cameraInput (change)="onPhotoSelected($event)" 
-       style="position:absolute; left:-9999px; top:-9999px;" />
+<input type="file"
+       accept="image/*"
+       capture="environment"
+       #cameraInput
+       (change)="onPhotoSelected($event)"
+       hidden />
 
-<!-- GALLERY -->
-<input type="file" accept="image/*"
-       #galleryInput (change)="onPhotoSelected($event)" 
-       style="position:absolute; left:-9999px; top:-9999px;" />
+<input type="file"
+       accept="image/*"
+       #galleryInput
+       (change)="onPhotoSelected($event)"
+       hidden />
+
 
 </div>
 
@@ -47,7 +55,6 @@
           </div>
         </div>
 
-        <!-- Profile Details -->
         <div class="profile-details">
           <div class="detail-box">
             <i class="fa-solid fa-id-badge"></i>
@@ -109,12 +116,10 @@
       </div>
     </div>
 
-    <!-- Loading / Empty State -->
     <div *ngIf="!profile" class="text-center p-4">
       <p>Loading profile...</p>
     </div>
 
-    <!-- Chatbot -->
     <div class="chatbot-toggle"><i class="fa fa-comments"></i></div>
     <div class="chatbot">
       <div class="chatbot-header">HRMS Chatbot</div>

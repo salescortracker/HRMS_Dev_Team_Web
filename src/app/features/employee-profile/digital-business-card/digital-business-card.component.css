@@ -1363,7 +1363,7 @@ button:hover {
   border-radius: 50%;
   object-fit: cover;
 }
-
+/* 
 .upload-overlay {
   position: absolute;
   top: 0;
@@ -1378,7 +1378,7 @@ button:hover {
   opacity: 0;
   cursor: pointer;
   transition: 0s ease;
-}
+} */
 
 .upload-overlay i {
   color: white;

@@ -257,6 +257,44 @@ export interface ShiftAllocationDto {
   modifiedBy?: number;
   modifiedDate?: string;
 }
+export interface DigitalCard {
+  userID: number;
+  fullName: string;
+  email: string;
+  employeeCode: string;
+  roleName: string;
+  companyName: string;
+  regionName: string;
+  location: string;
+  mobileNumber: string | null;
+  personalEmail: string | null;
+  linkedInProfile: string | null;
+  githubProfile: string | null;  // ✅ Added
+  profileImagePath?: string;
+}
+
+export interface EmployeeProfile {
+  profilePictureBase64: string;
+  employeeCode: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  bandGrade: string;
+  esicNumber: string;
+  pfNumber: string;
+  uan: string;
+  reportingManager: string;
+  dateOfJoining: string;
+  employeeType: string;
+  serviceStatus: string;
+  rolename : string;   
+  departmentName: string;
+  location: string;
+  shiftName: string;
+  skypeId: string;
+    profilePicture?: string;
+
+}
 
 
 @Injectable({
@@ -916,13 +954,31 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
   }
 
   updateAllocation(model: ShiftAllocationDto): Observable<any> {
-    return this.http.put(`${this.baseUrl}/UserManagement/UpdateAllocation`, model);
+    return this.http.put(`${this.baseUrl}/UserManagement/UpdateAllocation`, model,  { responseType: 'text' as 'json' }  );
   }
 
   deleteAllocation(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/UserManagement/DeleteAllocation/${id}`);
   }
+// ===================================================================
+  getDigitalCard(userId: number): Observable<any> {
+    
+    return this.http.get<any>(`${this.baseUrl}/UserManagement/GetDigitalCard/${userId}`);
+  }
+  // ===================================================================
+   getProfile(userId: number): Observable<EmployeeProfile> {
+ 
+    return this.http.get<EmployeeProfile>(`${this.baseUrl}/UserManagement/GetProfile/${userId}`);
+  }
 
+uploadProfileImage(formData: FormData): Observable<any> {
+  return this.http.post<any>(
+    `${this.baseUrl}/UserManagement/UploadProfileImage`,
+    formData
+  );
+}
+
+// ======================================================================
 
 
 }

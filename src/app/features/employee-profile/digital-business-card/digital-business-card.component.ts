@@ -20,22 +20,35 @@ export class DigitalBusinessCardComponent implements OnInit {
 
   constructor(private adminService: AdminService) {}
 
-  ngOnInit(): void {
-    const userId = Number(sessionStorage.getItem('UserId'));
+ ngOnInit(): void {
+  const userId = Number(sessionStorage.getItem('UserId'));
+  if (!userId) return;
 
-    this.adminService.getDigitalCard(userId).subscribe({
-      next: (data) => {
-        console.log("Digital Card Data:", data);
-        this.profile = data;
-
-        // If backend already has image, show it
-        if (this.profile?.profilePictureBase64) {
-          this.profileImage = 'data:image/png;base64,' + this.profile.profilePictureBase64;
-        }
-      },
-      error: (err) => console.error("Error loading digital card:", err)
-    });
+  // 🔁 instant UI from cache
+  const cachedImage = sessionStorage.getItem(`profileImage_${userId}`);
+  if (cachedImage) {
+    this.profileImage = cachedImage;
   }
+
+  this.adminService.getDigitalCard(userId).subscribe({
+    next: (data) => {
+      this.profile = data;
+
+      if (data?.profileImagePath) {
+        this.profileImage =
+          'https://localhost:44370/' + data.profileImagePath;
+
+        sessionStorage.setItem(
+          `profileImage_${userId}`,
+          this.profileImage
+        );
+      }
+    },
+    error: (err) => console.error(err)
+  });
+}
+
+
 
   // ------------------ DOWNLOAD PDF --------------------
   downloadPDF() {
@@ -61,40 +74,46 @@ export class DigitalBusinessCardComponent implements OnInit {
 
   // ------------------ DOWNLOAD IMAGE --------------------
 downloadImage() {
-  if (!this.profile?.profilePictureBase64) {
-    console.error("No profile image to download!");
-    return;
-  }
+  const userId = Number(sessionStorage.getItem('UserId'));
+  if (!userId) return;
 
-  const imageData = "data:image/png;base64," + this.profile.profilePictureBase64;
+  const url =
+    `https://localhost:44370/api/UserManagement/DownloadProfileImage/${userId}`;
 
-  const link = document.createElement("a");
-  link.href = imageData;
-  link.download = `${this.profile?.fullName}-ProfileImage.png`;
+  const link = document.createElement('a');
+  link.href = url;
   link.click();
 }
 
 
+
   // ------------------ IMAGE UPLOAD --------------------
-  onPhotoSelected(event: any) {
-    const file = event.target.files[0];
-    if (!file) return;
+ onPhotoSelected(event: any) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-    const reader = new FileReader();
+  const formData = new FormData();
+  formData.append('Image', file);
+  formData.append('UserId', sessionStorage.getItem('UserId')!);
+  formData.append('CompanyId', sessionStorage.getItem('CompanyId')!);
+  formData.append('RegionId', sessionStorage.getItem('RegionId')!);
+  formData.append('CreatedBy', sessionStorage.getItem('UserId')!);
 
-    reader.onload = () => {
-      // preview image
-      this.profileImage = reader.result;
+  this.adminService.uploadProfileImage(formData).subscribe({
+    next: (res) => {
+      this.profileImage =
+        'https://localhost:44370/' + res.imagePath;
 
-      // save only Base64 part for backend
-      const base64String = (reader.result as string).split(',')[1];
-      if (this.profile) {
-        this.profile.profilePictureBase64 = base64String;
-      }
-    };
+      sessionStorage.setItem(
+        `profileImage_${sessionStorage.getItem('UserId')}`,
+        this.profileImage
+      );
 
-    reader.readAsDataURL(file);
-  }
+      Swal.fire('Success', 'Profile image updated', 'success');
+    }
+  });
+}
+
   openImageOptions() {
   Swal.fire({
     title: 'Select Option',
@@ -103,9 +122,9 @@ downloadImage() {
     cancelButtonText: 'Choose File',
   }).then((result) => {
     if (result.isConfirmed) {
-      this.cameraInput.nativeElement.click(); // Open camera
+      this.cameraInput.nativeElement.click(); 
     } else {
-      this.galleryInput.nativeElement.click(); // Open gallery/file picker
+      this.galleryInput.nativeElement.click(); 
     }
   });
 }
