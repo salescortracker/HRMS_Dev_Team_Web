@@ -283,6 +283,24 @@ export interface EmployeeReferenceDto {
   modifiedBy?: number | null;
   userId: number;
 }
+export interface CompanyNewsDto {
+  newsId?: number;
+  title: string;
+  category: string;        // roleName
+  description: string;
+  fromDate: string;
+  toDate: string;
+  companyId?: number;      // ✅ OPTIONAL (backend decides)
+  regionId: number;
+  createdBy: number;
+  
+  // 🔹 FILE INFO (ADD THESE)
+  attachmentName?: string;
+  attachmentPath?: string;
+}
+
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -1001,5 +1019,40 @@ addPersonal(formData: FormData): Observable<any> {
   // Don't set Content-Type header here — browser will set multipart boundary automatically.
   return this.http.post(`${this.baseUrl}/UserManagement/personal`, formData);
 }
+// -------------------------------------------------------------
+// 🔹 COMPANY NEWS (MasterDataController)
+// -------------------------------------------------------------
+
+// CREATE
+createCompanyNewsForm(formData: FormData) {
+  return this.http.post(
+    `${this.baseUrl}/MasterData/CreateCompanyNews`,
+    formData
+  );
+}
+
+updateCompanyNewsForm(id: number, formData: FormData) {
+  return this.http.put(
+    `${this.baseUrl}/MasterData/UpdateCompanyNews/${id}`,
+    formData
+  );
+}
+
+
+// GET ALL
+getCompanyNews(companyId: number, regionId: number) {
+  return this.http.get<CompanyNewsDto[]>(
+    `${this.baseUrl}/MasterData/GetCompanyNews`,
+    { params: { companyId, regionId } }
+  );
+}
+
+// DELETE
+deleteCompanyNews(newsId: number): Observable<any> {
+  return this.http.delete<any>(
+    `${this.baseUrl}/MasterData/DeleteCompanyNews/${newsId}`
+  );
+}
+
 
 }
