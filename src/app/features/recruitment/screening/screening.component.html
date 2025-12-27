@@ -1,0 +1,185 @@
+ <h4>Screening / Shortlisting</h4>
+
+<form #screeningForm="ngForm" class="row g-3">
+
+  <!-- Candidates -->
+  <div class="col-md-4">
+    <label class="form-label">
+      Select Candidates (multiple) <span class="text-danger">*</span>
+    </label>
+    <select class="form-select" multiple
+            name="screenCandidates"
+            [(ngModel)]="screeningSelectedCandidates"
+            required #candidatesRef="ngModel">
+      <option *ngFor="let c of candidates" [ngValue]="c">
+        {{ c.candidateName }} — {{ c.technology }}
+      </option>
+    </select>
+    <small *ngIf="candidatesRef.invalid && candidatesRef.touched" class="text-danger">
+      At least one candidate is required
+    </small>
+  </div>
+
+  <!-- Recruiters -->
+  <div class="col-md-4">
+    <label class="form-label">
+      Select Recruiters (multiple) <span class="text-danger">*</span>
+    </label>
+    <select class="form-select" multiple
+            name="screenRecruiters"
+            [(ngModel)]="screeningRecruiters"
+            required #recruitersRef="ngModel">
+      <option *ngFor="let r of recruiters" [ngValue]="r">
+        {{ r.fullName }}
+      </option>
+    </select>
+    <small *ngIf="recruitersRef.invalid && recruitersRef.touched" class="text-danger">
+      At least one recruiter is required
+    </small>
+  </div>
+
+  <!-- Result -->
+  <div class="col-md-4">
+    <label class="form-label">
+      Result <span class="text-danger">*</span>
+    </label>
+    <select class="form-select"
+            name="screenResult"
+            [(ngModel)]="screeningResult"
+            required #resultRef="ngModel">
+      <option value="">-- Select --</option>
+      <option value="Pass">Pass</option>
+      <option value="Hold">Hold</option>
+      <option value="Reject">Reject</option>
+    </select>
+    <small *ngIf="resultRef.invalid && resultRef.touched" class="text-danger">
+      Result is required
+    </small>
+  </div>
+
+  <!-- Remarks -->
+  <div class="col-md-8">
+    <label class="form-label">
+      Remarks <span class="text-danger">*</span>
+    </label>
+    <textarea class="form-control" rows="2"
+              name="screenRemarks"
+              maxlength="300"
+              [(ngModel)]="screeningRemarks"
+              required #remarksRef="ngModel"></textarea>
+    <small *ngIf="remarksRef.invalid && remarksRef.touched" class="text-danger">
+      Remarks are required (max 300 characters)
+    </small>
+  </div>
+
+  <!-- Submit -->
+  <div class="col-md-4 d-flex align-items-end">
+    <button class="btn btn-primary w-100"
+            type="button"
+            (click)="applyScreening(screeningForm)"
+            [disabled]="screeningForm.invalid">
+      Apply Screening
+    </button>
+  </div>
+
+</form>
+
+        <hr />
+
+        <h5>Screening Records</h5>
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead class="table-light">
+<tr>
+  <th>#</th>
+
+  <th (click)="sortBy('candidateName')" style="cursor:pointer">
+    Candidate
+    <span *ngIf="sortColumn==='candidateName'">
+      {{sortDirection==='asc'?'▲':'▼'}}
+    </span>
+  </th>
+
+  <th (click)="sortBy('recruiters')" style="cursor:pointer">
+    Recruiters
+    <span *ngIf="sortColumn==='recruiters'">
+      {{sortDirection==='asc'?'▲':'▼'}}
+    </span>
+  </th>
+
+  <th (click)="sortBy('result')" style="cursor:pointer">
+    Result
+    <span *ngIf="sortColumn==='result'">
+      {{sortDirection==='asc'?'▲':'▼'}}
+    </span>
+  </th>
+
+  <th>Remarks</th>
+
+  <th (click)="sortBy('createdAt')" style="cursor:pointer">
+    Date
+    <span *ngIf="sortColumn==='createdAt'">
+      {{sortDirection==='asc'?'▲':'▼'}}
+    </span>
+  </th>
+
+  <th>Progress</th>
+</tr>
+</thead>
+
+            <tbody>
+  <tr *ngFor="let s of pagedScreeningRecords(); let i = index">
+  <td>{{ (currentPage-1)*pageSize + i + 1 }}</td>
+  <td>{{ s.candidateName }}</td>
+  <td>{{ s.recruiters }}</td>
+  <td>
+    <span class="badge bg-success" *ngIf="s.result === 'Pass'">{{ s.result }}</span>
+    <span class="badge bg-warning" *ngIf="s.result === 'Hold'">{{ s.result }}</span>
+    <span class="badge bg-danger" *ngIf="s.result === 'Reject'">{{ s.result }}</span>
+  </td>
+  <td>{{ s.remarks || '-' }}</td>
+  <td>{{ s.createdAt | date:'dd-MMM-yyyy HH:mm' }}</td>
+  <td>
+    <div class="progress" style="height:8px;">
+      <div class="progress-bar bg-info" [style.width.%]="s.progressPercent"></div>
+    </div>
+    <small>{{s.progressPercent}}%</small>
+  </td>
+</tr>
+
+
+  <tr *ngIf="screeningRecords.length === 0">
+    <td colspan="7" class="text-center text-muted">
+      No screening records found
+    </td>
+  </tr>
+</tbody>
+
+          </table>
+          <div class="d-flex justify-content-between mt-3">
+
+  <div>
+    Show
+    <select class="form-select d-inline w-auto ms-2"
+            [(ngModel)]="pageSize"
+            (change)="changePageSize(pageSize)">
+      <option *ngFor="let s of pageSizeOptions" [ngValue]="s">{{s}}</option>
+    </select>
+    entries
+  </div>
+
+  <div>
+    <button class="btn btn-sm btn-outline-secondary me-2"
+            (click)="changePage(currentPage-1)"
+            [disabled]="currentPage===1">Previous</button>
+
+    Page {{currentPage}} of {{totalPages}}
+
+    <button class="btn btn-sm btn-outline-secondary ms-2"
+            (click)="changePage(currentPage+1)"
+            [disabled]="currentPage===totalPages">Next</button>
+  </div>
+
+</div>
+
+        </div>

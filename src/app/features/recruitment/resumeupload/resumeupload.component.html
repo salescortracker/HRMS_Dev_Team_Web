@@ -1,0 +1,242 @@
+<h4>Resume Upload</h4>
+
+<form class="row g-3 align-items-end" (ngSubmit)="addCandidate(uploadForm)" #uploadForm="ngForm">
+
+  <!-- Candidate Name -->
+  <div class="col-md-3">
+    <label class="form-label">
+      Candidate Name <span class="text-danger">*</span>
+    </label>
+    <input name="name" class="form-control" placeholder="Ex: Shaik Karishma"
+  pattern="^[A-Z][a-z]*(?:\s[A-Z][a-z]*)*$"
+  maxlength="100" [(ngModel)]="candidateForm.name" required #name="ngModel"/>
+<small *ngIf="name.invalid && name.touched" class="text-danger">
+  Only letters allowed. First letter capital, spaces allowed.
+</small>
+
+  </div>
+
+  <!-- Email -->
+  <div class="col-md-2">
+    <label class="form-label">
+      Email <span class="text-danger">*</span>
+    </label>
+    <input name="email" type="email" class="form-control" placeholder="Ex:Shaikkarishma&#64;mail.com"
+      [(ngModel)]="candidateForm.email" required #email="ngModel"
+      pattern="^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"/>
+    <small *ngIf="email.invalid && email.touched" class="text-danger">
+      Enter a valid email format (example&#64;mail.com)
+    </small>
+  </div>
+
+  <!-- Mobile -->
+  <div class="col-md-2">
+    <label class="form-label">
+      Mobile <span class="text-danger">*</span>
+    </label>
+    <input name="mobile" class="form-control" placeholder="Ex: 9876543210"
+      pattern="^[0-9]{10,15}$" maxlength="10"
+      [(ngModel)]="candidateForm.mobile" required #mobile="ngModel"/>
+    <small *ngIf="mobile.invalid && mobile.touched" class="text-danger">
+      Only digits allowed 10 digits
+    </small>
+  </div>
+
+  <!-- Technology / Skill -->
+  <div class="col-md-2">
+    <label class="form-label">
+      Technology / Skill <span class="text-danger">*</span>
+    </label>
+    <input name="technology" class="form-control" placeholder="Angular, Java..."
+      maxlength="200" [(ngModel)]="candidateForm.technology" required #tech="ngModel"/>
+    <small *ngIf="tech.invalid && tech.touched" class="text-danger">Required field</small>
+  </div>
+
+  <!-- Experience -->
+  <div class="col-md-1">
+    <label class="form-label">
+      Exp (yrs) <span class="text-danger">*</span>
+    </label>
+    <input name="exp" type="number" class="form-control" placeholder="0 / 1.5 / 5"
+      min="0" step="0.1" [(ngModel)]="candidateForm.experience" required #exp="ngModel"/>
+    <small *ngIf="exp.invalid && exp.touched" class="text-danger">Enter valid number</small>
+  </div>
+
+  <!-- Current CTC -->
+  <div class="col-md-2">
+    <label class="form-label">Current CTC</label>
+    <input name="currentCTC" type="number" step="0.01" class="form-control" placeholder="₹"
+      [(ngModel)]="candidateForm.currentCTC"/>
+  </div>
+
+  <!-- Resume -->
+  <div class="col-md-4">
+    <label class="form-label">
+      Resume (PDF, DOC, DOCX) <span class="text-danger">*</span>
+    </label>
+    <input type="file" (change)="onResumeFiles($event)" class="form-control" required/>
+    <small class="text-muted">Max size: 10 MB</small>
+  </div>
+
+  <!-- Applied Date -->
+  <div class="col-md-3">
+    <label class="form-label">
+      Applied Date <span class="text-danger">*</span>
+    </label>
+    <input type="date" class="form-control" [(ngModel)]="candidateForm.appliedDate"
+      name="appliedDate" required #applied="ngModel"/>
+    <small *ngIf="applied.invalid && applied.touched" class="text-danger">Required field</small>
+  </div>
+
+  <!-- Submit -->
+  <!-- Submit -->
+<div class="col-md-2">
+  <label class="form-label">&nbsp;</label>
+  <button class="btn btn-success w-100" type="submit"
+    [disabled]="uploadForm.invalid">Add Candidate</button>
+</div>
+
+<!-- Reset Button (same size, same style) -->
+<div class="col-md-2">
+  <label class="form-label">&nbsp;</label>
+  <button class="btn btn-danger w-100" type="button"
+    (click)="resetForm(); uploadForm.resetForm();">
+    Reset
+  </button>
+</div>
+
+</form>
+
+
+        <hr />
+
+        <h5>Candidates Listing</h5>
+        <div class="table-responsive">
+          <table class="table table-sm table-hover">
+           <thead class="table-light">
+  <tr>
+    <th>#</th>
+
+    <th (click)="sortBy('candidateName')" style="cursor:pointer">
+      Name
+      <span *ngIf="sortColumn === 'candidateName'">
+        {{ sortDirection === 'asc' ? '▲' : '▼' }}
+      </span>
+    </th>
+
+    <th (click)="sortBy('technology')" style="cursor:pointer">
+      Tech
+      <span *ngIf="sortColumn === 'technology'">
+        {{ sortDirection === 'asc' ? '▲' : '▼' }}
+      </span>
+    </th>
+
+    <th (click)="sortBy('experienceYears')" style="cursor:pointer">
+      Exp
+      <span *ngIf="sortColumn === 'experienceYears'">
+        {{ sortDirection === 'asc' ? '▲' : '▼' }}
+      </span>
+    </th>
+
+    <th (click)="sortBy('appliedDate')" style="cursor:pointer">
+      Applied
+      <span *ngIf="sortColumn === 'appliedDate'">
+        {{ sortDirection === 'asc' ? '▲' : '▼' }}
+      </span>
+    </th>
+
+    <th (click)="sortBy('stageName')" style="cursor:pointer">
+      Stage
+      <span *ngIf="sortColumn === 'stageName'">
+        {{ sortDirection === 'asc' ? '▲' : '▼' }}
+      </span>
+    </th>
+
+    <th>File</th>
+    <th>Progress</th>
+    <th>Actions</th>
+  </tr>
+</thead>
+
+            <tbody>
+             <tr *ngFor="let c of pagedCandidates(); let i = index"
+    [class.table-active]="selectedCandidate?.candidateId === c.candidateId">
+
+  <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+
+  <td>{{ c.candidateName }}
+    <small class="d-block text-muted">{{ c.email }}</small>
+  </td>
+
+                <td>{{ c.technology }}</td>
+                <td>{{ c.experienceYears  }}</td>
+                <td>{{ c.appliedDate| date:'dd-MMM-yyyy' }}</td>
+                <td><span class="badge bg-info text-dark">{{ c.stageName }}</span></td>
+                <td>
+                  <a *ngIf="c.fileName; else noFile" (click)="viewDocument(c.fileName)"
+                    style="cursor:pointer; color:#0d6efd; font-weight:500;">
+                    View
+                  </a>
+
+                  <ng-template #noFile>
+                    <span class="text-muted">No File</span>
+                  </ng-template>
+                </td>
+
+                <td style="min-width:170px;">
+                  <div class="d-flex align-items-center">
+                    <div class="flex-fill me-2">
+                      <div class="progress" style="height:8px;">
+                        <div class="progress-bar" role="progressbar"
+                             [style.width.%]="calculateProgress(c)" [ngClass]="getProgressColor(c)"></div>
+                      </div>
+                    </div>
+                    <small>{{ calculateProgress(c)}}%</small>
+                  </div>
+                </td>
+                <td>
+                 
+                  <button class="btn btn-sm btn-outline-success me-1" (click)="advanceStage(c)"  [disabled]="['Screening','Interview','Offer','Onboarding'].includes(c.stageName)">Select</button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="removeCandidate(c)">Delete</button>
+                </td>
+              </tr>
+              <tr *ngIf="viewCandidates().length === 0">
+                <td colspan="8" class="text-center text-muted">No candidates found</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="d-flex justify-content-between align-items-center mt-3">
+
+  <div>
+    <label>
+      Show
+      <select class="form-select d-inline w-auto ms-2"
+              [(ngModel)]="pageSize"
+              (change)="changePageSize(pageSize)">
+        <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+          {{ size }}
+        </option>
+      </select>
+      entries
+    </label>
+  </div>
+
+  <div>
+    <button class="btn btn-outline-secondary btn-sm me-2"
+            (click)="changePage(currentPage - 1)"
+            [disabled]="currentPage === 1">
+      Previous
+    </button>
+
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+    <button class="btn btn-outline-secondary btn-sm ms-2"
+            (click)="changePage(currentPage + 1)"
+            [disabled]="currentPage === totalPages">
+      Next
+    </button>
+  </div>
+
+</div>
+
+        </div>

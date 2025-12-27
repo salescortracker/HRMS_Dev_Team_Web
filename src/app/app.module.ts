@@ -59,6 +59,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { TimesheetApplicationComponent } from './features/timesheet/timesheet-application/timesheet-application.component';
+import { TimesheetApprovalComponent } from './features/timesheet/timesheet-approval/timesheet-approval.component';
+import { ResumeuploadComponent } from './features/recruitment/resumeupload/resumeupload.component';
+import { ScreeningComponent } from './features/recruitment/screening/screening.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -113,7 +118,12 @@ import { ReactiveFormsModule } from '@angular/forms';
     MyEventsComponent,
     CompensationComponent,
     RecruitmentProcessComponent,
-    CommonUploadComponent
+    CommonUploadComponent,
+    TimesheetApplicationComponent,
+    TimesheetApprovalComponent,
+    ResumeuploadComponent,
+    ScreeningComponent,
+    
   ],
   imports: [
     BrowserModule,ReactiveFormsModule,

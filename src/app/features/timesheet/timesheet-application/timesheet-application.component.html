@@ -1,0 +1,176 @@
+<div class="card shadow-sm p-4">
+
+  
+
+  <form #form="ngForm" (ngSubmit)="saveTimesheet(form)">
+
+    
+    <div class="row g-3 mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Employee Name</label>
+        <input class="form-control" [(ngModel)]="model.employeeName" name="employeeName" readonly>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Employee Code</label>
+        <input class="form-control" [(ngModel)]="model.employeeCode" name="employeeCode" readonly>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-control" [(ngModel)]="model.date" name="date" required>
+      </div>
+
+      <div class="col-md-8">
+        <label class="form-label">Comments / Work Notes</label>
+        <textarea class="form-control" [(ngModel)]="model.comments" name="comments"></textarea>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Attachment</label>
+        <input type="file" class="form-control" (change)="onFileSelect($event)">
+      </div>
+    </div>
+
+    
+    <h6>Projects</h6>
+
+
+
+    <div *ngFor="let p of model.projects; let i = index" class="row g-2 align-items-end mb-2">
+
+      <div class="col-md-3">
+        <label class="form-label">
+          Project {{ i + 1 }} / Client
+        </label>
+
+        <input class="form-control" [(ngModel)]="p.projectName" name="project{{i}}" required>
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label">Start</label>
+        <input type="time" class="form-control"
+               [(ngModel)]="p.startTime" name="start{{i}}"
+               (change)="calculateProjectHours(p)">
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label">End</label>
+        <input type="time" class="form-control"
+               [(ngModel)]="p.endTime" name="end{{i}}"
+               (change)="calculateProjectHours(p)">
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label">Total</label>
+        <input class="form-control" [value]="p.totalHoursText" readonly>
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label">OT</label>
+        <input class="form-control"
+               [(ngModel)]="p.overtimeHours" name="ot{{i}}">
+      </div>
+
+      <div class="col-md-1 text-center">
+        <button type="button" class="btn btn-danger btn-sm"
+                (click)="removeProject(i)">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-secondary btn-sm mt-2"
+            (click)="addProject()">
+      <i class="fa-solid fa-plus me-2"></i> Add Project
+    </button>
+
+    <div class="text-end mt-4 d-flex justify-content-end gap-2">
+
+      <button class="btn btn-success"
+              type="submit"
+              [disabled]="!form.valid">
+        <i class="fa-solid fa-floppy-disk me-2"></i>
+        Save Timesheet
+      </button>
+
+      <button class="btn btn-success"
+              type="button"
+              [disabled]="!form.valid"
+              (click)="sendTimesheet()">
+        <i class="fa-solid fa-paper-plane me-2"></i>
+        Send Timesheet
+      </button>
+
+    </div>
+
+
+  </form>
+</div>
+
+
+
+
+<div class="dashboard-tables full-row mt-4">
+  <div class="table-card">
+    <h3>Submitted Timesheets</h3>
+
+    <table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>S.No</th>
+      <th>Employee Name</th>
+      <th>Employee ID</th>
+      <th>Date</th>
+      <th>Projects</th>
+      <th>Total Hours</th>
+      <th>OT Hours</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let row of submittedTimesheets; let i = index">
+      <td>{{ i + 1 }}</td>
+      <td>{{ row.employeeName }}</td>
+      <td>{{ row.employeeCode }}</td>
+      <td>{{ row.date }}</td>
+
+      <!-- PROJECTS -->
+      <td>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item py-1"
+              *ngFor="let p of row.projects; let pi = index">
+            <strong>Project {{ pi + 1 }}:</strong> {{ p.projectName }}
+          </li>
+
+        </ul>
+      </td>
+
+      <!-- TOTAL HOURS -->
+      <td>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item py-1"
+              *ngFor="let p of row.projects">
+            {{ p.totalHours }}
+          </li>
+        </ul>
+      </td>
+
+      <!-- OT HOURS -->
+      <td>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item py-1"
+              *ngFor="let p of row.projects">
+            {{ p.overtimeHours }}
+          </li>
+        </ul>
+      </td>
+
+      <td>{{ row.status }}</td>
+    </tr>
+  </tbody>
+</table>
+
+  </div>
+</div>
