@@ -218,6 +218,16 @@ export interface Department {
   isDeleted?: boolean;
 }
 
+export interface ClockInOutDto {
+  attendanceId?: number;   // optional for new records
+  employeeCode: string;
+  employeeName?: string;   // optional, can be filled from backend
+  department?: string;     // optional
+  clockType: 'Clock In' | 'Clock Out';
+  time: string;            // HH:mm format
+  createdBy?: number;      // user ID
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -825,4 +835,42 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
   );
 }
+
+// ---------------- CLOCK IN / CLOCK OUT ----------------
+
+getTodayAttendanceSummary(employeeCode: string) {
+  return this.http.get<{ clockIn: string, clockOut: string, totalHours: string }>(
+    `${this.baseUrl}/Attendance/TodaySummary/${employeeCode}`
+  );
+}
+
+
+
+
+
+getAllClockInOutRecords() {
+  return this.http.get<any[]>(`${this.baseUrl}/Attendance/GetAll`);
+}
+
+
+
+// Update Clock In / Clock Out entry
+updateClockInOut(id: number, data: { clockIn: string, clockOut: string, totalHours: string }) {
+  return this.http.put(`${this.baseUrl}/Attendance/Update/${id}`, data);
+}
+
+// Delete attendance record
+deleteClockInOut(id: number) {
+  return this.http.delete(`${this.baseUrl}/Attendance/Delete/${id}`);
+}
+ getTodayAttendance(employeeCode: string, companyId: number, regionId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/Attendance/TodayByEmployee`, {
+      params: { employeeCode, companyId, regionId }
+    });
+  }
+
+  createClockInOut(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/Attendance/CreateClockInOut`, payload);
+  }
+
 }
