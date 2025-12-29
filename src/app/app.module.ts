@@ -59,6 +59,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AddAssestsComponent } from './features/asset/add-assests/add-assests.component';
+import { MyAssetComponent } from './features/asset/my-asset/my-asset.component';
+import { AssetApprovalComponent } from './features/asset/asset-approval/asset-approval.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -113,7 +116,10 @@ import { ReactiveFormsModule } from '@angular/forms';
     MyEventsComponent,
     CompensationComponent,
     RecruitmentProcessComponent,
-    CommonUploadComponent
+    CommonUploadComponent,
+    AddAssestsComponent,
+    MyAssetComponent,
+    AssetApprovalComponent
   ],
   imports: [
     BrowserModule,ReactiveFormsModule,

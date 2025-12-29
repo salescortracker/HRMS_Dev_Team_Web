@@ -1,0 +1,351 @@
+<form [formGroup]="assetForm" (ngSubmit)="submit()" novalidate>
+
+  <!-- Hidden ID -->
+  <input type="hidden" formControlName="assetID" />
+
+  <!-- ================= ROW 1 ================= -->
+ <!-- Employee Name -->
+  <div class="row mb-3"> 
+<div class="col-md-4">
+  <label class="form-label">Employee Name <span class="text-danger">*</span></label>
+  <select class="form-select" formControlName="userID">
+    <option value="">Select Employee</option>
+    <option *ngFor="let emp of employees" [value]="emp.userId">
+      {{ emp.fullName }}
+    </option>
+  </select>
+
+  <small class="text-danger"
+    *ngIf="f['userID'].touched && f['userID'].errors?.['required']">
+    Employee is required
+  </small>
+</div>
+
+    <!-- Asset Name -->
+    <div class="col-md-4">
+      <label class="form-label">
+        Asset Name <span class="text-danger">*</span>
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="assetName"
+        placeholder="Enter asset name"
+        maxlength="150"
+      />
+
+      <small class="text-danger"
+        *ngIf="f['assetName'].touched && f['assetName'].errors?.['required']">
+        Asset Name is required
+      </small>
+
+      <small class="text-danger"
+        *ngIf="f['assetName'].touched && f['assetName'].errors?.['pattern']">
+        Only letters, numbers, "-" and "/" are allowed
+      </small>
+    </div>
+
+    <!-- Asset Code -->
+    <div class="col-md-4">
+      <label class="form-label">
+        Asset Code <span class="text-danger">*</span>
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="assetCode"
+        placeholder="Enter asset code"
+        maxlength="50"
+      />
+
+      <small class="text-danger"
+        *ngIf="f['assetCode'].touched && f['assetCode'].errors?.['required']">
+        Asset Code is required
+      </small>
+
+      <small class="text-danger"
+        *ngIf="f['assetCode'].touched && f['assetCode'].errors?.['pattern']">
+        Asset Code must be alphanumeric
+      </small>
+    </div>
+
+    <!-- Asset Location -->
+    <div class="col-md-4">
+      <label class="form-label">
+        Asset Location <span class="text-danger">*</span>
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="assetLocation"
+        placeholder="Enter location"
+        maxlength="100"
+      />
+
+      <small class="text-danger"
+        *ngIf="f['assetLocation'].touched && f['assetLocation'].errors?.['required']">
+        Asset Location is required
+      </small>
+    </div>
+
+  </div>
+
+  <!-- ================= ROW 2 ================= -->
+  <div class="row mb-3">
+
+    <!-- Asset Cost -->
+    <div class="col-md-4">
+      <label class="form-label">
+        Asset Cost <span class="text-danger">*</span>
+      </label>
+
+      <div class="d-flex">
+        <select
+          class="form-select me-2"
+          style="max-width: 100px"
+          formControlName="currencyCode">
+          <option value="INR">INR</option>
+          <option value="USD">USD</option>
+          <option value="MYR">MYR</option>
+          <option value="EUR">EUR</option>
+        </select>
+
+        <input
+          type="number"
+          class="form-control"
+          formControlName="assetCost"
+          min="1"
+          placeholder="Enter amount"
+        />
+      </div>
+
+      <small class="text-danger"
+        *ngIf="f['assetCost'].touched && f['assetCost'].errors?.['required']">
+        Asset Cost is required
+      </small>
+
+      <small class="text-danger"
+        *ngIf="f['assetCost'].touched && f['assetCost'].errors?.['min']">
+        Asset Cost must be greater than 0
+      </small>
+    </div>
+
+    <!-- Description -->
+    <div class="col-md-4">
+      <label class="form-label">Asset Description</label>
+      <textarea
+        class="form-control"
+        formControlName="assetDescription"
+        maxlength="500"
+        placeholder="Enter description">
+      </textarea>
+    </div>
+
+    <!-- Model -->
+    <div class="col-md-4">
+      <label class="form-label">Asset Model / Version</label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="assetModel"
+        maxlength="100"
+        placeholder="Enter model/version"
+      />
+    </div>
+
+  </div>
+
+  <!-- ================= ROW 3 ================= -->
+  <div class="row mb-3">
+
+    <!-- Purchase Order -->
+    <div class="col-md-4">
+      <label class="form-label">Purchase Order</label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="purchaseOrder"
+        maxlength="100"
+        placeholder="Enter purchase order"
+      />
+    </div>
+
+    <!-- Warranty Start -->
+    <div class="col-md-4">
+      <label class="form-label">Warranty Start Date</label>
+      <input type="date" class="form-control" formControlName="warrantyStartDate" />
+    </div>
+
+    <!-- Warranty End -->
+    <div class="col-md-4">
+      <label class="form-label">Warranty End Date</label>
+      <input type="date" class="form-control" formControlName="warrantyEndDate" />
+    </div>
+
+  </div>
+
+  <!-- ================= ROW 4 ================= -->
+  <div class="row mb-3">
+
+    <!-- Return Date -->
+    <div class="col-md-4">
+      <label class="form-label">Asset Return Date</label>
+      <input type="date" class="form-control" formControlName="assetReturnDate" />
+    </div>
+
+    <!-- Status -->
+    <div class="col-md-4">
+      <label class="form-label">
+        Status <span class="text-danger">*</span>
+      </label>
+
+      <select class="form-select" formControlName="assetStatusID">
+        <option value="">Select Status</option>
+        <option *ngFor="let s of assetStatuses" [value]="s.assetStatusId">
+          {{ s.assetStatusName }}
+        </option>
+      </select>
+
+      <small class="text-danger"
+        *ngIf="f['assetStatusID'].touched && f['assetStatusID'].errors?.['required']">
+        Status is required
+      </small>
+    </div>
+
+    <!-- Submit -->
+    <div class="col-md-4 d-flex align-items-end">
+      <button
+        type="submit"
+        class="btn btn-primary w-100"
+        [disabled]="assetForm.invalid">
+        {{ isEditMode ? 'Update Asset' : 'Add Asset' }}
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ================= FORM LEVEL ERRORS ================= -->
+  <div class="alert alert-danger mt-2"
+    *ngIf="assetForm.errors?.['warrantyDateInvalid']">
+    Warranty End Date must be after Warranty Start Date.
+  </div>
+
+  <div class="alert alert-danger mt-2"
+    *ngIf="assetForm.errors?.['returnDateInvalid']">
+    Asset Return Date cannot be before Warranty Start Date.
+  </div>
+
+</form>
+
+
+<!-- ================== LISTING VIEW ================== -->
+<div class="dashboard-tables full-row mt-4">
+  <div class="table-card">
+    <h3>Asset List</h3>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+               <th>Employee Name</th> <!-- ✅ NEW -->
+            <th (click)="sortBy('assetName')" style="cursor:pointer">
+              Asset Name
+              <span *ngIf="sortColumn === 'assetName'">
+                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+
+            <th (click)="sortBy('assetCode')" style="cursor:pointer">
+              Asset Code
+              <span *ngIf="sortColumn === 'assetCode'">
+                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+
+            <th>Location</th>
+
+            <th (click)="sortBy('assetCost')" style="cursor:pointer">
+              Cost
+              <span *ngIf="sortColumn === 'assetCost'">
+                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+
+            <th>Description</th>
+            <th>Model</th>
+            <th>PO</th>
+            <th>Warranty Start</th>
+            <th>Warranty End</th>
+            <th>Return Date</th>
+            <th>Status</th>
+            <th width="120">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let asset of filteredAssets()">
+               <td>{{ asset.employeeName }}</td>
+
+            <td>{{ asset.assetName }}</td>
+            <td>{{ asset.assetCode }}</td>
+            <td>{{ asset.assetLocation }}</td>
+            <td>{{ asset.currencyCode }} {{ asset.assetCost }}</td>
+            <td>{{ asset.assetDescription }}</td>
+            <td>{{ asset.assetModel }}</td>
+            <td>{{ asset.purchaseOrder }}</td>
+            <td>{{ asset.warrantyStartDate | date:'dd-MM-yyyy' }}</td>
+            <td>{{ asset.warrantyEndDate | date:'dd-MM-yyyy' }}</td>
+            <td>{{ asset.assetReturnDate | date:'dd-MM-yyyy' }}</td>
+            <td>{{ getStatusName(asset.assetStatusID) }}</td>
+
+            <td class="text-center">
+              <i class="fa-solid fa-pen me-3" (click)="edit(asset)"></i>
+              <i class="fa-solid fa-trash text-danger"
+                 (click)="delete(asset.assetID!)"></i>
+            </td>
+          </tr>
+
+          <tr *ngIf="assets.length === 0">
+            <td colspan="12" class="text-center text-muted">
+              No assets found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ================= PAGINATION FOOTER ================= -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div>
+        <label>
+          Show
+          <select class="form-select d-inline w-auto ms-2"
+                  [(ngModel)]="pageSize"
+                  (change)="changePageSize(pageSize)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+              {{ size }}
+            </option>
+          </select>
+          entries
+        </label>
+      </div>
+
+      <div>
+        <button class="btn btn-outline-secondary btn-sm me-2"
+                (click)="changePage(currentPage - 1)"
+                [disabled]="currentPage === 1">
+          Previous
+        </button>
+
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+        <button class="btn btn-outline-secondary btn-sm ms-2"
+                (click)="changePage(currentPage + 1)"
+                [disabled]="currentPage === totalPages">
+          Next
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
