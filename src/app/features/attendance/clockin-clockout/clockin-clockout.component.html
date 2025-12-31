@@ -7,88 +7,57 @@
 
 <div class="container mt-4">
 
-  <!-- Current Date & Time -->
+  <!-- Current User -->
   <div class="text-center mb-3">
     <h5 id="currentDateTime">{{ currentUser?.fullName }}</h5>
   </div>
 
-  <!-- CLOCK IN / CLOCK OUT FORM -->
+  <!-- Clock In / Clock Out Form -->
   <div class="card p-4 mb-4 shadow-sm">
     <h5>Clock In / Clock Out</h5>
-
     <form [formGroup]="attendanceForm" (ngSubmit)="onSubmit()">
-
       <div class="row mb-3">
         <div class="col-md-4">
           <label>Employee Code</label>
           <input class="form-control" formControlName="employeeCode" readonly />
         </div>
-
         <div class="col-md-4">
           <label>Employee Name</label>
           <input class="form-control" formControlName="employeeName" readonly />
         </div>
-
         <div class="col-md-4">
-          <label>Department</label>
-          <input class="form-control" formControlName="department" readonly />
+          <label>Role</label>
+          <input class="form-control"  formControlName="department" readonly />
         </div>
       </div>
 
       <div class="row mb-3">
-        <!-- <div class="col-md-4">
+        <div class="col-md-4">
           <label>Action</label>
           <select class="form-select" formControlName="clockType">
             <option value="">Select</option>
             <option value="ClockIn">Clock In</option>
             <option value="ClockOut">Clock Out</option>
           </select>
-           <small class="text-danger"
-    *ngIf="attendanceForm.get('clockType')?.touched &&
-           attendanceForm.get('clockType')?.hasError('required')">
-    Action is required
-  </small>
-        </div> -->
-<div class="col-md-4">
-  <label>Action</label>
-  <select class="form-select" formControlName="clockType">
-    <option *ngFor="let action of availableActions" [value]="action">
-      {{ action === 'ClockIn' ? 'Clock In' : 'Clock Out' }}
-    </option>
-  </select>
-
-  <small class="text-danger"
-    *ngIf="attendanceForm.get('clockType')?.touched &&
-           attendanceForm.get('clockType')?.hasError('required')">
-    Action is required
-  </small>
-</div>
+          <small class="text-danger" *ngIf="attendanceForm.get('clockType')?.touched &&
+                 attendanceForm.get('clockType')?.hasError('required')">
+            Action is required
+          </small>
+        </div>
 
         <div class="col-md-4">
           <label>Time</label>
           <input type="time" class="form-control" formControlName="time" />
-           <small class="text-danger"
-    *ngIf="attendanceForm.get('time')?.touched &&
-           attendanceForm.get('time')?.hasError('required')">
-    Time is required
-  </small>
-
-  <small class="text-danger"
-    *ngIf="attendanceForm.get('time')?.touched &&
-           attendanceForm.get('time')?.hasError('pattern')">
-    Invalid time format (HH:mm)
-  </small>
+          <small class="text-danger" *ngIf="attendanceForm.get('time')?.touched &&
+                 attendanceForm.get('time')?.hasError('required')">
+            Time is required
+          </small>
         </div>
 
         <div class="col-md-4 d-flex align-items-end">
-          <!-- <button class="btn btn-primary w-100" [disabled]="loading">
+          <button class="btn btn-primary w-100" [disabled]="attendanceForm.invalid || loading">
             Submit
-          </button> -->
-          <button class="btn btn-primary w-100"
-        [disabled]="attendanceForm.invalid || loading">
-  Submit
-</button>
-
+          </button>
         </div>
       </div>
     </form>
@@ -96,57 +65,53 @@
     <div class="text-success mt-2">{{ message }}</div>
   </div>
 
-  <!-- TODAY SUMMARY -->
- <div class="row mb-4">
-  <div class="col-md-4">
-    <div class="card p-3 text-center">
-      <h6>Clock In</h6>
-      <p>{{ todayClockIn }}</p>
+  <!-- Today Summary -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card p-3 text-center">
+        <h6>Clock In</h6>
+        <p>{{ todayClockIn }}</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3 text-center">
+        <h6>Clock Out</h6>
+        <p>{{ todayClockOut }}</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3 text-center bg-light">
+        <h6>Duration of Day</h6>
+        <p class="fw-bold">{{ todayDuration }}</p>
+      </div>
     </div>
   </div>
 
-  <div class="col-md-4">
-    <div class="card p-3 text-center">
-      <h6>Clock Out</h6>
-      <p>{{ todayClockOut }}</p>
-    </div>
-  </div>
-
-  <div class="col-md-4">
-    <div class="card p-3 text-center bg-light">
-      <h6>Duration of Day</h6>
-      <p class="fw-bold">{{ todayDuration }}</p>
-    </div>
-  </div>
-</div>
-
-
-  <!-- ATTENDANCE TABLE -->
+  <!-- Attendance Table -->
   <div class="card p-4 shadow-sm">
     <h5>Attendance Records</h5>
-
     <table class="table table-bordered">
       <thead>
         <tr>
           <th>Date</th>
           <th>Employee</th>
-          <th>Department</th>
+          <th>Role</th>
           <th>Action</th>
           <th>Time</th>
         </tr>
       </thead>
-
       <tbody>
-        <tr *ngFor="let r of attendanceRecords">
+        <tr *ngFor="let r of attendanceRecord">
           <td>{{ r.attendanceDate | date:'yyyy-MM-dd' }}</td>
           <td>{{ r.employeeName }}</td>
-          <td>{{ r.department }}</td>
+          <td>{{ r.departments }}</td>
           <td>{{ r.actionType }}</td>
           <td>{{ r.actionTime }}</td>
         </tr>
       </tbody>
     </table>
   </div>
+
 </div>
 
 <app-footer></app-footer>

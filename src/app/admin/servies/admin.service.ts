@@ -873,4 +873,63 @@ deleteClockInOut(id: number) {
     return this.http.post(`${this.baseUrl}/Attendance/CreateClockInOut`, payload);
   }
 
+  getEarlyDepartures(
+    companyId: number,
+    regionId: number,
+    fromDate: string,
+    toDate: string,
+    employeeCode?: string
+  ): Observable<any[]> {
+
+    let params = new HttpParams()
+      .set('companyId', companyId)
+      .set('regionId', regionId)
+      .set('fromDate', fromDate)
+      .set('toDate', toDate);
+
+    if (employeeCode) {
+      params = params.set('employeeCode', employeeCode);
+    }
+
+    return this.http.get<any[]>(
+      `${this.baseUrl}/attendance/early-departures`,
+      { params }
+    );
+  }
+
+  getLateArrivals(
+    companyId: number,
+    regionId: number,
+    fromDate: string,
+    toDate: string,
+    employeeCode?: string
+  ): Observable<any[]> {
+
+    let params = new HttpParams()
+      .set('companyId', companyId)
+      .set('regionId', regionId)
+      .set('fromDate', fromDate)
+      .set('toDate', toDate);
+
+    if (employeeCode) {
+      params = params.set('employeeCode', employeeCode);
+    }
+
+    return this.http.get<any[]>(
+      `${this.baseUrl}/Attendance/late-arrivals`,
+      { params }
+    );
+  }
+
+    getEmployees(companyId: number, regionId: number): Observable<any[]> {
+    const params = new HttpParams()
+      .set('companyId', companyId)
+      .set('regionId', regionId);
+
+    return this.http.get<any[]>(
+      `${this.baseUrl}/Attendance/dropdown`,
+      { params }
+    );
+  }
+
 }

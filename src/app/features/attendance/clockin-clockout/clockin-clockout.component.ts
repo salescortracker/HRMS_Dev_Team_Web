@@ -9,6 +9,7 @@ interface AttendanceRecord {
   department: string;
   actionType: string;
   actionTime: string;
+  departments:string;
 }
 
 @Component({
@@ -18,16 +19,16 @@ interface AttendanceRecord {
   styleUrl: './clockin-clockout.component.css'
 })
 export class ClockinClockoutComponent implements OnInit {
-  attendanceForm!: FormGroup;
+ attendanceForm!: FormGroup;
   attendanceRecords: AttendanceRecord[] = [];
+  attendanceRecord:any;
   currentUser: any;
   loading = false;
   message = '';
   todayClockIn = '--:--';
   todayClockOut = '--:--';
-  availableActions: string[] = [];
-todayDuration = '--:--';
-
+  todayDuration = '--:--';
+currentUserRoleId :any;
   constructor(private fb: FormBuilder, private adminService: AdminService) {}
 
   ngOnInit(): void {
@@ -52,50 +53,24 @@ todayDuration = '--:--';
     this.attendanceForm.patchValue({
       employeeCode: this.currentUser.userId,
       employeeName: this.currentUser.fullName,
-      department: this.currentUser.roleId,
+      department: this.currentUser.roleName,
     });
+     this.currentUserRoleId = this.currentUser.roleId; 
   }
-  setAvailableActions() {
-  const today = new Date().toISOString().split('T')[0];
-
-  const todayRecords = this.attendanceRecords
-    .filter(r => r.attendanceDate.startsWith(today))
-    .sort((a, b) => a.actionTime.localeCompare(b.actionTime));
-
-  // FIRST record of the day
-  if (todayRecords.length === 0) {
-    this.availableActions = ['ClockIn'];
-    this.attendanceForm.patchValue({ clockType: 'ClockIn' });
-    return;
-  }
-
-  // LAST record decides next action
-  const lastAction = todayRecords[todayRecords.length - 1].actionType;
-
-  if (lastAction === 'ClockIn') {
-    this.availableActions = ['ClockOut'];
-    this.attendanceForm.patchValue({ clockType: 'ClockOut' });
-  } else {
-    this.availableActions = ['ClockIn'];
-    this.attendanceForm.patchValue({ clockType: 'ClockIn' });
-  }
-}
-
 
   onSubmit() {
-    // if (this.attendanceForm.invalid) return;
-     if (this.attendanceForm.invalid) {
-    this.attendanceForm.markAllAsTouched();
-    return;
-  }
+    if (this.attendanceForm.invalid) {
+      this.attendanceForm.markAllAsTouched();
+      return;
+    }
+
     const form = this.attendanceForm.getRawValue();
     const payload = {
       regionId: this.currentUser.regionId,
       companyId: this.currentUser.companyId,
       employeeCode: String(this.currentUser.userId),
       employeeName: form.employeeName,
-      // department: form.department,
-      department: String(form.department), // OR actual department name
+      department: this.currentUserRoleId,
       attendanceDate: new Date(),
       actionType: form.clockType,
       actionTime: form.time
@@ -109,73 +84,66 @@ todayDuration = '--:--';
         next: () => {
           this.message = 'Attendance saved successfully';
           this.attendanceForm.patchValue({ clockType: '', time: '' });
+          this.attendanceForm.get('clockType')?.markAsUntouched();
+      this.attendanceForm.get('time')?.markAsUntouched();
+      this.attendanceForm.get('clockType')?.markAsPristine();
+      this.attendanceForm.get('time')?.markAsPristine();
           this.loadAttendance();
-          this.ngOnInit();  
         },
         error: () => this.message = 'Failed to save attendance'
       });
   }
 
   loadAttendance() {
+    if (!this.currentUser) return;
+
     this.adminService.getTodayAttendance(
       String(this.currentUser.userId),
       this.currentUser.companyId,
       this.currentUser.regionId
     ).subscribe(res => {
       this.attendanceRecords = res;
+      this.attendanceRecord = res;
       this.setTodaySummary();
-      this.setAvailableActions(); 
     });
   }
 
   parseTime(time: string): Date {
-  const [hours, minutes] = time.split(':').map(Number);
-  const d = new Date();
-  d.setHours(hours, minutes, 0, 0);
-  return d;
-}
+    const [hours, minutes] = time.split(':').map(Number);
+    const d = new Date();
+    d.setHours(hours, minutes, 0, 0);
+    return d;
+  }
 
-   setTodaySummary() {
-  const today = new Date().toISOString().split('T')[0];
+  setTodaySummary() {
+    const today = new Date().toLocaleDateString('en-CA'); // yyyy-MM-dd
 
-  const todayRecords = this.attendanceRecords
-    .filter(r => r.attendanceDate.startsWith(today))
-    .sort((a, b) => a.actionTime.localeCompare(b.actionTime));
+    const todayRecords = this.attendanceRecords
+      .filter(r => r.attendanceDate.startsWith(today))
+      .sort((a, b) => a.actionTime.localeCompare(b.actionTime));
 
-  const clockIns = todayRecords.filter(r => r.actionType === 'ClockIn');
-  const clockOuts = todayRecords.filter(r => r.actionType === 'ClockOut');
+    const clockIns = todayRecords.filter(r => r.actionType === 'ClockIn');
+    const clockOuts = todayRecords.filter(r => r.actionType === 'ClockOut');
 
-  // First ClockIn
-  this.todayClockIn = clockIns.length
-    ? clockIns[0].actionTime
-    : '--:--';
+    this.todayClockIn = clockIns.length ? clockIns[0].actionTime : '--:--';
+    this.todayClockOut = clockOuts.length ? clockOuts[clockOuts.length - 1].actionTime : '--:--';
 
-  // Last ClockOut
-  this.todayClockOut = clockOuts.length
-    ? clockOuts[clockOuts.length - 1].actionTime
-    : '--:--';
+    if (this.todayClockIn !== '--:--' && this.todayClockOut !== '--:--') {
+      const start = this.parseTime(this.todayClockIn);
+      const end = this.parseTime(this.todayClockOut);
+      const diffMs = end.getTime() - start.getTime();
 
-  // 🟢 Calculate duration
-  if (this.todayClockIn !== '--:--' && this.todayClockOut !== '--:--') {
-    const start = this.parseTime(this.todayClockIn);
-    const end = this.parseTime(this.todayClockOut);
-
-    const diffMs = end.getTime() - start.getTime();
-
-    if (diffMs > 0) {
-      const hours = Math.floor(diffMs / (1000 * 60 * 60));
-      const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-
-      this.todayDuration =
-        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      if (diffMs > 0) {
+        const h = Math.floor(diffMs / 3600000);
+        const m = Math.floor((diffMs % 3600000) / 60000);
+        this.todayDuration = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+      } else {
+        this.todayDuration = '--:--';
+      }
     } else {
       this.todayDuration = '--:--';
     }
-  } else {
-    this.todayDuration = '--:--';
   }
-}
-
 
   loadSessionUser() {
     const user = sessionStorage.getItem('currentUser');
