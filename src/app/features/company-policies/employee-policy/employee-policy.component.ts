@@ -1,4 +1,7 @@
 import { Component ,Input} from '@angular/core';
+import { CompanyPolicy } from '../../../admin/layout/models/company-policies.model';
+import { environment } from '../../../../environments/environment';
+import { AdminService, CategoryDropdown } from '../../../admin/servies/admin.service';
 interface Policy {
   Title: string;
   Category: string;
@@ -14,39 +17,60 @@ interface Policy {
   styleUrl: './employee-policy.component.css'
 })
 export class EmployeePolicyComponent {
-categories: string[] = ['HR Policy', 'Compliance', 'IT Security', 'Finance', 'General'];
-
-  policies: Policy[] = [
-    {
-      Title: 'Leave Policy 2025',
-      Category: 'HR Policy',
-      EffectiveDate: new Date('2025-01-01'),
-      Description: 'Updated leave policy for 2025 including casual, sick and paid leaves.',
-      FileName: 'LeavePolicy2025.pdf',
-      FileUrl: 'assets/policies/LeavePolicy2025.pdf'
-    },
-    {
-      Title: 'Expense Reimbursement Policy',
-      Category: 'Finance',
-      EffectiveDate: new Date('2025-03-01'),
-      Description: 'Procedure and limits for employee expense claims.',
-      FileName: 'ExpensePolicy.pdf',
-      FileUrl: 'assets/policies/ExpensePolicy.pdf'
-    }
-  ];
-
-  selectedCategory: string = '';
+policies: CompanyPolicy[] = []; // load from API
+  
+ categories: CategoryDropdown[] = [];
+  selectedCategory = '';
   fromDate?: string;
   toDate?: string;
 
-  applyFilter() { }
+  constructor(private adminService: AdminService) {}
+  ngOnInit() {
+   this.loadPolicies();
+     this.loadCategories();
+  }
 
-  filteredPolicies(): Policy[] {
+  loadPolicies(): void {
+    this.adminService.getAllCompanyPolicies().subscribe({
+      next: (res) => {
+        this.policies = res;
+      },
+      error: (err) => {
+        console.error('Failed to load policies', err);
+      }
+    });
+  }
+
+  
+ loadCategories(): void {
+    this.adminService.getActiveCategories().subscribe({
+      next: (res) => {
+        this.categories = res;
+      },
+      error: (err) => {
+        console.error('Failed to load categories', err);
+      }
+    });
+  }
+  applyFilter() {}
+
+  filteredPolicies(): CompanyPolicy[] {
     return this.policies.filter(p => {
-      const matchCategory = this.selectedCategory ? p.Category === this.selectedCategory : true;
-      const matchFrom = this.fromDate ? new Date(p.EffectiveDate) >= new Date(this.fromDate) : true;
-      const matchTo = this.toDate ? new Date(p.EffectiveDate) <= new Date(this.toDate) : true;
+      const matchCategory =
+        this.selectedCategory ? p.categoryName === this.selectedCategory : true;
+
+      const matchFrom =
+        this.fromDate ? new Date(p.effectiveDate) >= new Date(this.fromDate) : true;
+
+      const matchTo =
+        this.toDate ? new Date(p.effectiveDate) <= new Date(this.toDate) : true;
+
       return matchCategory && matchFrom && matchTo;
     });
+  }
+
+  viewDocument(path?: string) {
+    if (!path) return;
+    window.open(`${environment.baseurl}/${path}`, '_blank');
   }
 }

@@ -1,109 +1,147 @@
+<div class="card shadow-sm p-4">
 
-<div class="form-container">
-
-  <form class="form-grid">
-    <div class="form-group">
-      <label>Name *</label>
-      <input type="text" required placeholder="Enter full name">
+  <!-- FORM -->
+  <form class="row g-3 align-items-end mb-4" [formGroup]="familyForm" (ngSubmit)="onSubmit()">
+    <div class="col-md-4">
+      <label class="form-label">Name *</label>
+      <input class="form-control" type="text" placeholder="Enter full name" formControlName="name" />
+      <div *ngIf="f['name'].touched && f['name'].invalid" class="text-danger small mt-1">Name is required and must be valid.</div>
     </div>
 
-    <div class="form-group">
-      <label>Relationship *</label>
-      <select required>
+    <div class="col-md-4">
+      <label class="form-label">Relationship *</label>
+      <select class="form-select" formControlName="relationshipId">
         <option value="">Select relationship</option>
-        <option>Spouse</option>
-        <option>Child</option>
-        <option>Parent</option>
-        <option>Other</option>
+        <option *ngFor="let r of relationships" [value]="r.relationshipID">{{ r.relationshipName }}</option>
       </select>
+      <div *ngIf="f['relationshipId'].touched && f['relationshipId'].invalid" class="text-danger small mt-1">Relationship is required.</div>
     </div>
 
-    <div class="form-group">
-      <label>Date of Birth *</label>
-      <input type="date" required>
+    <div class="col-md-4">
+      <label class="form-label">Date of Birth *</label>
+      <input class="form-control" type="date" formControlName="dateOfBirth" />
+      <div *ngIf="f['dateOfBirth'].touched && f['dateOfBirth'].invalid" class="text-danger small mt-1">Date of birth is required.</div>
     </div>
 
-    <div class="form-group">
-      <label>Gender *</label>
-      <select required>
+    <div class="col-md-4">
+      <label class="form-label">Gender *</label>
+      <select class="form-select" formControlName="genderId">
         <option value="">Select gender</option>
-        <option>Male</option>
-        <option>Female</option>
-        <option>Other</option>
+        <option *ngFor="let g of genders" [value]="g.genderId">{{ g.genderName }}</option>
       </select>
+      <div *ngIf="f['genderId'].touched && f['genderId'].invalid" class="text-danger small mt-1">Gender is required.</div>
     </div>
 
-    <div class="form-group">
-      <label>Occupation</label>
-      <input type="text" placeholder="Enter occupation">
+    <div class="col-md-4">
+      <label class="form-label">Occupation</label>
+      <input class="form-control" type="text" placeholder="Enter occupation" formControlName="occupation" />
     </div>
 
-    <div class="form-group">
-      <label>Phone</label>
-      <input type="tel" placeholder="Enter phone number">
+    <div class="col-md-4">
+      <label class="form-label">Phone</label>
+      <input class="form-control" type="tel" placeholder="Enter phone number" formControlName="phone" />
     </div>
 
-    <div class="form-group">
-      <label>Address</label>
-      <textarea placeholder="Enter address"></textarea>
+    <div class="col-12">
+      <label class="form-label">Address</label>
+      <textarea class="form-control" rows="2" placeholder="Enter address" formControlName="address"></textarea>
     </div>
 
-    <div class="form-group-checkbox">
-      <input type="checkbox" required>
-      <label>Is this person your dependent? *</label>
-    </div>
+    <div class="col-12 d-flex align-items-center">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="isDependent" formControlName="isDependent" />
+        <label class="form-check-label ms-2" for="isDependent">Is this person your dependent?</label>
+      </div>
 
-    <div style="flex-basis: 100%;">
-      <button type="submit" class="submit-btn">Save Details</button>
+      <div class="ms-auto">
+        <button type="submit" class="btn btn-dark me-2">{{ editMode ? 'Update Details' : 'Save Details' }}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="resetForm()">Reset</button>
+      </div>
     </div>
   </form>
-  <div class="form-container">
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Relationship</th>
-        <th>DOB</th>
-        <th>Gender</th>
-        <th>Occupation</th>
-        <th>Phone</th>
-        <th>Address</th>
-        <th>Dependent</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Example static rows -->
-      <tr>
-        <td>John Doe</td>
-        <td>Spouse</td>
-        <td>1985-05-10</td>
-        <td>Male</td>
-        <td>Engineer</td>
-        <td>9876543210</td>
-        <td>123 Street, City</td>
-        <td>Yes</td>
-        <td class="action-icons">
-          <i class="fa-solid fa-pen"></i>
-          <i class="fa-solid fa-trash"></i>
-        </td>
-      </tr>
-      <tr>
-        <td>Jane Doe</td>
-        <td>Child</td>
-        <td>2010-08-15</td>
-        <td>Female</td>
-        <td>Student</td>
-        <td>--</td>
-        <td>123 Street, City</td>
-        <td>No</td>
-        <td class="action-icons">
-          <i class="fa-solid fa-pen"></i>
-          <i class="fa-solid fa-trash"></i>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+
+  <!-- CONTROLS: search (top) - SHOW selector removed from top -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <div style="max-width: 350px; width: 100%;">
+    <input class="form-control" type="text"
+           placeholder="Search name / relationship / gender / occupation"
+           [(ngModel)]="searchText" name="familySearch"
+           (ngModelChange)="currentPage = 1" />
+  </div>
 </div>
 
+  <!-- TABLE -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th style="width:60px; text-align:center">S.No</th>
+          <th (click)="sortBy('name')" style="cursor:pointer">Name <small *ngIf="sortColumn === 'name'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</small></th>
+          <th (click)="sortBy('relationship')" style="cursor:pointer">Relationship <small *ngIf="sortColumn === 'relationship'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</small></th>
+          <th (click)="sortBy('dateOfBirth')" style="cursor:pointer">DOB <small *ngIf="sortColumn === 'dateOfBirth'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</small></th>
+          <th (click)="sortBy('gender')" style="cursor:pointer">Gender</th>
+          <th>Occupation</th>
+          <th>Phone</th>
+          <th>Address</th>
+          <th style="width:100px; text-align:center" (click)="sortBy('isDependent')">Dependent</th>
+          <th style="width:120px; text-align:center">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let item of filteredFamilies(); let i = index">
+          <td style="text-align:center">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.relationship }}</td>
+          <td>{{ item.dateOfBirth | date:'yyyy-MM-dd' }}</td>
+          <td>{{ item.gender }}</td>
+          <td>{{ item.occupation || '--' }}</td>
+          <td>{{ item.phone || '--' }}</td>
+          <td>{{ item.address || '--' }}</td>
+          <td style="text-align:center">{{ item.isDependent ? 'Yes' : 'No' }}</td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-light me-1" title="Edit" (click)="edit(item)"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-sm btn-outline-danger" title="Delete" (click)="delete(item.familyId)"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>
+
+        <tr *ngIf="filteredFamilies().length === 0">
+          <td colspan="10" class="text-center py-3">No family records found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+<!-- PAGINATION FOOTER -->
+<div class="d-flex justify-content-between align-items-center mt-3">
+
+  <!-- LEFT SIDE: Show entries -->
+  <div class="d-flex align-items-center gap-2">
+    <label class="mb-0 small">Show:</label>
+    <select class="form-select form-select-sm" style="width:90px;"
+            [(ngModel)]="pageSize" name="familyPageSize"
+            (change)="changePageSize(pageSize)">
+      <option *ngFor="let s of pageSizeOptions" [ngValue]="s">{{ s }}</option>
+    </select>
+  </div>
+
+  <!-- RIGHT SIDE: Prev / Next -->
+  <div class="btn-group" role="group" aria-label="pagination">
+    <button class="btn btn-sm btn-outline-secondary"
+            (click)="changePage(currentPage - 1)"
+            [disabled]="currentPage === 1">
+      Previous
+    </button>
+
+    <button class="btn btn-sm btn-outline-secondary"
+            (click)="changePage(currentPage + 1)"
+            [disabled]="currentPage === totalPages">
+      Next
+    </button>
+  </div>
+
+</div>
+
+
+
+
+</div>
