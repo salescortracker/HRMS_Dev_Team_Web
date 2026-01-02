@@ -6,6 +6,12 @@ import { map } from 'rxjs';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { EmployeePersonal } from '../layout/models/employee-personal.model';
+import { CompanyPolicy } from '../layout/models/company-policies.model';
+
+export interface CategoryDropdown {
+  categoryId: number;
+  categoryName: string;
+}
 // ------------ Model Interfaces ----------------
 export interface Designation {
   designationID: number;
@@ -1053,6 +1059,58 @@ deleteCompanyNews(newsId: number): Observable<any> {
     `${this.baseUrl}/MasterData/DeleteCompanyNews/${newsId}`
   );
 }
+
+// ---------------- CATEGORY DROPDOWN ----------------
+getActiveCategories(): Observable<CategoryDropdown[]> {
+  return this.http.get<CategoryDropdown[]>(
+    `${this.baseUrl}/MasterData/GetActiveCategories`
+  
+  );
+}
+
+// -------------------------------------------------------------
+// 🔹 COMPANY POLICIES (CRUD with file upload)
+// -------------------------------------------------------------
+
+getCompanyPolicies(companyId: number, regionId: number): Observable<CompanyPolicy[]> {
+  return this.http.get<CompanyPolicy[]>(
+    `${this.baseUrl}/MasterData/GetAll`,
+    { params: { companyId, regionId } }
+  );
+}
+
+getCompanyPolicyById(id: number): Observable<CompanyPolicy> {
+  return this.http.get<CompanyPolicy>(
+    `${this.baseUrl}/MasterData/GetById/${id}`
+  );
+}
+
+createCompanyPolicy(formData: FormData): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/MasterData/Create`,
+    formData
+  );
+}
+
+updateCompanyPolicy(id: number, formData: FormData): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/MasterData/Update/${id}`,
+    formData
+  );
+}
+
+deleteCompanyPolicy(id: number): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/MasterData/Delete/${id}`,
+    {}
+  );
+}
+getAllCompanyPolicies(): Observable<CompanyPolicy[]> {
+  return this.http.get<CompanyPolicy[]>(
+    `${this.baseUrl}/MasterData/GetAllPolicies`
+  );
+}
+
 
 
 }
