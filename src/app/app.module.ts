@@ -62,6 +62,15 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AddAssestsComponent } from './features/asset/add-assests/add-assests.component';
 import { MyAssetComponent } from './features/asset/my-asset/my-asset.component';
 import { AssetApprovalComponent } from './features/asset/asset-approval/asset-approval.component';
+import { BankDetailsComponent } from './features/employee-profile/employee-finance-tabs/bank-details/bank-details.component';
+import { DdListComponent } from './features/employee-profile/employee-finance-tabs/dd-list/dd-list.component';
+import { W4Component } from './features/employee-profile/employee-finance-tabs/w4/w4.component';
+import { EmployeeLettersComponent } from './features/employee-profile/employee-letters/employee-letters.component';
+import { EmployeeFormsComponent } from './features/employee-profile/employee-forms/employee-forms.component';
+import { EmployeeDocumentComponent } from './features/employee-profile/employee-document/employee-document.component';
+import { EmployeeJobhistoryComponent } from './features/employee-profile/employee-jobhistory/employee-jobhistory.component';
+import { EmployeeEducationComponent } from './features/employee-profile/employee-education/employee-education.component';
+import { EmployeeCertificationsComponent } from './features/employee-profile/employee-certifications/employee-certifications.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -120,6 +129,15 @@ import { AssetApprovalComponent } from './features/asset/asset-approval/asset-ap
     AddAssestsComponent,
     MyAssetComponent,
     AssetApprovalComponent
+    BankDetailsComponent,
+    DdListComponent,
+    W4Component
+    EmployeeLettersComponent,
+    EmployeeFormsComponent,
+    EmployeeDocumentComponent
+    EmployeeJobhistoryComponent,
+    EmployeeEducationComponent,
+    EmployeeCertificationsComponent
   ],
   imports: [
     BrowserModule,ReactiveFormsModule,
