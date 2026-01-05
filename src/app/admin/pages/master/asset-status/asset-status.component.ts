@@ -14,45 +14,74 @@ import { AssetStatus } from '../../../servies/admin.service';
 })
 export class AssetStatusComponent {
 
-  companyId = 1;
-  regionId = 1;
+  companyId!: number;
+  regionId!: number;
 
-  status: AssetStatus = this.getEmptyStatus();
+  status!: AssetStatus;
   statuses: AssetStatus[] = [];
-  statusesModel: any = {};
+  statusesModel: any = {}; // for bulk upload
 
   isEditMode = false;
+
   searchText = '';
   statusFilter: boolean | '' = '';
+
   currentPage = 1;
   pageSize = 5;
 
-  sortColumn = 'AssetStatusID';
-  sortDirection: 'asc' | 'desc' = 'desc';
+  sortColumn: keyof AssetStatus = 'assetStatusName';
+  sortDirection: 'asc' | 'desc' = 'asc';
 
   showUploadPopup = false;
 
-  constructor(private adminService: AdminService, private spinner: NgxSpinnerService) {}
+  constructor(
+    private adminService: AdminService,
+    private spinner: NgxSpinnerService
+  ) {}
+ngOnInit(): void {
+  this.loadSessionData();
+  this.resetForm();
+  this.loadStatuses();
 
-  ngOnInit(): void {
-    this.loadStatuses();
+  // Initialize bulk upload model
+ this.statusesModel = {
+  companyId: this.companyId,
+  companyName: sessionStorage.getItem('CompanyName') || '', // <- add this
+  regionId: this.regionId
+};
+
+}
+
+
+  /* ================= SESSION ================= */
+
+  private loadSessionData(): void {
+    this.companyId = Number(sessionStorage.getItem('CompanyId')) || 0;
+    this.regionId = Number(sessionStorage.getItem('RegionId')) || 0;
   }
 
-  getEmptyStatus(): AssetStatus {
+  /* ================= MODEL ================= */
+
+  private getEmptyStatus(): AssetStatus {
     return {
-      AssetStatusID: 0,
-      AssetStatusName: '',
-      IsActive: true,
-      CompanyID: this.companyId,
-      RegionID: this.regionId
+      assetStatusId: 0,
+      assetStatusName: '',
+      description: '',
+      isActive: true,
+      companyId: this.companyId,
+      regionId: this.regionId
     };
   }
 
+  /* ================= LOAD ================= */
+
   loadStatuses(): void {
+    if (!this.companyId || !this.regionId) return;
+
     this.spinner.show();
     this.adminService.getAssetStatuses(this.companyId, this.regionId).subscribe({
       next: res => {
-        this.statuses = res.data?.data || res;
+        this.statuses = res;
         this.spinner.hide();
       },
       error: () => {
@@ -62,95 +91,121 @@ export class AssetStatusComponent {
     });
   }
 
+  /* ================= SAVE / UPDATE ================= */
+
   onSubmit(): void {
-    this.spinner.show();
-    if (this.isEditMode) {
-      this.adminService.updateAssetStatus(this.status).subscribe({
-        next: () => {
-          this.spinner.hide();
-          Swal.fire('Updated', `${this.status.AssetStatusName} updated successfully!`, 'success');
-          this.loadStatuses();
-          this.resetForm();
-        },
-        error: () => {
-          this.spinner.hide();
-          Swal.fire('Error', 'Update failed.', 'error');
-        }
-      });
-    } else {
-      this.adminService.createAssetStatus(this.status).subscribe({
-        next: () => {
-          this.spinner.hide();
-          Swal.fire('Created', `${this.status.AssetStatusName} added successfully!`, 'success');
-          this.loadStatuses();
-          this.resetForm();
-        },
-        error: () => {
-          this.spinner.hide();
-          Swal.fire('Error', 'Create failed.', 'error');
-        }
-      });
-    }
+    this.isEditMode ? this.updateStatus() : this.createStatus();
   }
+
+  private createStatus(): void {
+    this.spinner.show();
+    this.adminService.createAssetStatus(this.status).subscribe({
+      next: () => {
+        Swal.fire('Saved!', 'Asset Status created successfully.', 'success');
+        this.loadStatuses();
+        this.resetForm();
+        this.spinner.hide();
+      },
+      error: () => {
+        this.spinner.hide();
+        Swal.fire('Error', 'Failed to create status.', 'error');
+      }
+    });
+  }
+
+  private updateStatus(): void {
+    this.spinner.show();
+    this.adminService.updateAssetStatus(this.status).subscribe({
+      next: () => {
+        Swal.fire('Updated!', 'Asset Status updated successfully.', 'success');
+        this.loadStatuses();
+        this.resetForm();
+        this.spinner.hide();
+      },
+      error: () => {
+        this.spinner.hide();
+        Swal.fire('Error', 'Failed to update status.', 'error');
+      }
+    });
+  }
+
+  /* ================= EDIT ================= */
 
   editStatus(s: AssetStatus): void {
     this.status = { ...s };
     this.isEditMode = true;
   }
 
+  /* ================= DELETE ================= */
+
   deleteStatus(s: AssetStatus): void {
     Swal.fire({
-      title: `Delete ${s.AssetStatusName}?`,
-      showDenyButton: true,
-      confirmButtonText: 'Confirm'
+      title: 'Are you sure?',
+      text: `Do you want to delete "${s.assetStatusName}"?`,
+      icon: 'warning',
+      showCancelButton: true
     }).then(result => {
       if (result.isConfirmed) {
         this.spinner.show();
-        this.adminService.deleteAssetStatus(s.AssetStatusID).subscribe({
+        this.adminService.deleteAssetStatus(s.assetStatusId).subscribe({
           next: () => {
-            this.spinner.hide();
-            Swal.fire('Deleted', `${s.AssetStatusName} deleted successfully.`, 'success');
+            Swal.fire('Deleted!', 'Asset Status deleted successfully.', 'success');
             this.loadStatuses();
+            this.spinner.hide();
           },
           error: () => {
             this.spinner.hide();
-            Swal.fire('Error', 'Delete failed.', 'error');
+            Swal.fire('Error', 'Failed to delete status.', 'error');
           }
         });
       }
     });
   }
 
+  /* ================= RESET ================= */
+
   resetForm(): void {
     this.status = this.getEmptyStatus();
     this.isEditMode = false;
   }
 
-  /** Filtering + Sorting + Pagination */
+  /* ================= FILTER ================= */
+
   filteredStatuses(): AssetStatus[] {
     return this.statuses.filter(s => {
-      const matchesSearch = s.AssetStatusName.toLowerCase().includes(this.searchText.toLowerCase());
-      const matchesStatus = this.statusFilter === '' || s.IsActive === this.statusFilter;
-      return matchesSearch && matchesStatus;
+      const searchMatch =
+        s.assetStatusName.toLowerCase().includes(this.searchText.toLowerCase());
+
+      const statusMatch =
+        this.statusFilter === '' || s.isActive === this.statusFilter;
+
+      return searchMatch && statusMatch;
     });
   }
 
-  sortTable(column: string) {
-    if (this.sortColumn === column) this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    else this.sortColumn = column; this.sortDirection = 'asc';
+  /* ================= SORT ================= */
+
+  sortTable(column: keyof AssetStatus): void {
+    this.sortDirection =
+      this.sortColumn === column && this.sortDirection === 'asc'
+        ? 'desc'
+        : 'asc';
+    this.sortColumn = column;
   }
+
+  /* ================= PAGINATION ================= */
 
   get pagedStatuses(): AssetStatus[] {
-    const filtered = this.filteredStatuses();
-    filtered.sort((a: any, b: any) => {
-      const valA = a[this.sortColumn]?.toString().toLowerCase() || '';
-      const valB = b[this.sortColumn]?.toString().toLowerCase() || '';
-      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
-      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
-      return 0;
+    const sorted = [...this.filteredStatuses()].sort((a, b) => {
+      const valA = String(a[this.sortColumn]).toLowerCase();
+      const valB = String(b[this.sortColumn]).toLowerCase();
+      return this.sortDirection === 'asc'
+        ? valA.localeCompare(valB)
+        : valB.localeCompare(valA);
     });
+
     const start = (this.currentPage - 1) * this.pageSize;
-    return filtered.slice(start, start + this.pageSize);
+    return sorted.slice(start, start + this.pageSize);
   }
 
   get totalPages(): number {
@@ -158,25 +213,32 @@ export class AssetStatusComponent {
   }
 
   goToPage(page: number): void {
-    if (page < 1) page = 1;
-    if (page > this.totalPages) page = this.totalPages;
-    this.currentPage = page;
+    this.currentPage = Math.min(Math.max(page, 1), this.totalPages);
   }
 
-  getSortIcon(column: string): string {
-    if (this.sortColumn !== column) return 'fa-sort';
-    return this.sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
+  /* ================= BULK UPLOAD ================= */
+
+  openUploadPopup(): void {
+    this.showUploadPopup = true;
   }
 
-  /** Export */
-  exportAs(type: 'excel' | 'pdf') {
-    type === 'excel' ? this.exportExcel() : this.exportPDF();
+  closeUploadPopup(): void {
+    this.showUploadPopup = false;
   }
 
-  exportExcel() {
+  onBulkUploadComplete(event: any): void {
+    this.showUploadPopup = false;
+    Swal.fire('Success', 'Bulk upload completed successfully.', 'success');
+    this.loadStatuses();
+  }
+
+  /* ================= EXPORT ================= */
+
+  exportExcel(): void {
     const data = this.statuses.map(s => ({
-      'Asset Status': s.AssetStatusName,
-      'Active': s.IsActive ? 'Yes' : 'No'
+      'Asset Status': s.assetStatusName,
+      'Description': s.description,
+      'Active': s.isActive ? 'Yes' : 'No'
     }));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
@@ -184,29 +246,16 @@ export class AssetStatusComponent {
     XLSX.writeFile(wb, 'AssetStatuses.xlsx');
   }
 
-  exportPDF() {
+  exportPDF(): void {
     const doc = new jsPDF();
-    const data = this.statuses.map(s => [s.AssetStatusName, s.IsActive ? 'Yes' : 'No']);
-    autoTable(doc, { head: [['Asset Status', 'Active']], body: data });
-    doc.save('AssetStatuses.pdf');
-  }
-
-  /** Bulk Upload */
-  openUploadPopup() { this.showUploadPopup = true; }
-  closeUploadPopup() { this.showUploadPopup = false; }
-
-  onBulkUploadComplete(data: any): void {
-    if (!data || !data.length) {
-      Swal.fire('Info', 'No valid data found in uploaded file.', 'info');
-      return;
-    }
-    this.adminService.bulkInsertData('AssetStatus', data).subscribe({
-      next: () => {
-        Swal.fire('Success', 'Asset Status data uploaded successfully!', 'success');
-        this.loadStatuses();
-        this.closeUploadPopup();
-      },
-      error: () => Swal.fire('Error', 'Failed to upload data.', 'error')
+    autoTable(doc, {
+      head: [['Asset Status', 'Description', 'Active']],
+      body: this.statuses.map(s => [
+        s.assetStatusName,
+        s.description,
+        s.isActive ? 'Yes' : 'No'
+      ])
     });
+    doc.save('AssetStatuses.pdf');
   }
 }

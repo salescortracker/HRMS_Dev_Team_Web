@@ -25,12 +25,14 @@ export interface Designation {
   isDeleted?: boolean;
 }
 export interface AssetStatus {
-  AssetStatusID: number;
-  AssetStatusName: string;
-  IsActive: boolean;
-  CompanyID: number;
-  RegionID: number;
+  assetStatusId: number;
+  assetStatusName: string;
+  description: string;
+  isActive: boolean;
+  companyId: number;
+  regionId: number;
 }
+
 export interface PolicyCategory {
   PolicyCategoryID?: number;
   CompanyID: number;
@@ -858,25 +860,40 @@ deleteAttachmentType(id: number) {
     return this.http.delete(`${this.baseUrl}/project-status/${id}`);
   }
 
-  // GET all asset statuses
-  getAssetStatuses(companyId: number, regionId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/asset-status?companyId=${companyId}&regionId=${regionId}`);
-  }
+ // GET all asset statuses
+getAssetStatuses(companyId: number, regionId: number): Observable<AssetStatus[]> {
+  return this.http.get<AssetStatus[]>(
+    `${this.baseUrl}/MasterData/asset-status`,
+    { params: { companyId, regionId } }
+  );
+}
 
-  // CREATE
-  createAssetStatus(status: AssetStatus): Observable<any> {
-    return this.http.post(`${this.baseUrl}/asset-status`, status);
-  }
 
-  // UPDATE
-  updateAssetStatus(status: AssetStatus): Observable<any> {
-    return this.http.put(`${this.baseUrl}/asset-status/${status.AssetStatusID}`, status);
-  }
+// CREATE
+createAssetStatus(status: AssetStatus): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/MasterData/asset-status`,
+    status
+  );
+}
 
-  // DELETE
-  deleteAssetStatus(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/asset-status/${id}`);
-  }
+
+// UPDATE
+updateAssetStatus(status: AssetStatus): Observable<any> {
+  return this.http.put(
+    `${this.baseUrl}/MasterData/asset-status/${status.assetStatusId}`,
+    status
+  );
+}
+
+
+// DELETE
+deleteAssetStatus(id: number): Observable<any> {
+  return this.http.delete(
+    `${this.baseUrl}/MasterData/asset-status/${id}`
+  );
+}
+
 
   // GET all helpdesk categories
   getHelpdeskCategories(companyId: number, regionId: number): Observable<any> {
