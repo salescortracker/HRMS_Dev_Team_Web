@@ -10,137 +10,319 @@
   </nav>
 </div>
 
-<!-- TAB 8: VISA / WORK PERMIT -->
 <div class="tab-container">
-  <form>
-    <!-- Personal Details -->
+
+  <!-- ==========================
+       FORM START
+  =========================== -->
+  <form #immigrationForm="ngForm" (ngSubmit)="saveImmigration(immigrationForm)" novalidate>
+
+    <!-- ========= PERSONAL DETAILS ========= -->
+    <h4 class="section-title">Personal Details</h4>
+
     <div class="row mb-3">
+      <!-- Full Name -->
       <div class="col-md-4">
-        <label class="form-label">Full Name</label>
-        <input type="text" class="form-control" placeholder="Enter full name" required>
+        <label class="form-label">Full Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" name="fullName"
+          [(ngModel)]="formModel.fullName"
+          placeholder="Enter full name" maxlength="100"
+          pattern="[A-Za-z ]*"
+          #fullName="ngModel"
+          required>
+        <div *ngIf="fullName.invalid && (fullName.dirty || fullName.touched)" class="text-danger small">
+          <div *ngIf="fullName.errors?.['required']">Full name is required</div>
+          <div *ngIf="fullName.errors?.['pattern']">Only alphabets allowed</div>
+          <div *ngIf="fullName.errors?.['maxlength']">Max 100 characters</div>
+        </div>
       </div>
+
+      <!-- Employee ID -->
       <div class="col-md-4">
-        <label class="form-label">Employee ID / Code</label>
-        <input type="text" class="form-control" placeholder="Enter employee ID / code">
+        <label class="form-label">Employee ID / Code <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" name="employeeId"
+          [(ngModel)]="formModel.employeeId"
+          placeholder="Enter employee ID / code" maxlength="20"
+          pattern="[A-Za-z0-9/\\-]*"
+          #employeeId="ngModel"
+          required>
+        <div *ngIf="employeeId.invalid && (employeeId.dirty || employeeId.touched)" class="text-danger small">
+          <div *ngIf="employeeId.errors?.['required']">Employee ID is required.</div>
+          <div *ngIf="employeeId.errors?.['pattern']">Only alphanumeric allowed.</div>
+          <div *ngIf="employeeId.errors?.['maxlength']">Max 20 characters allowed.</div>
+        </div>
       </div>
+
+      <!-- DOB -->
       <div class="col-md-4">
-        <label class="form-label">Date of Birth</label>
-        <input type="date" class="form-control" required>
+        <label class="form-label">Date of Birth <span class="text-danger">*</span></label>
+        <input type="date" class="form-control" name="dateOfBirth"
+          [(ngModel)]="formModel.dateOfBirth"
+          max="{{ today | date:'yyyy-MM-dd' }}"
+          #dateOfBirth="ngModel"
+          required>
+        <div *ngIf="dateOfBirth.invalid && (dateOfBirth.dirty || dateOfBirth.touched)" class="text-danger small">
+          <div *ngIf="dateOfBirth.errors?.['required']">Date of birth is required.</div>
+          <div *ngIf="dateOfBirth.errors?.['max']">Date cannot be in future.</div>
+        </div>
       </div>
     </div>
 
     <div class="row mb-3">
+      <!-- Nationality -->
       <div class="col-md-4">
-        <label class="form-label">Nationality / Citizenship</label>
-        <input type="text" class="form-control" placeholder="Enter nationality or select country" required>
+        <label class="form-label">Nationality / Citizenship <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" name="nationality" 
+          [(ngModel)]="formModel.nationality"
+          placeholder="Enter nationality or select country" 
+          #nationality="ngModel" 
+          required>
+        <div *ngIf="nationality.invalid && (nationality.dirty || nationality.touched)" class="text-danger small">
+          <div *ngIf="nationality.errors?.['required']">Nationality is required.</div>
+        </div>
       </div>
+
+      <!-- Passport Number -->
       <div class="col-md-4">
-        <label class="form-label">Passport Number</label>
-        <input type="text" class="form-control" placeholder="Enter passport number" required>
+        <label class="form-label">Passport Number <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" name="passportNumber"
+          [(ngModel)]="formModel.passportNumber"
+          placeholder="Enter passport number" maxlength="20"
+          pattern="[A-Z0-9]*" #passportNumber="ngModel"
+          (input)="onPassportInput($event)"
+          required>
+        <div *ngIf="passportNumber.invalid && (passportNumber.dirty || passportNumber.touched)" class="text-danger small">
+          <div *ngIf="passportNumber.errors?.['required']">Passport number is required.</div>
+          <div *ngIf="passportNumber.errors?.['pattern']">Uppercase letters and digits only.</div>
+          <div *ngIf="passportNumber.errors?.['maxlength']">Maximum 20 characters allowed.</div>
+        </div>
       </div>
+
+      <!-- Passport Expiry -->
       <div class="col-md-4">
-        <label class="form-label">Passport Expiry Date</label>
-        <input type="date" class="form-control" required>
+        <label class="form-label">Passport Expiry Date <span class="text-danger">*</span></label>
+        <input type="date" class="form-control" name="passportExpiryDate"
+          [(ngModel)]="formModel.passportExpiryDate"
+          min="{{ today | date:'yyyy-MM-dd' }}"
+          #passportExpiryDate="ngModel"
+          required>
+        <div *ngIf="passportExpiryDate.invalid && (passportExpiryDate.dirty || passportExpiryDate.touched)" class="text-danger small">
+          <div *ngIf="passportExpiryDate.errors?.['required']">Passport expiry date is required.</div>
+          <div *ngIf="passportExpiryDate.errors?.['min']">Expiry date must be in future.</div>
+        </div>
       </div>
     </div>
 
-    <!-- Visa / Work Permit Details -->
+    <!-- ========= VISA DETAILS ========= -->
+    <h4 class="section-title">Visa / Work Permit Details</h4>
+
     <div class="row mb-3">
+      <!-- Visa Type -->
       <div class="col-md-4">
-        <label class="form-label">Visa Type</label>
-        <select class="form-select" required>
-          <option value="">Select Visa Type</option>
-          <option>Work</option>
-          <option>Study</option>
-          <option>Dependent</option>
-          <option>Temporary</option>
-          <option>Permanent</option>
+        <label class="form-label">Visa Type <span class="text-danger">*</span></label>
+        <select class="form-select" name="visaTypeId"
+          [(ngModel)]="formModel.visaTypeId" #visaTypeId="ngModel" required>
+          <option value="">Select visa type</option>
+          <option *ngFor="let v of visaTypes" [value]="v.visaTypeId">{{ v.visaTypeName }}</option>
         </select>
+        <div *ngIf="visaTypeId.invalid && (visaTypeId.dirty || visaTypeId.touched)" class="text-danger small">
+          <div *ngIf="visaTypeId.errors?.['required']">Visa type is required.</div>
+        </div>
       </div>
+
+      <!-- Visa Number -->
       <div class="col-md-4">
-        <label class="form-label">Visa Number / Permit Number</label>
-        <input type="text" class="form-control" placeholder="Enter visa or permit number" required>
+        <label class="form-label">Visa Number / Permit Number <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" name="visaNumber"
+          [(ngModel)]="formModel.visaNumber"
+          placeholder="Enter visa or permit number" maxlength="30"
+          pattern="[A-Za-z0-9-]*" #visaNumber="ngModel"
+          required>
+        <div *ngIf="visaNumber.invalid && (visaNumber.dirty || visaNumber.touched)" class="text-danger small">
+          <div *ngIf="visaNumber.errors?.['required']">Visa number is required.</div>
+          <div *ngIf="visaNumber.errors?.['pattern']">Only letters, digits and '-' allowed.</div>
+          <div *ngIf="visaNumber.errors?.['maxlength']">Maximum 30 characters allowed.</div>
+        </div>
       </div>
+
+      <!-- Visa Issuing Country -->
       <div class="col-md-4">
-        <label class="form-label">Visa Issuing Country</label>
-        <input type="text" class="form-control" placeholder="Enter issuing country" required>
+        <label class="form-label">Visa Issuing Country <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" name="visaIssuingCountry"
+          [(ngModel)]="formModel.visaIssuingCountry"
+          placeholder="Enter issuing country" maxlength="50"
+          pattern="[A-Za-z ]*" #visaIssuingCountry="ngModel"
+          required>
+        <div *ngIf="visaIssuingCountry.invalid && (visaIssuingCountry.dirty || visaIssuingCountry.touched)" class="text-danger small">
+          <div *ngIf="visaIssuingCountry.errors?.['required']">Issuing country is required.</div>
+          <div *ngIf="visaIssuingCountry.errors?.['pattern']">Only alphabets allowed.</div>
+        </div>
       </div>
     </div>
 
     <div class="row mb-3">
+      <!-- Visa Issue Date -->
       <div class="col-md-4">
-        <label class="form-label">Visa Issue Date</label>
-        <input type="date" class="form-control" required>
+        <label class="form-label">Visa Issue Date <span class="text-danger">*</span></label>
+        <input type="date" class="form-control" name="visaIssueDate"
+          [(ngModel)]="formModel.visaIssueDate"
+          (change)="onVisaDateChange()"
+          max="{{ today | date:'yyyy-MM-dd' }}"
+          #visaIssueDate="ngModel"
+          required>
+        <div *ngIf="visaIssueDate.invalid && (visaIssueDate.dirty || visaIssueDate.touched)" class="text-danger small">
+          <div *ngIf="visaIssueDate.errors?.['required']">Visa issue date is required.</div>
+          <div *ngIf="visaIssueDate.errors?.['max']">Issue date cannot be in future.</div>
+        </div>
       </div>
+
+      <!-- Visa Expiry Date -->
       <div class="col-md-4">
-        <label class="form-label">Visa Expiry Date</label>
-        <input type="date" class="form-control" required>
+        <label class="form-label">Visa Expiry Date <span class="text-danger">*</span></label>
+        <input type="date" class="form-control" name="visaExpiryDate"
+          [(ngModel)]="formModel.visaExpiryDate"
+          (change)="onVisaDateChange()"
+          min="{{ today | date:'yyyy-MM-dd' }}"
+          #visaExpiryDate="ngModel"
+          required>
+        <div *ngIf="visaExpiryDate.invalid && (visaExpiryDate.dirty || visaExpiryDate.touched)" class="text-danger small">
+          <div *ngIf="visaExpiryDate.errors?.['required']">Visa expiry date is required.</div>
+          <div *ngIf="visaExpiryDate.errors?.['min']">Expiry date must be in future.</div>
+        </div>
       </div>
+
+      <!-- Status -->
       <div class="col-md-4">
-        <label class="form-label">Work Authorization / Permit Status</label>
-        <select class="form-select" required>
-          <option value="">Select Status</option>
-          <option>Approved</option>
-          <option>Pending</option>
-          <option>Rejected</option>
+        <label class="form-label">Work Authorization / Permit Status <span class="text-danger">*</span></label>
+        <select class="form-select" name="statusId"
+          [(ngModel)]="formModel.statusId" #statusId="ngModel" required>
+          <option value="">Select status</option>
+          <option *ngFor="let s of workStatuses" [value]="s.statusId">{{ s.statusName }}</option>
         </select>
+        <div *ngIf="statusId.invalid && (statusId.dirty || statusId.touched)" class="text-danger small">
+          <div *ngIf="statusId.errors?.['required']">Status is required.</div>
+        </div>
       </div>
     </div>
 
-    <!-- Employer / Sponsorship Details -->
+    <!-- ========= EMPLOYER DETAILS ========= -->
+    <h4 class="section-title">Employer / Sponsorship Details</h4>
+
     <div class="row mb-3">
+      <!-- Employer Name -->
       <div class="col-md-4">
-        <label class="form-label">Employer / Sponsor Name</label>
-        <input type="text" class="form-control" placeholder="Enter employer or sponsor name" required>
+        <label class="form-label">Employer / Sponsor Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" name="employerName"
+          [(ngModel)]="formModel.employerName"
+          placeholder="Enter employer or sponsor name"
+          maxlength="150" pattern="[A-Za-z&. \\-]*" #employerName="ngModel"
+          required>
+        <div *ngIf="employerName.invalid && (employerName.dirty || employerName.touched)" class="text-danger small">
+          <div *ngIf="employerName.errors?.['required']">Employer / Sponsor name is required.</div>
+          <div *ngIf="employerName.errors?.['pattern']">Only letters, &, ., - and spaces allowed.</div>
+        </div>
       </div>
+
+      <!-- Employer Address -->
       <div class="col-md-4">
         <label class="form-label">Employer Address</label>
-        <input type="text" class="form-control" placeholder="Enter employer address" required>
+        <textarea class="form-control" name="employerAddress"
+          [(ngModel)]="formModel.employerAddress"
+          placeholder="Enter employer address"
+          maxlength="250" #employerAddress="ngModel"></textarea>
       </div>
+
+      <!-- HR Contact Person -->
       <div class="col-md-4">
         <label class="form-label">Contact Person / HR</label>
-        <input type="text" class="form-control" placeholder="Enter HR contact name" required>
+        <input type="text" class="form-control" name="contactPerson"
+          [(ngModel)]="formModel.contactPerson"
+          placeholder="Enter HR contact name"
+          maxlength="100" pattern="[A-Za-z ]*" #contactPerson="ngModel">
+        <div *ngIf="contactPerson.invalid && (contactPerson.dirty || contactPerson.touched)" class="text-danger small">
+          <div *ngIf="contactPerson.errors?.['pattern']">Only alphabets allowed.</div>
+        </div>
       </div>
     </div>
 
     <div class="row mb-3">
+      <!-- Employer Contact -->
       <div class="col-md-4">
         <label class="form-label">Employer Contact Email / Phone</label>
-        <input type="text" class="form-control" placeholder="Enter email or phone" required>
+        <input type="text" class="form-control" name="employerContact"
+          [(ngModel)]="formModel.employerContact"
+          placeholder="Enter email or phone"
+          maxlength="100" #employerContact="ngModel">
       </div>
+
+      <!-- Remarks -->
       <div class="col-md-8">
         <label class="form-label">Remarks / Additional Information</label>
-        <textarea class="form-control" placeholder="Any additional info (optional)"></textarea>
+        <textarea class="form-control" name="remarks"
+          [(ngModel)]="formModel.remarks"
+          placeholder="Any additional info (optional)" maxlength="500"></textarea>
       </div>
     </div>
 
-    <!-- Upload Documents -->
+    <!-- ========= FILE UPLOAD ========= -->
+    <h4 class="section-title">Upload Documents</h4>
+
     <div class="row mb-3">
+      <!-- Passport Copy -->
       <div class="col-md-4">
-        <label class="form-label">Passport Copy</label>
-        <input type="file" class="form-control" accept=".pdf,.jpg,.png">
+        <label class="form-label">Passport Copy <span class="text-danger">*</span></label>
+        <input type="file" class="form-control"
+          (change)="onFileChange($event, 'passportCopy')"
+          accept=".pdf,.jpg,.jpeg,.png">
+        <div *ngIf="passportFileError" class="text-danger small">{{ passportFileError }}</div>
+        <div *ngIf="passportFile" class="small text-muted mt-1">Selected: {{ passportFile.name }} ({{ passportFile.size | number }} bytes)</div>
       </div>
+
+      <!-- Visa Copy -->
       <div class="col-md-4">
-        <label class="form-label">Visa / Work Permit Copy</label>
-        <input type="file" class="form-control" accept=".pdf,.jpg,.png">
+        <label class="form-label">Visa / Work Permit Copy <span class="text-danger">*</span></label>
+        <input type="file" class="form-control"
+          (change)="onFileChange($event, 'visaCopy')"
+          accept=".pdf,.jpg,.jpeg,.png">
+        <div *ngIf="visaFileError" class="text-danger small">{{ visaFileError }}</div>
+        <div *ngIf="visaFile" class="small text-muted mt-1">Selected: {{ visaFile.name }} ({{ visaFile.size | number }} bytes)</div>
       </div>
+
+      <!-- Other Documents -->
       <div class="col-md-4">
         <label class="form-label">Other Supporting Documents</label>
-        <input type="file" class="form-control" accept=".pdf,.jpg,.png">
+        <input type="file" class="form-control"
+          (change)="onFileChange($event, 'otherDocs')"
+          accept=".pdf,.jpg,.jpeg,.png">
+        <div *ngIf="otherFileError" class="text-danger small">{{ otherFileError }}</div>
+        <div *ngIf="otherFile" class="small text-muted mt-1">Selected: {{ otherFile.name }} ({{ otherFile.size | number }} bytes)</div>
       </div>
     </div>
 
+    <!-- ========= BUTTONS ========= -->
     <div class="row mb-3">
       <div class="col-md-12 text-first">
-        <button type="submit" class="btn btn-primary">Save Visa / Work Permit</button>
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
+          {{ isEditMode ? 'Update Visa / Work Permit' : 'Save Visa / Work Permit' }}
+        </button>
+        <button type="button" class="btn btn-secondary ms-2" (click)="resetForm(immigrationForm)">
+          Reset
+        </button>
       </div>
     </div>
-  </form>
 
-  <!-- Visa / Work Permit Table -->
+  </form>
+  <!-- ==========================
+       FORM END
+  =========================== -->
+
+  <!-- ==========================
+       LISTING TABLE
+  =========================== -->
   <div class="dashboard-tables full-row mt-4">
     <div class="table-card">
       <h3>Visa / Work Permit List</h3>
+
       <table class="table table-bordered">
         <thead>
           <tr>
@@ -153,24 +335,43 @@
             <th>Actions</th>
           </tr>
         </thead>
+
         <tbody>
-          <tr>
-            <td>EMP006 - Raj</td>
-            <td>Work</td>
-            <td>W1234567</td>
-            <td>2024-01-10</td>
-            <td>2025-01-09</td>
-            <td>Approved</td>
+          <tr *ngFor="let item of immigrationList" [class.table-warning]="isExpiringSoon(item.visaExpiryDate)">
+            <td>{{ item.employeeId }} - {{ item.fullName }}</td>
+            <td>{{ item.visaTypeName }}</td>
+            <td>{{ item.visaNumber }}</td>
+
+            <!-- Date Format dd/MM/yyyy -->
+            <td>{{ item.visaIssueDate | date:'dd/MM/yyyy' }}</td>
+            <td>{{ item.visaExpiryDate | date:'dd/MM/yyyy' }}</td>
+
+            <td>{{ item.statusName }}</td>
+
             <td class="action-icons">
-              <i class="fa-solid fa-pen"></i>
-              <i class="fa-solid fa-trash"></i>
+              <i class="fa-solid fa-pen" (click)="editImmigration(item)" title="Edit"></i>
+              <i class="fa-solid fa-trash" (click)="confirmDelete(item.immigrationId!)" title="Delete"></i>
+
+              <!-- Download Buttons -->
+              <div class="dropdown d-inline-block ms-2">
+                <i class="fa-solid fa-download dropdown-toggle" data-bs-toggle="dropdown"></i>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" (click)="downloadFile(item.immigrationId!, 'passport')">Passport Copy</a></li>
+                  <li><a class="dropdown-item" (click)="downloadFile(item.immigrationId!, 'visa')">Visa Copy</a></li>
+                  <li><a class="dropdown-item" (click)="downloadFile(item.immigrationId!, 'other')">Other Documents</a></li>
+                </ul>
+              </div>
             </td>
+          </tr>
+
+          <tr *ngIf="immigrationList.length === 0">
+            <td colspan="7" class="text-center text-muted">No records found</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+
 </div>
 
 <app-footer></app-footer>
-
