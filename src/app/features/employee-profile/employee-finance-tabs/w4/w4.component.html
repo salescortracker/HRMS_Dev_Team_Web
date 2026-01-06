@@ -1,0 +1,219 @@
+<!-- W4 Form -->
+<form [formGroup]="w4Form" (ngSubmit)="saveW4()">
+
+  <!-- Employee Info -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">First Name</label>
+      <input type="text" class="form-control" placeholder="Enter first name"
+             formControlName="firstName" maxlength="50" required
+             (blur)="trimField('firstName')">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Middle Initial</label>
+      <input type="text" class="form-control" placeholder="Enter middle initial"
+             formControlName="middleInitial" maxlength="1"
+             (input)="toUpperCase($event, 'middleInitial')"
+             (blur)="trimField('middleInitial')">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Last Name</label>
+      <input type="text" class="form-control" placeholder="Enter last name"
+             formControlName="lastName" maxlength="50" required
+             (blur)="trimField('lastName')">
+    </div>
+  </div>
+
+  <!-- SSN & Address -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">SSN</label>
+      <input type="text" class="form-control" placeholder="Enter SSN"
+             formControlName="ssn" required
+             (blur)="trimField('ssn')">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Address</label>
+      <textarea class="form-control" placeholder="Enter address"
+                formControlName="address" rows="2" maxlength="250" required></textarea>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">City</label>
+      <input type="text" class="form-control" placeholder="Enter city"
+             formControlName="city" maxlength="100" required
+             (blur)="trimField('city')">
+    </div>
+  </div>
+
+  <!-- State, ZIP, Filing Status -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">State</label>
+      <select class="form-select" formControlName="state" required>
+        <option value="">Select state</option>
+        <option *ngFor="let s of states">{{ s }}</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">ZIP Code</label>
+      <input type="text" class="form-control" placeholder="Enter ZIP code"
+             formControlName="zipCode" required
+             (blur)="trimField('zipCode')">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Filing Status</label>
+      <select class="form-select" formControlName="filingStatus" required>
+        <option value="">Select status</option>
+        <option>Single</option>
+        <option>Married</option>
+        <option>Head of Household</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Multiple Jobs / Dependents -->
+  <div class="row mb-3">
+    <div class="col-md-4 d-flex align-items-center">
+      <div class="form-check mt-2">
+        <input class="form-check-input" type="checkbox" formControlName="multipleJobsOrSpouse">
+        <label class="form-check-label">Multiple Jobs or Spouse Works</label>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Total Dependents</label>
+      <input type="number" class="form-control" placeholder="Enter total dependents"
+             formControlName="totalDependents" min="0" max="99" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Dependent Amounts</label>
+      <input type="number" class="form-control" placeholder="Enter dependent amounts"
+             formControlName="dependentAmounts" max="9999999999">
+    </div>
+  </div>
+
+  <!-- Income Details -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">Other Income</label>
+      <input type="number" class="form-control" placeholder="Other income"
+             formControlName="otherIncome" max="9999999999">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Deductions</label>
+      <input type="number" class="form-control" placeholder="Enter deductions"
+             formControlName="deductions" max="9999999999">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Extra Withholding</label>
+      <input type="number" class="form-control" placeholder="Extra withholding"
+             formControlName="extraWithholding" max="9999999999">
+    </div>
+  </div>
+
+  <!-- Signature & Date -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">Employee Signature</label>
+      <input type="text" class="form-control" placeholder="Sign here"
+             formControlName="employeeSignature" maxlength="100" required
+             (blur)="trimField('employeeSignature')">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Date</label>
+      <input type="date" class="form-control" formControlName="formDate" required>
+    </div>
+  </div>
+
+  <!-- Submit & Reset -->
+  <div class="row">
+    <div class="col-md-12 text-end">
+      <button type="submit" class="btn btn-primary me-2">
+        {{ isEditMode ? 'Update W4(USA)' : 'Save W4(USA)' }}
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="resetForm()">
+        Reset
+      </button>
+    </div>
+  </div>
+</form>
+
+<!-- W4 List Table with Search, Sorting, Pagination -->
+<div class="dashboard-tables full-row mt-4">
+  <div class="table-card">
+    <h3>W4 List</h3>
+
+    <!-- Search & Page Size -->
+    <div class="d-flex justify-content-between mb-2">
+      <input type="text" class="form-control w-auto" placeholder="Search..." [(ngModel)]="searchText">
+      <select class="form-select w-auto" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+        <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+      </select>
+    </div>
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th (click)="sortBy('firstName')" style="cursor:pointer">
+            Employee
+            <span *ngIf="sortColumn==='firstName'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th (click)="sortBy('ssn')" style="cursor:pointer">
+            SSN
+            <span *ngIf="sortColumn==='ssn'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th (click)="sortBy('address')" style="cursor:pointer">
+            Address
+            <span *ngIf="sortColumn==='address'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th (click)="sortBy('city')" style="cursor:pointer">
+            City
+            <span *ngIf="sortColumn==='city'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th (click)="sortBy('state')" style="cursor:pointer">
+            State
+            <span *ngIf="sortColumn==='state'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th (click)="sortBy('zipCode')" style="cursor:pointer">
+            ZIP
+            <span *ngIf="sortColumn==='zipCode'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th (click)="sortBy('filingStatus')" style="cursor:pointer">
+            Filing Status
+            <span *ngIf="sortColumn==='filingStatus'">{{ sortDirection==='asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let w4 of filteredW4s(); let i = index">
+          <td>{{ w4.firstName }} {{ w4.lastName }}</td>
+          <td>{{ w4.ssn }}</td>
+          <td>{{ w4.address }}</td>
+          <td>{{ w4.city }}</td>
+          <td>{{ w4.state }}</td>
+          <td>{{ w4.zipCode }}</td>
+          <td>{{ w4.filingStatus }}</td>
+          <td class="action-icons">
+            <i class="fa-solid fa-pen" (click)="editW4(w4)"></i>
+            <i class="fa-solid fa-trash" (click)="deleteW4(w4.w4Id)"></i>
+          </td>
+        </tr>
+
+        <tr *ngIf="filteredW4s().length === 0">
+          <td colspan="8" class="text-center">No W4 records found.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <div class="d-flex justify-content-between mt-2">
+      <div>Page {{ currentPage }} of {{ totalPages }}</div>
+      <div class="btn-group">
+        <button class="btn btn-sm btn-outline-secondary" (click)="changePage(1)" [disabled]="currentPage===1">First</button>
+        <button class="btn btn-sm btn-outline-secondary" (click)="changePage(currentPage-1)" [disabled]="currentPage===1">Prev</button>
+        <button class="btn btn-sm btn-outline-secondary" (click)="changePage(currentPage+1)" [disabled]="currentPage===totalPages">Next</button>
+        <button class="btn btn-sm btn-outline-secondary" (click)="changePage(totalPages)" [disabled]="currentPage===totalPages">Last</button>
+      </div>
+    </div>
+  </div>
+</div>
