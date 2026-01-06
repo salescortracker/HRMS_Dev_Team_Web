@@ -150,7 +150,11 @@ export interface CertificationType {
   CertificationTypeID: number;
   CertificationTypeName: string;
   IsActive: boolean;
+  Description?: string | null; // optional
+  CompanyID?: number;           // optional
+  RegionID?: number;            // optional
 }
+
 export interface BloodGroup {
   bloodGroupID: number;
   bloodGroupName: string;
@@ -599,22 +603,45 @@ updateRelationship(id: number, data: any) {
 deleteRelationship(id: number) {
   return this.http.delete<any>(`${this.baseUrl}/relationship/${id}`);
 }
- // Certification Type APIs
-  getCertificationTypes(): Observable<CertificationType[]> {
-    return this.http.get<CertificationType[]>(`${this.baseUrl}/CertificationType`);
-  }
+ // ================= CERTIFICATION TYPE =================
 
-  createCertificationType(data: CertificationType): Observable<any> {
-    return this.http.post(`${this.baseUrl}/CertificationType`, data);
-  }
+getCertificationTypes(companyId: number, regionId: number) {
+  return this.http.get<any>(
+    `${this.baseUrl}/MasterData/certification-types?companyId=${companyId}&regionId=${regionId}`
+  );
+}
 
-  updateCertificationType(id: number, data: CertificationType): Observable<any> {
-    return this.http.put(`${this.baseUrl}/CertificationType/${id}`, data);
-  }
 
-  deleteCertificationType(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/CertificationType/${id}`);
-  }
+
+createCertificationType(data: CertificationType) {
+  return this.http.post(
+    `${this.baseUrl}/MasterData/certification-types`,
+    data
+  );
+}
+
+updateCertificationType(id: number, data: CertificationType) {
+  return this.http.put(
+    `${this.baseUrl}/MasterData/certification-types/${id}`,
+    data
+  );
+}
+
+// DELETE (HARD DELETE – no query params)
+deleteCertificationType(id: number) {
+  return this.http.delete(
+    `${this.baseUrl}/MasterData/certification-types/${id}`
+  );
+}
+
+// BULK UPLOAD
+bulkUploadCertificationTypes(data: CertificationType[]): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/MasterData/certification-types/bulk`,
+    data
+  );
+}
+
   // Policy Category
 
 createPolicyCategory(policy: PolicyCategory) {
