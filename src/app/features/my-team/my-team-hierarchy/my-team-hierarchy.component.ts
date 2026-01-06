@@ -1,36 +1,68 @@
-import { Component,Input } from '@angular/core';
-interface Employee {
-  id: number;
-  name: string;
-  role: string;
-  managerId?: number;
+import { Component, OnInit } from '@angular/core';
+import { AdminService, TeamHierarchyDto } from '../../../admin/servies/admin.service';
+import Swal from 'sweetalert2';
+
+// Reuse Employee interface for recursive tree
+export interface Employee {
+  employeeMasterId: number;
+  fullName: string;
+  role?: string | null;
+  managerId?: number | null;
+  subordinates: Employee[];
+  expanded?: boolean; // for UI toggle
 }
+
 @Component({
   selector: 'app-my-team-hierarchy',
-  standalone: false,
   templateUrl: './my-team-hierarchy.component.html',
-  styleUrl: './my-team-hierarchy.component.css'
+  styleUrls: ['./my-team-hierarchy.component.css'],
+  standalone: false // make sure it's not standalone
 })
-export class MyTeamHierarchyComponent {
-  employees: Employee[] = [
-    { id: 1, name: 'John Smith', role: 'CEO' },
-    { id: 2, name: 'Alice Johnson', role: 'HR Manager', managerId: 1 },
-    { id: 3, name: 'Bob Lee', role: 'IT Manager', managerId: 1 },
-    { id: 4, name: 'Clara Doe', role: 'HR Executive', managerId: 2 },
-    { id: 5, name: 'David Kim', role: 'Lead Developer', managerId: 3 },
-    { id: 6, name: 'Eva Wong', role: 'Developer', managerId: 5 },
-    { id: 7, name: 'Fiona Adams', role: 'Intern', managerId: 6 },
-    { id: 8, name: 'George White', role: 'Developer', managerId: 5 },
-    { id: 9, name: 'Helen Brown', role: 'Finance Manager', managerId: 1 },
-    { id: 10, name: 'Ian Black', role: 'Finance Executive', managerId: 9 },
-  ];
+export class MyTeamHierarchyComponent implements OnInit {
 
-  // Filter top-level employees (CEOs)
-  topLevelEmployees(): Employee[] {
-    return this.employees.filter(e => !e.managerId);
+  tree: Employee[] = [];
+  loading: boolean = false;
+
+  constructor(private adminService: AdminService) {}
+
+  ngOnInit(): void {
+    const loggedInUserId = Number(sessionStorage.getItem('UserId'));
+    if (loggedInUserId) {
+      this.loadMyTeam(loggedInUserId);
+    } else {
+      Swal.fire('Error', 'Logged-in user not found', 'error');
+    }
   }
 
-  getSubordinates(managerId: number): Employee[] {
-    return this.employees.filter(e => e.managerId === managerId);
+  loadMyTeam(managerUserId: number) {
+    this.loading = true;
+    this.adminService.getMyTeam(managerUserId).subscribe({
+      next: (res: TeamHierarchyDto) => {
+        this.tree = [this.mapToEmployee(res)];
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        Swal.fire('Error', 'Failed to load team hierarchy', 'error');
+        this.loading = false;
+      }
+    });
+  }
+
+  // Map TeamHierarchyDto to Employee recursively
+  private mapToEmployee(node: TeamHierarchyDto): Employee {
+    return {
+      employeeMasterId: node.employeeMasterId,
+      fullName: node.fullName,
+      role: node.role,
+      managerId: node.managerId,
+      expanded: true, // default expanded
+      subordinates: node.subordinates.map(sub => this.mapToEmployee(sub))
+    };
+  }
+
+  // Optional: expand/collapse toggle
+  toggleNode(node: Employee) {
+    node.expanded = !node.expanded;
   }
 }

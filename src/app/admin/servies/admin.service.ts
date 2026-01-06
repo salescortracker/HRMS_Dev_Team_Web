@@ -217,6 +217,37 @@ export interface Department {
   modifiedAt?: Date;
   isDeleted?: boolean;
 }
+  // ------------------ Employee Master Interface ------------------ //
+  export interface EmployeeMaster {
+    employeeMasterId: number;
+    fullName: string;
+    role?: string | null;
+      roleId?: number;   // For backend
+    department?: string | null;
+    managerId?: number | null;
+    createdBy?: number | null;
+    updatedBy?: number | null;  // ✅ needed for edit
+
+  } 
+  //------------------- Manager Dropdown Interface ------------------ //
+  export interface ManagerDropdown {
+    userId: number;
+    fullName: string;
+  }
+
+//---------------------------------My Team Hierarchy Interface---------------------//
+export interface TeamHierarchyDto {
+  employeeMasterId: number;
+  fullName: string;
+  role?: string | null;
+  managerId?: number | null;
+  subordinates: TeamHierarchyDto[];
+  expanded?: boolean; // optional for UI toggle
+}
+
+
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -825,4 +856,45 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
   );
 }
+//------------------------------EmployeeMasterService-------------------------------------//
+getAllEmployees() {
+  return this.http.get<EmployeeMaster[]>(
+    `${this.baseUrl}/UserManagement/GetAllEmployees`
+  );
+}
+
+createEmployee(dto: EmployeeMaster) {
+  return this.http.post(
+    `${this.baseUrl}/UserManagement/CreateEmployee`,
+    dto
+  );
+}
+
+updateEmployee(id: number, dto: EmployeeMaster) {
+  return this.http.post(
+    `${this.baseUrl}/UserManagement/UpdateEmployee/${id}`,
+    dto
+  );
+}
+
+deleteEmployee(id: number) {
+  return this.http.post(
+    `${this.baseUrl}/UserManagement/DeleteEmployee/${id}`,
+    {}
+  );
+}
+
+getManagers() {
+  return this.http.get<ManagerDropdown[]>(
+    `${this.baseUrl}/UserManagement/GetManagers`
+  );
+}
+//------------------------------My Team Hierarchy Service-------------------------------------//
+getMyTeam(managerUserId: number): Observable<TeamHierarchyDto> {
+  return this.http.get<TeamHierarchyDto>(`${this.baseUrl}/UserManagement/MyTeam/${managerUserId}`);
+}
+
+
+
+
 }
