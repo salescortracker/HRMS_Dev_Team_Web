@@ -11,33 +11,37 @@
 </div>
 
 <div class="tab-container">
-<div class="container mt-4">
-  <h3>My Team / Subordinates</h3>
-<div class="org-chart">
-  <ul class="org-ul">
-    <ng-container *ngFor="let emp of topLevelEmployees()">
-      <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: emp }"></ng-container>
-    </ng-container>
-  </ul>
-</div>
+  <div class="container mt-4">
+    <h3>My Team / Subordinates</h3>
 
-<ng-template #recursiveList let-employee>
-  <li>
-    <div class="employee-card">
-      <strong>{{ employee.name }}</strong>
-      <span>{{ employee.role }}</span>
+    <div class="org-chart">
+      <ul class="org-ul">
+        <ng-container *ngFor="let emp of tree">
+          <ng-container
+            *ngTemplateOutlet="recursiveList; context: { $implicit: emp }">
+          </ng-container>
+        </ng-container>
+      </ul>
     </div>
 
-    <ul *ngIf="getSubordinates(employee.id).length > 0">
-      <ng-container *ngFor="let sub of getSubordinates(employee.id)">
-        <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: sub }"></ng-container>
-      </ng-container>
-    </ul>
-  </li>
-</ng-template>
+    <ng-template #recursiveList let-employee>
+      <li>
+        <div class="employee-card">
+          <strong>{{ employee.fullName }}</strong>
+          <span *ngIf="employee.role">{{ employee.role }}</span>
+        </div>
 
+        <ul *ngIf="employee.subordinates?.length">
+          <ng-container *ngFor="let sub of employee.subordinates">
+            <ng-container
+              *ngTemplateOutlet="recursiveList; context: { $implicit: sub }">
+            </ng-container>
+          </ng-container>
+        </ul>
+      </li>
+    </ng-template>
 
+  </div>
 </div>
 
-</div>
 <app-footer></app-footer>
