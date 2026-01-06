@@ -59,6 +59,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AddAssestsComponent } from './features/asset/add-assests/add-assests.component';
+import { MyAssetComponent } from './features/asset/my-asset/my-asset.component';
+import { AssetApprovalComponent } from './features/asset/asset-approval/asset-approval.component';
 import { BankDetailsComponent } from './features/employee-profile/employee-finance-tabs/bank-details/bank-details.component';
 import { DdListComponent } from './features/employee-profile/employee-finance-tabs/dd-list/dd-list.component';
 import { W4Component } from './features/employee-profile/employee-finance-tabs/w4/w4.component';
@@ -123,6 +126,9 @@ import { EmployeeCertificationsComponent } from './features/employee-profile/emp
     CompensationComponent,
     RecruitmentProcessComponent,
     CommonUploadComponent,
+    AddAssestsComponent,
+    MyAssetComponent,
+    AssetApprovalComponent
     BankDetailsComponent,
     DdListComponent,
     W4Component

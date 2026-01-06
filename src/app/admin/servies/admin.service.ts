@@ -25,12 +25,14 @@ export interface Designation {
   isDeleted?: boolean;
 }
 export interface AssetStatus {
-  AssetStatusID: number;
-  AssetStatusName: string;
-  IsActive: boolean;
-  CompanyID: number;
-  RegionID: number;
+  assetStatusId: number;
+  assetStatusName: string;
+  description: string;
+  isActive: boolean;
+  companyId: number;
+  regionId: number;
 }
+
 export interface PolicyCategory {
   PolicyCategoryID?: number;
   CompanyID: number;
@@ -153,7 +155,11 @@ export interface CertificationType {
   CertificationTypeID: number;
   CertificationTypeName: string;
   IsActive: boolean;
+  Description?: string | null; // optional
+  CompanyID?: number;           // optional
+  RegionID?: number;            // optional
 }
+
 export interface BloodGroup {
   bloodGroupID: number;
   bloodGroupName: string;
@@ -763,22 +769,49 @@ updateRelationship(id: number, data: any) {
 deleteRelationship(id: number) {
   return this.http.delete<any>(`${this.baseUrl}/relationship/${id}`);
 }
+ // ================= CERTIFICATION TYPE =================
  // Certification Type APIs
   // getCertificationTypes(): Observable<CertificationType[]> {
   //   return this.http.get<CertificationType[]>(`${this.baseUrl}/CertificationType`);
   // }
 
-  createCertificationType(data: CertificationType): Observable<any> {
-    return this.http.post(`${this.baseUrl}/CertificationType`, data);
-  }
+getCertificationTypes(companyId: number, regionId: number) {
+  return this.http.get<any>(
+    `${this.baseUrl}/MasterData/certification-types?companyId=${companyId}&regionId=${regionId}`
+  );
+}
 
-  updateCertificationType(id: number, data: CertificationType): Observable<any> {
-    return this.http.put(`${this.baseUrl}/CertificationType/${id}`, data);
-  }
 
-  deleteCertificationType(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/CertificationType/${id}`);
-  }
+
+createCertificationType(data: CertificationType) {
+  return this.http.post(
+    `${this.baseUrl}/MasterData/certification-types`,
+    data
+  );
+}
+
+updateCertificationType(id: number, data: CertificationType) {
+  return this.http.put(
+    `${this.baseUrl}/MasterData/certification-types/${id}`,
+    data
+  );
+}
+
+// DELETE (HARD DELETE – no query params)
+deleteCertificationType(id: number) {
+  return this.http.delete(
+    `${this.baseUrl}/MasterData/certification-types/${id}`
+  );
+}
+
+// BULK UPLOAD
+bulkUploadCertificationTypes(data: CertificationType[]): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/MasterData/certification-types/bulk`,
+    data
+  );
+}
+
   // Policy Category
 
 createPolicyCategory(policy: PolicyCategory) {
@@ -858,25 +891,40 @@ deleteAttachmentType(id: number) {
     return this.http.delete(`${this.baseUrl}/project-status/${id}`);
   }
 
-  // GET all asset statuses
-  getAssetStatuses(companyId: number, regionId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/asset-status?companyId=${companyId}&regionId=${regionId}`);
-  }
+ // GET all asset statuses
+getAssetStatuses(companyId: number, regionId: number): Observable<AssetStatus[]> {
+  return this.http.get<AssetStatus[]>(
+    `${this.baseUrl}/MasterData/asset-status`,
+    { params: { companyId, regionId } }
+  );
+}
 
-  // CREATE
-  createAssetStatus(status: AssetStatus): Observable<any> {
-    return this.http.post(`${this.baseUrl}/asset-status`, status);
-  }
 
-  // UPDATE
-  updateAssetStatus(status: AssetStatus): Observable<any> {
-    return this.http.put(`${this.baseUrl}/asset-status/${status.AssetStatusID}`, status);
-  }
+// CREATE
+createAssetStatus(status: AssetStatus): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/MasterData/asset-status`,
+    status
+  );
+}
 
-  // DELETE
-  deleteAssetStatus(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/asset-status/${id}`);
-  }
+
+// UPDATE
+updateAssetStatus(status: AssetStatus): Observable<any> {
+  return this.http.put(
+    `${this.baseUrl}/MasterData/asset-status/${status.assetStatusId}`,
+    status
+  );
+}
+
+
+// DELETE
+deleteAssetStatus(id: number): Observable<any> {
+  return this.http.delete(
+    `${this.baseUrl}/MasterData/asset-status/${id}`
+  );
+}
+
 
   // GET all helpdesk categories
   getHelpdeskCategories(companyId: number, regionId: number): Observable<any> {
