@@ -126,12 +126,14 @@ export interface HelpdeskCategory {
   RegionID: number;
 }
 export interface KpiCategory {
-  KpiCategoryID?: number;
+  KpiCategoryID: number;       // required now to avoid undefined errors
   KpiCategoryName: string;
+  Description?: string;        // optional, can be empty
   IsActive: boolean;
-  CompanyID?: number;
-  RegionID?: number;
+  CompanyID: number;
+  RegionID: number;
 }
+
 export interface MaritalStatus {
   MaritalStatusID: number;
   StatusName: string;
@@ -388,7 +390,7 @@ export interface EmployeeImmigration {
   providedIn: 'root'
 })
 export class AdminService {
-  private baseUrl = 'https://localhost:44320/api'; // 🔹 Change this to your actual API URL
+  private baseUrl = 'https://localhost:44370/api'; // 🔹 Change this to your actual API URL
 
   constructor(private http: HttpClient) {}
   // -------------------------------------------------------------
@@ -801,28 +803,32 @@ deletePolicyCategory(id: number) {
 
     return this.http.get<PolicyCategory[]>(`${this.baseUrl}/PolicyCategory`, { params });
   }
-  // ---------- KPI CATEGORY ----------
-createKpiCategory(model: KpiCategory) {
-  return this.http.post(`${this.baseUrl}/KpiCategory/Create`, model);
-}
-
-getKpiCategories(companyId: number, regionId: number) {
-  return this.http.get(`${this.baseUrl}/KpiCategory/GetAll`, {
-    params: { companyId, regionId }
-  });
+// ---------- KPI CATEGORY ----------
+getKpiCategories() {
+  return this.http.get(`${this.baseUrl}/MasterData/kpi-categories`);
 }
 
 getKpiCategoryById(id: number) {
-  return this.http.get(`${this.baseUrl}/KpiCategory/GetById/${id}`);
+  return this.http.get(`${this.baseUrl}/MasterData/kpi-categories/${id}`);
 }
 
-updateKpiCategory(model: KpiCategory) {
-  return this.http.put(`${this.baseUrl}/KpiCategory/Update`, model);
+createKpiCategory(data: any) {
+  return this.http.post(`${this.baseUrl}/MasterData/kpi-categories`, data);
+}
+
+updateKpiCategory(data: any) {
+  return this.http.put(`${this.baseUrl}/MasterData/kpi-categories`, data);
 }
 
 deleteKpiCategory(id: number) {
-  return this.http.delete(`${this.baseUrl}/KpiCategory/Delete/${id}`);
+  return this.http.delete(`${this.baseUrl}/MasterData/kpi-categories/${id}`);
 }
+
+
+
+
+// ATTACHMENT TYPE CRUD
+
 getAttachmentTypes(companyId: number, regionId: number) {
   return this.http.get<any>(`${this.baseUrl}/AttachmentType/Get?companyId=${companyId}&regionId=${regionId}`);
 }
@@ -1046,7 +1052,7 @@ uploadDDCopy(formData: FormData): Observable<{ fileName: string }> {
 downloadDDCopy(fileName: string): Observable<Blob> {
   return this.http.get(`${this.baseUrl}/UserManagement/DownloadDDCopy/${fileName}`, { responseType: 'blob' });
 
-
+}
 // -------------------------------------------------------------
 // 🔹 EMPLOYEE  Letters  OPERATIONS
 // -------------------------------------------------------------
@@ -1097,6 +1103,7 @@ updateEmployeeForms(id: number, formData: FormData): Observable<any> {
 deleteEmployeeForms(id: number): Observable<any> {
   return this.http.delete(`${this.baseUrl}/UserManagement/forms/${id}`);
 }
+
 // -------------------------------------------------------------
 // 🔹 EMPLOYEE  Document  OPERATIONS
 // -------------------------------------------------------------
@@ -1125,6 +1132,7 @@ deleteEmployeeDocument(id: number): Observable<any> {
   getEmployeeImmigrationById(id: number) : Observable <EmployeeImmigration> {
     return this.http.get<EmployeeImmigration>(`${this.baseUrl}/UserManagement/GetByIdImmigration/${id}`);
   }
+
 
  CreateEmployeeImmigration(formData: FormData): Observable<any> {
   return this.http.post(`${this.baseUrl}/UserManagement/CreateImmigration`, formData, {
@@ -1262,9 +1270,6 @@ updateCertification(id: number, formData: FormData): Observable<any> {
 
 deleteCertification(id: number): Observable<any> {
   return this.http.delete(`${this.baseUrl}/UserManagement/certifications/${id}`);
-}
-
-
 }
 
 
