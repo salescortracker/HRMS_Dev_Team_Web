@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams,HttpErrorResponse  } from '@angular/common/http';
+
+import { forkJoin, of } from 'rxjs';
+import { map } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Observable, throwError, forkJoin, map } from 'rxjs';
 
@@ -32,12 +36,16 @@ export interface AssetStatus {
   RegionID: number;
 }
 export interface PolicyCategory {
-  PolicyCategoryID?: number;
-  CompanyID: number;
-  RegionID: number;
-  PolicyCategoryName: string;
-  IsActive: boolean;
+  policyCategoryId?: number;
+  companyId: number;
+  regionId: number;
+  policyCategoryName: string;
+  description?: string;
+  isActive: boolean;
+  userId: number;
 }
+
+
 export interface AttachmentType {
   AttachmentTypeID?: number;
   AttachmentTypeName: string;
@@ -62,11 +70,12 @@ export interface AttendanceStatus {
   
 }
 export interface ExpenseCategory {
-  ExpenseCategoryID: number;
-  ExpenseCategoryName: string;
-  IsActive: boolean;
-  CompanyID: number;
-  RegionID: number;
+  expenseCategoryID: number;
+  expenseCategoryName: string;
+  isActive: boolean;
+  companyID: number;
+  regionID: number;
+  createdBy?: number;
 }
 export interface LeaveStatus {
   LeaveStatusID: number;
@@ -160,10 +169,12 @@ export interface BloodGroup {
   isActive: boolean;
 }
 export interface Gender {
-  genderID: number;
+  genderId: number;
   genderName: string;
   description?: string;
   isActive: boolean;
+    companyId: number;   // ✅ REQUIRED
+  regionId: number;    
 }
 
 export interface Region {
@@ -382,6 +393,23 @@ export interface EmployeeImmigration {
 }
 
 
+
+
+export interface EventModel {
+  eventId?: number;
+  eventName: string;
+  eventTypeId: number;
+  eventDate: string;
+  description?: string;
+  companyId: number;
+  regionId: number;
+  userId: number;
+}
+
+export interface EventType {
+  eventTypeId: number;
+  eventTypeName: string;
+}
 
 
 @Injectable({
@@ -699,20 +727,46 @@ deleteDesignation(id: number): Observable<any> {
 }
 
 getGenders() {
-  return this.http.get<{ data: { data: Gender[] } }>(`${this.baseUrl}/Gender/GetAll`);
+  // debugger;
+  return this.http.get(`${this.baseUrl}/MasterData/GetGenderAll`);
 }
 
 createGender(gender: Gender) {
-  return this.http.post(`${this.baseUrl}/Gender/Create`, gender);
+  debugger;
+  return this.http.post(`${this.baseUrl}/MasterData/CreateGender`, gender);
 }
 
+// 🔴 MUST BE PUT (backend uses HttpPut)
 updateGender(id: number, gender: Gender) {
-  return this.http.put(`${this.baseUrl}/Gender/Update/${id}`, gender);
+  return this.http.put(`${this.baseUrl}/MasterData/UpdateGender/${id}`,gender);
 }
 
 deleteGender(id: number) {
-  return this.http.delete(`${this.baseUrl}/Gender/Delete/${id}`);
+  return this.http.delete(`${this.baseUrl}/MasterData/DeleteGender/${id}`);
 }
+
+bulkUploadPolicyCategory(
+  file: File,
+  companyId: number,
+  regionId: number,
+  userId: number
+) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return this.http.post(
+    `${this.baseUrl}/MasterData/PolicyCategories/BulkUpload?companyId=${companyId}&regionId=${regionId}&userId=${userId}`,
+    formData
+  );
+}
+
+
+  // bulkUpload(file: File): Observable<any> {
+  //   const formData = new FormData();
+  //   formData.append('file', file);
+  //   return this.http.post(`${this.baseUrl}/MasterData/BulkUpload`, formData);
+  // }
+
 // Example endpoints
 getBloodGroups() {
   return this.http.get(`${this.baseUrl}/bloodgroups`);
@@ -781,26 +835,46 @@ deleteRelationship(id: number) {
   }
   // Policy Category
 
+ getPolicyCategories(): Observable<PolicyCategory[]> {
+
+  const companyId = Number(sessionStorage.getItem('CompanyID'));
+  const regionId  = Number(sessionStorage.getItem('RegionID'));
+
+  return this.http.get<PolicyCategory[]>(
+    `${this.baseUrl}/MasterData/PolicyCategories`,
+    {
+      params: {
+        companyId: companyId.toString(),
+        regionId: regionId.toString()
+      }
+    }
+  );
+}
+
 createPolicyCategory(policy: PolicyCategory) {
-  return this.http.post(`${this.baseUrl}/PolicyCategory`, policy);
+  return this.http.post(
+    `${this.baseUrl}/MasterData/PolicyCategories`,
+    {
+      companyId: policy.companyId,
+      regionId: policy.regionId,
+      policyCategoryName: policy.policyCategoryName,
+      description: policy.description,
+      isActive: policy.isActive,
+      userId: policy.userId
+    }
+  );
 }
 
-updatePolicyCategory(id: number, policy: PolicyCategory) {
-  return this.http.put(`${this.baseUrl}/PolicyCategory/${id}`, policy);
-}
 
-deletePolicyCategory(id: number) {
-  return this.http.delete(`${this.baseUrl}/PolicyCategory/${id}`);
-}
-
-// Get policy categories by company and region
-  getPolicyCategories(companyID: number, regionID: number): Observable<PolicyCategory[]> {
-    let params = new HttpParams()
-      .set('CompanyID', companyID.toString())
-      .set('RegionID', regionID.toString());
-
-    return this.http.get<PolicyCategory[]>(`${this.baseUrl}/PolicyCategory`, { params });
+  updatePolicyCategory(id: number, policy: PolicyCategory) {
+    return this.http.put(`${this.baseUrl}/MasterData/PolicyCategories/${id}`, policy);
   }
+
+  deletePolicyCategory(id: number) {
+    return this.http.delete(`${this.baseUrl}/MasterData/PolicyCategories/${id}`);
+  }
+
+
   // ---------- KPI CATEGORY ----------
 createKpiCategory(model: KpiCategory) {
   return this.http.post(`${this.baseUrl}/KpiCategory/Create`, model);
@@ -974,23 +1048,86 @@ deleteExpenseStatus(id: number) {
 }
  // ------------------ EXPENSE CATEGORY TYPE ------------------
 
+
+
 createExpenseCategoryType(model: ExpenseCategory) {
-  return this.http.post(`${this.baseUrl}/ExpenseCategoryType/Create`, model);
+  return this.http.post<any>(
+    `${this.baseUrl}/MasterData/CreateExpences`,
+    model
+  );
 }
 
 updateExpenseCategoryType(model: ExpenseCategory) {
-  return this.http.put(`${this.baseUrl}/ExpenseCategoryType/Update`, model);
+  return this.http.put<any>(
+    `${this.baseUrl}/MasterData/UpdateExpences`,
+    model
+  );
 }
 
 deleteExpenseCategoryType(id: number) {
-  return this.http.delete<any>(`${this.baseUrl}/ExpenseCategoryType/Delete/${id}`);
+  return this.http.delete<any>(
+    `${this.baseUrl}/MasterData/DeleteExpences/${id}`
+  );
 }
 
 getAllExpenseCategoryTypes(companyId: number, regionId: number) {
   return this.http.get<any>(
-    `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
+    `${this.baseUrl}/MasterData/GetAllExpences/${companyId}/${regionId}`
   );
 }
+
+//------------------------------------------------------------
+ // events.service.ts
+getEventTypes(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/MasterData/GetAllEventTypes`);
+}
+
+getEvents(companyId: number, regionId: number): Observable<any[]> {
+  const params = new HttpParams()
+    .set('companyId', companyId)
+    .set('regionId', regionId);
+
+  return this.http.get<any[]>(`${this.baseUrl}/MasterData/GetEvents`, { params });
+}
+
+createEvent(event: any): Observable<any> {
+  return this.http.post(`${this.baseUrl}/MasterData/CreateEvent`, event);
+}
+updateEvent(eventId: number, event: any): Observable<any> {
+  return this.http.put<any>(
+    `${this.baseUrl}/MasterData/UpdateEvent/${eventId}`,
+    event,
+    { responseType: 'json' }
+  ).pipe(
+    catchError(error => {
+      console.error('Update error:', error);
+      // If it's a 200 response with text, treat as success
+      if (error.status === 200 || error.status === 0) {
+        return of({ message: 'Success' });
+      }
+      return throwError(() => error);
+    })
+  );
+}
+
+deleteEvent(eventId: number, userId?: number): Observable<any> {
+  let url = `${this.baseUrl}/MasterData/DeleteEvent/${eventId}`;
+  if (userId !== undefined && userId !== null) {
+    url += `?userId=${userId}`;
+  }
+  return this.http.delete<any>(url, { responseType: 'json' }).pipe(
+    catchError(error => {
+      console.error('Delete error:', error);
+      // If it's a 200 response with text, treat as success
+      if (error.status === 200 || error.status === 0) {
+        return of({ message: 'Success' });
+      }
+      return throwError(() => error);
+    })
+  );
+}
+
+
 //--------------------------------BANK - DETAILS-----------------------------------//
 getBankDetails(): Observable<BankDetails[]> {
   return this.http.get<BankDetails[]>(`${this.baseUrl}/UserManagement/GetAllBankDetails`);

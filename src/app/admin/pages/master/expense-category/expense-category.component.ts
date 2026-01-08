@@ -13,8 +13,8 @@ import { AdminService, ExpenseCategory } from '../../../servies/admin.service';
   styleUrl: './expense-category.component.css'
 })
 export class ExpenseCategoryComponent {
-   companyId = 1;
-  regionId = 1;
+   companyId = sessionStorage.getItem('CompanyId') ? Number(sessionStorage.getItem('CompanyId')) : 1;
+  regionId = sessionStorage.getItem('RegionId') ? Number(sessionStorage.getItem('RegionId')) : 1;
 
   expense: ExpenseCategory = this.getEmptyExpenseCategory();
   expenseList: ExpenseCategory[] = [];
@@ -39,11 +39,11 @@ export class ExpenseCategoryComponent {
 
   getEmptyExpenseCategory(): ExpenseCategory {
     return {
-      ExpenseCategoryID: 0,
-      ExpenseCategoryName: '',
-      IsActive: true,
-      CompanyID: this.companyId,
-      RegionID: this.regionId
+      expenseCategoryID: 0,
+      expenseCategoryName: '',
+      isActive: true,
+      companyID: this.companyId,
+      regionID: this.regionId
     };
   }
 
@@ -51,7 +51,7 @@ export class ExpenseCategoryComponent {
     this.spinner.show();
     this.admin.getAllExpenseCategoryTypes(this.companyId, this.regionId).subscribe({
       next: res => {
-        this.expenseList = res.data?.data || res.data || res;
+         this.expenseList = res.data;
         this.spinner.hide();
       },
       error: () => {
@@ -98,15 +98,16 @@ export class ExpenseCategoryComponent {
     this.isEditMode = true;
   }
 
+
   deleteExpenseCategory(item: ExpenseCategory): void {
     Swal.fire({
-      title: `Delete "${item.ExpenseCategoryName}"?`,
+      title: `Delete "${item.expenseCategoryName}"?`,
       showCancelButton: true,
       confirmButtonText: 'Delete'
     }).then(result => {
       if (result.isConfirmed) {
         this.spinner.show();
-        this.admin.deleteExpenseCategoryType(item.ExpenseCategoryID).subscribe({
+        this.admin.deleteExpenseCategoryType(item.expenseCategoryID).subscribe({
           next: () => {
             this.spinner.hide();
             Swal.fire('Deleted', 'Expense Category deleted successfully.', 'success');
@@ -121,6 +122,12 @@ export class ExpenseCategoryComponent {
     });
   }
 
+  lettersOnly(event: KeyboardEvent) {
+  if (!/^[a-zA-Z ]$/.test(event.key)) {
+    event.preventDefault();
+  }
+}
+
   resetForm(): void {
     this.expense = this.getEmptyExpenseCategory();
     this.isEditMode = false;
@@ -128,8 +135,8 @@ export class ExpenseCategoryComponent {
 
   filteredExpenseCategory(): ExpenseCategory[] {
     return this.expenseList.filter(c => {
-      const matchSearch = c.ExpenseCategoryName.toLowerCase().includes(this.searchText.toLowerCase());
-      const matchStatus = this.statusFilter === '' || c.IsActive === this.statusFilter;
+      const matchSearch = c.expenseCategoryName.toLowerCase().includes(this.searchText.toLowerCase());
+      const matchStatus = this.statusFilter === '' || c.isActive === this.statusFilter;
       return matchSearch && matchStatus;
     });
   }
@@ -180,8 +187,8 @@ export class ExpenseCategoryComponent {
 
   exportExcel() {
     const data = this.expenseList.map(c => ({
-      'Category Name': c.ExpenseCategoryName,
-      'Active': c.IsActive ? 'Yes' : 'No'
+      'Category Name': c.expenseCategoryName,
+      'Active': c.isActive ? 'Yes' : 'No'
     }));
 
     const ws = XLSX.utils.json_to_sheet(data);
@@ -195,8 +202,8 @@ export class ExpenseCategoryComponent {
     const doc = new jsPDF();
 
     const data = this.expenseList.map(c => [
-      c.ExpenseCategoryName,
-      c.IsActive ? 'Yes' : 'No'
+      c.expenseCategoryName,
+      c.isActive ? 'Yes' : 'No'
     ]);
 
     autoTable(doc, {
