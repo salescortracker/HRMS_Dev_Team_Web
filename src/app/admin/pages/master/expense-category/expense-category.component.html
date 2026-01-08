@@ -38,13 +38,16 @@
 
             <div class="col-md-6">
               <label class="form-label fw-semibold">Category Name</label>
-              <input 
-                type="text" 
-                class="form-control" 
-                name="CategoryName"
-                [(ngModel)]="expense.ExpenseCategoryName"
-                placeholder="Enter Category Name"
-                required />
+             <input
+                type="text"
+                name="expenseCategoryName" 
+                [(ngModel)]="expense.expenseCategoryName"
+                (keypress)="lettersOnly($event)"
+                placeholder="Category Name"
+                class="form-control"
+                required 
+              />
+
             </div>
 
             <div class="col-md-6 d-flex align-items-center">
@@ -53,10 +56,10 @@
                   class="form-check-input" 
                   type="checkbox" 
                   id="categoryActiveSwitch"
-                  [(ngModel)]="expense.IsActive" 
+                  [(ngModel)]="expense.isActive" 
                   name="IsActive">
                 <label class="form-check-label ms-2" for="categoryActiveSwitch">
-                  {{ expense.IsActive ? 'Active' : 'Inactive' }}
+                  {{ expense.isActive ? 'Active' : 'Inactive' }}
                 </label>
               </div>
             </div>
@@ -106,10 +109,11 @@
 
                 <th>#</th>
 
-                <th (click)="sortTable('CategoryName')" class="sortable">
-                  Category Name
-                  <i class="fa" [ngClass]="getSortIcon('CategoryName')"></i>
-                </th>
+                <th (click)="sortTable('ExpenseCategoryName')" class="sortable">
+  Category Name
+  <i class="fa" [ngClass]="getSortIcon('ExpenseCategoryName')"></i>
+</th>
+
 
                 <th>Status</th>
 
@@ -121,11 +125,11 @@
               <tr *ngFor="let item of pagedExpenseCategory; let i = index">
                 <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
 
-                <td>{{ item.ExpenseCategoryName }}</td>
+                <td>{{ item.expenseCategoryName }}</td>
 
                 <td>
-                  <span class="badge" [ngClass]="item.IsActive ? 'bg-success' : 'bg-secondary'">
-                    {{ item.IsActive ? 'Active' : 'Inactive' }}
+                  <span class="badge" [ngClass]="item.isActive ? 'bg-success' : 'bg-secondary'">
+                    {{ item.isActive ? 'Active' : 'Inactive' }}
                   </span>
                 </td>
 

@@ -38,30 +38,35 @@
             <!-- Policy Category Name -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Policy Category</label>
-              <input
+             <input
                 type="text"
                 class="form-control"
-                name="PolicyCategoryName"
-                [(ngModel)]="policy.PolicyCategoryName"
+                name="policyCategoryName"
+                [(ngModel)]="policy.policyCategoryName"
                 placeholder="Enter Policy Category"
                 required
+                  pattern="^[A-Za-z ]+$"
+                (keypress)="lettersOnly($event)"
               />
+
             </div>
 
             <!-- IsActive Switch -->
             <div class="col-md-6 d-flex align-items-center mt-3">
               <div class="form-check form-switch">
                 <input
-                  class="form-check-input"
-                  type="checkbox"
-                  id="isActiveSwitch"
-                  name="IsActive"
-                  [(ngModel)]="policy.IsActive"
-                />
-                <label class="form-check-label ms-2" for="isActiveSwitch">
-                  {{ policy.IsActive ? 'Active' : 'Inactive' }}
-                </label>
+  class="form-check-input"
+  type="checkbox"
+  id="isActiveSwitch"
+  name="isActive"
+  [(ngModel)]="policy.isActive"
+/>
+
+               <label class="form-check-label ms-2">
+  {{ policy.isActive ? 'Active' : 'Inactive' }}
+</label>
               </div>
+
             </div>
 
             <!-- Submit -->
@@ -105,11 +110,12 @@
             <tbody>
               <tr *ngFor="let p of paginatedPolicies(); let i = index">
                 <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
-                <td>{{ p.PolicyCategoryName }}</td>
+                <td>{{ p.policyCategoryName  }}</td>
                 <td>
-                  <span class="badge" [ngClass]="p.IsActive ? 'bg-success' : 'bg-secondary'">
-                    {{ p.IsActive ? 'Active' : 'Inactive' }}
-                  </span>
+                  <span class="badge" [ngClass]="p.isActive ? 'bg-success' : 'bg-secondary'">
+  {{ p.isActive ? 'Active' : 'Inactive' }}
+</span>
+
                 </td>
                 <td class="text-center">
                   <button class="btn btn-sm btn-outline-primary me-2" (click)="editPolicy(p)">
@@ -143,6 +149,37 @@
         </nav>
       </div>
     </div>
+<!-- Bulk Upload Modal -->
+<div class="modal fade show d-block" *ngIf="showUploadPopup">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Bulk Upload Policy Categories</h5>
+        <button type="button" class="btn-close" (click)="closeUploadPopup()"></button>
+      </div>
+
+      <div class="modal-body">
+        <input
+          type="file"
+          accept=".xlsx,.xls"
+          class="form-control"
+          (change)="onFileSelected($event)"
+        />
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeUploadPopup()">Cancel</button>
+        <button class="btn btn-danger" (click)="uploadBulkPolicyCategories()">
+          Upload
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop fade show" *ngIf="showUploadPopup"></div>
 
   </div>
 </div>
