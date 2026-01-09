@@ -132,11 +132,7 @@ export interface KpiCategory {
   CompanyID?: number;
   RegionID?: number;
 }
-export interface MaritalStatus {
-  MaritalStatusID: number;
-  StatusName: string;
-  IsActive: boolean;
-}
+
 export interface Relationship {
   RelationshipID: number;
   RelationshipName: string;
@@ -382,6 +378,18 @@ export interface EmployeeImmigration {
 }
 
 
+
+
+export interface MaritalStatus {
+  maritalStatusID: number;
+  companyID: number;
+  regionID: number;
+  statusName: string;
+  description?: string;
+  isActive: boolean;
+    companyName?: string;
+  regionName?: string;
+}
 
 
 @Injectable({
@@ -729,23 +737,7 @@ updateBloodGroup(id: number, data: any) {
 deleteBloodGroup(id: number) {
   return this.http.delete(`${this.baseUrl}/bloodgroups/${id}`);
 }
-// ---------------- MARITAL STATUS MASTER ---------------- //
 
-getMaritalStatuses() {
-  return this.http.get<any>(`${this.baseUrl}/marital-status`);
-}
-
-createMaritalStatus(data: any) {
-  return this.http.post<any>(`${this.baseUrl}/marital-status`, data);
-}
-
-updateMaritalStatus(id: number, data: any) {
-  return this.http.put<any>(`${this.baseUrl}/marital-status/${id}`, data);
-}
-
-deleteMaritalStatus(id: number) {
-  return this.http.delete<any>(`${this.baseUrl}/marital-status/${id}`);
-}
 // ---------------- RELATIONSHIP MASTER ---------------- //
 
 getRelationships() {
@@ -991,6 +983,41 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
   );
 }
+
+//martital status CRUD operations
+
+   // ----------------- Marital Status -----------------
+  getMaritalStatuses(): Observable<MaritalStatus[]> {
+    // Must POST {} because backend uses [HttpPost("getall")]
+    return this.http.post<MaritalStatus[]>(`${this.baseUrl}/UserManagement/getall`, {});
+  }
+
+  createMaritalStatus(data: MaritalStatus): Observable<any> {
+    const fd = new FormData();
+    fd.append('companyId', data.companyID.toString());
+    fd.append('regionId', data.regionID.toString());
+    fd.append('maritalStatusName', data.statusName);
+    fd.append('description', data.description ?? '');
+    fd.append('isActive', data.isActive.toString());
+    return this.http.post(`${this.baseUrl}/UserManagement/create`, fd);
+  }
+
+  updateMaritalStatus(data: MaritalStatus): Observable<any> {
+    const fd = new FormData();
+    fd.append('id', data.maritalStatusID.toString());
+    fd.append('companyId', data.companyID.toString());
+    fd.append('regionId', data.regionID.toString());
+    fd.append('maritalStatusName', data.statusName);
+    fd.append('description', data.description ?? '');
+    fd.append('isActive', data.isActive.toString());
+    return this.http.post(`${this.baseUrl}/UserManagement/update`, fd);
+  }
+
+  deleteMaritalStatus(id: number): Observable<any> {
+    const fd = new FormData();
+    fd.append('id', id.toString());
+    return this.http.post(`${this.baseUrl}/UserManagement/delete`, fd);
+  }
 //--------------------------------BANK - DETAILS-----------------------------------//
 getBankDetails(): Observable<BankDetails[]> {
   return this.http.get<BankDetails[]>(`${this.baseUrl}/UserManagement/GetAllBankDetails`);
