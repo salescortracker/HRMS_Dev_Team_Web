@@ -69,12 +69,14 @@ export interface ExpenseCategory {
   RegionID: number;
 }
 export interface LeaveStatus {
-  LeaveStatusID: number;
-  LeaveStatusName: string;
-  IsActive: boolean;
-  CompanyID: number;
-  RegionID: number;
+  leaveStatusID: number;
+  leaveStatusName: string;
+  description?: string;
+  isActive: boolean;
+  companyID: number;
+  regionID: number;
 }
+
 export interface LeaveType {
   LeaveTypeId: number;
   LeaveTypeName: string;
@@ -938,37 +940,38 @@ updateAttendanceStatus(model: AttendanceStatus) {
 deleteAttendanceStatus(id: number) {
   return this.http.delete(`${this.baseUrl}/AttendanceStatus/Delete?id=${id}`);
 }
-// ================= LEAVE STATUS ===================
+// ===================== LEAVE STATUS =====================
 
-// Get All
-getLeaveStatus(companyId: number, regionId: number) {
-  return this.http.get<any>(
-    `${this.baseUrl}/LeaveStatus/GetLeaveStatus?CompanyID=${companyId}&RegionID=${regionId}`
-  );
+// Get all leave status
+getLeaveStatus() {
+  return this.http.get<any>(`${this.baseUrl}/MasterData/leave-status`);
 }
 
-// Create
-createLeaveStatus(data: LeaveStatus) {
-  return this.http.post<any>(`${this.baseUrl}/LeaveStatus/CreateLeaveStatus`, data);
+// Get leave status by id
+getLeaveStatusById(id: number) {
+  return this.http.get<any>(`${this.baseUrl}/MasterData/leave-status/${id}`);
 }
 
-// Update
-updateLeaveStatus(data: LeaveStatus) {
-  return this.http.put<any>(`${this.baseUrl}/LeaveStatus/UpdateLeaveStatus`, data);
+// Create leave status
+createLeaveStatus(payload: LeaveStatus) {
+  return this.http.post<any>(`${this.baseUrl}/MasterData/leave-status`, payload);
 }
 
-// Delete
+// Update leave status
+updateLeaveStatus(payload: LeaveStatus) {
+  return this.http.put<any>(`${this.baseUrl}/MasterData/leave-status`, payload);
+}
+
+// Delete leave status
 deleteLeaveStatus(id: number) {
-  return this.http.delete<any>(
-    `${this.baseUrl}/LeaveStatus/DeleteLeaveStatus?LeaveStatusID=${id}`
-  );
+  return this.http.delete<any>(`${this.baseUrl}/MasterData/leave-status/${id}`);
 }
 getLeaveType(companyId: number, regionId: number) {
   return this.http.get<any>(
     `${this.baseUrl}/LeaveStatus/GetLeaveStatus?CompanyID=${companyId}&RegionID=${regionId}`
   );
 }
-
+//-----------leavetype----------------//
   createLeaveType(model: LeaveType): Observable<any> {
     return this.http.post(`${this.baseUrl}/Create`, model);
   }
