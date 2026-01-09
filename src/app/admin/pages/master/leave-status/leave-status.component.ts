@@ -41,18 +41,15 @@ export class LeaveStatusComponent {
     private spinner: NgxSpinnerService
   ) {}
 
-  /* ================= Init ================= */
-
   ngOnInit(): void {
-    this.companyId = Number(sessionStorage.getItem('CompanyId')) || 0;
-    this.regionId = Number(sessionStorage.getItem('RegionId')) || 0;
+    this.leave = this.getEmptyLeave();
+    this.companyId = this.leave.companyID;
+    this.regionId = this.leave.regionID;
 
     this.loadCompanies();
-    this.leave = this.getEmptyLeave();
   }
 
-  /* ================= Helpers ================= */
-
+  /* ================= HELPERS ================= */
   getEmptyLeave(): LeaveStatusView {
     return {
       leaveStatusID: 0,
@@ -65,14 +62,13 @@ export class LeaveStatusComponent {
     };
   }
 
-  /* ================= Company / Region ================= */
-
+  /* ================= COMPANY / REGION ================= */
   loadCompanies(): void {
     this.adminService.getCompanies().subscribe({
       next: (res: Company[]) => {
         this.companies = res || [];
         this.companyMap = {};
-        this.companies.forEach(c => this.companyMap[c.companyId] = c.companyName);
+        this.companies.forEach(c => (this.companyMap[c.companyId] = c.companyName));
 
         if (this.companyId) {
           this.loadRegions();
@@ -94,9 +90,10 @@ export class LeaveStatusComponent {
       next: (res: Region[]) => {
         this.regions = res || [];
         this.regionMap = {};
-        this.regions.forEach(r => this.regionMap[r.regionID] = r.regionName);
+        this.regions.forEach(r => (this.regionMap[r.regionID] = r.regionName));
 
-        if (!this.regionId || !this.regionMap[this.regionId]) {
+        // Preserve region selection if exists
+        if (!this.regionMap[this.regionId]) {
           this.regionId = this.regions.length ? this.regions[0].regionID : 0;
         }
 
@@ -110,87 +107,41 @@ export class LeaveStatusComponent {
   }
 
   onCompanyChange(): void {
-  if (!this.companyId) {
-    this.regions = [];
+    sessionStorage.setItem('CompanyId', this.companyId.toString());
+    this.leave.companyID = this.companyId;
+
+    // Reset region dropdown
     this.regionId = 0;
-    return;
+    this.leave.regionID = 0;
+    this.regions = [];
+    this.regionMap = {};
+
+    this.loadRegions();
   }
 
-  // Save company selection
-  sessionStorage.setItem('CompanyId', this.companyId.toString());
-
-  // Reset region selection
-  this.regionId = 0;
-  this.regions = [];
-  this.leave.regionID = 0;
-  this.leave.companyID = this.companyId;
-
-  // Load ONLY regions for selected company
-  this.adminService.getRegions(this.companyId).subscribe({
-    next: (res: Region[]) => {
-      this.regions = res || [];
-
-      // Rebuild region map ONLY from company regions
-      this.regionMap = {};
-      this.regions.forEach(r => {
-        this.regionMap[r.regionID] = r.regionName;
-      });
-    },
-    error: () => Swal.fire('Error', 'Failed to load regions', 'error')
-  });
-}
-
-onRegionChange(): void {
-  if (!this.regionId) return;
-
-  sessionStorage.setItem('RegionId', this.regionId.toString());
-  this.leave.regionID = this.regionId;
-
-  // Optional: reload table if region-based filtering is needed
-  // this.loadLeaveStatus();
-}
-
+  onRegionChange(): void {
+    if (!this.regionId) return;
+    sessionStorage.setItem('RegionId', this.regionId.toString());
+    this.leave.regionID = this.regionId;
+  }
 
   /* ================= CRUD ================= */
-
   loadLeaveStatus(): void {
     this.spinner.show();
-
     this.adminService.getLeaveStatus().subscribe({
       next: (res: any) => {
         const data = res.data || [];
-
-        this.adminService.getRegions().subscribe({
-          next: (allRegions: Region[]) => {
-            this.regionMap = {};
-            allRegions.forEach(r => this.regionMap[r.regionID] = r.regionName);
-
-            this.leaveList = data.map((l: any) => ({
-              leaveStatusID: l.leaveStatusID,
-              leaveStatusName: l.leaveStatusName,
-              isActive: l.isActive,
-              companyID: l.companyID,
-              regionID: l.regionID,
-              companyName: this.companyMap[l.companyID] ?? '—',
-              regionName: this.regionMap[l.regionID] ?? '—'
-            }));
-
-            this.currentPage = 1;
-            this.spinner.hide();
-          },
-          error: () => {
-            this.leaveList = data.map((l: any) => ({
-              leaveStatusID: l.leaveStatusID,
-              leaveStatusName: l.leaveStatusName,
-              isActive: l.isActive,
-              companyID: l.companyID,
-              regionID: l.regionID,
-              companyName: this.companyMap[l.companyID] ?? '—',
-              regionName: '—'
-            }));
-            this.spinner.hide();
-          }
-        });
+        this.leaveList = data.map((l: any) => ({
+          leaveStatusID: l.leaveStatusID,
+          leaveStatusName: l.leaveStatusName,
+          isActive: l.isActive,
+          companyID: l.companyID,
+          regionID: l.regionID,
+          companyName: this.companyMap[l.companyID] ?? '—',
+          regionName: this.regionMap[l.regionID] ?? '—'
+        }));
+        this.currentPage = 1;
+        this.spinner.hide();
       },
       error: () => {
         this.spinner.hide();
@@ -211,9 +162,11 @@ onRegionChange(): void {
     obs.subscribe({
       next: () => {
         this.spinner.hide();
-        Swal.fire(this.isEditMode ? 'Updated!' : 'Added!',
+        Swal.fire(
+          this.isEditMode ? 'Updated!' : 'Added!',
           `Leave status ${this.isEditMode ? 'updated' : 'created'} successfully.`,
-          'success');
+          'success'
+        );
         this.loadLeaveStatus();
         this.resetForm();
       },
@@ -228,6 +181,7 @@ onRegionChange(): void {
     this.leave = { ...l };
     this.isEditMode = true;
 
+    // Pre-select dropdowns
     this.companyId = l.companyID;
     this.regionId = l.regionID;
 
@@ -236,17 +190,16 @@ onRegionChange(): void {
 
   loadRegionsForEdit(): void {
     if (!this.companyId) return;
-
     this.adminService.getRegions(this.companyId).subscribe({
       next: (res: Region[]) => {
         this.regions = res || [];
         this.regionMap = {};
-        this.regions.forEach(r => this.regionMap[r.regionID] = r.regionName);
+        this.regions.forEach(r => (this.regionMap[r.regionID] = r.regionName));
 
+        // Ensure selected region exists
         if (!this.regionMap[this.regionId]) {
           this.regionId = this.regions.length ? this.regions[0].regionID : 0;
         }
-
         this.leave.regionID = this.regionId;
       },
       error: () => Swal.fire('Error', 'Failed to load regions', 'error')
@@ -278,13 +231,23 @@ onRegionChange(): void {
     });
   }
 
+  /* ================= RESET FORM ================= */
   resetForm(): void {
     this.leave = this.getEmptyLeave();
     this.isEditMode = false;
+
+    this.companyId = this.leave.companyID;
+    this.regionId = this.leave.regionID;
+
+    if (this.companyId) {
+      this.loadRegions();
+    } else {
+      this.regions = [];
+      this.regionMap = {};
+    }
   }
 
-  /* ================= Search & Pagination ================= */
-
+  /* ================= FILTER / PAGINATION ================= */
   filteredLeave(): LeaveStatusView[] {
     const search = this.searchText.toLowerCase();
     return this.leaveList.filter(l =>
@@ -308,8 +271,7 @@ onRegionChange(): void {
     }
   }
 
-  /* ================= Export ================= */
-
+  /* ================= EXPORT ================= */
   exportAs(type: 'excel' | 'pdf'): void {
     type === 'excel' ? this.exportExcel() : this.exportPDF();
   }
@@ -321,7 +283,6 @@ onRegionChange(): void {
       'Region': l.regionName,
       'Status': l.isActive ? 'Active' : 'Inactive'
     }));
-
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Leave Status');
@@ -336,34 +297,15 @@ onRegionChange(): void {
       l.regionName,
       l.isActive ? 'Active' : 'Inactive'
     ]);
-
-    autoTable(doc, {
-      head: [['Leave Status', 'Company', 'Region', 'Status']],
-      body: data
-    });
-
+    autoTable(doc, { head: [['Leave Status', 'Company', 'Region', 'Status']], body: data });
     doc.save('LeaveStatusList.pdf');
   }
 
-  /* ================= Bulk Upload ================= */
-
-  openUploadPopup(): void {
-    this.showUploadPopup = true;
-  }
-
-  closeUploadPopup(): void {
-    this.showUploadPopup = false;
-  }
-
+  /* ================= BULK UPLOAD ================= */
+  openUploadPopup(): void { this.showUploadPopup = true; }
+  closeUploadPopup(): void { this.showUploadPopup = false; }
   onBulkUploadComplete(event: any): void {
-    const file = event as File;
-    if (!file) {
-      Swal.fire('Error', 'No file received', 'error');
-      return;
-    }
-
-    Swal.fire('Success', 'Bulk upload completed successfully.', 'success');
-    this.loadLeaveStatus();
     this.showUploadPopup = false;
+    this.loadLeaveStatus();
   }
 }

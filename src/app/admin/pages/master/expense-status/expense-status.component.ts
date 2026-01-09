@@ -49,8 +49,14 @@ regionMap: { [key: number]: string } = {};
 
 ngOnInit(): void {
   this.expense = this.getEmptyExpense();
-  this.loadCompanies(); // 🔹 maps built here
+
+  // 🔹 Reset dropdowns
+  this.companyId = this.expense.CompanyID || 0;
+  this.regionId = this.expense.RegionID || 0;
+
+  this.loadCompanies(); 
 }
+
 
 
   getEmptyExpense(): ExpenseStatus {
@@ -84,7 +90,6 @@ ngOnInit(): void {
   });
 }
 
-
 loadRegions(): void {
   if (!this.companyId) return;
 
@@ -97,20 +102,28 @@ loadRegions(): void {
         this.regionMap[r.regionID] = r.regionName
       );
 
-      this.loadExpenseStatus(); // ✅ NOW names can bind
+      // 🔹 Ensure regionId is preserved after loading regions
+      if (!this.regions.find(r => r.regionID === this.regionId)) {
+        this.regionId = 0;
+        this.expense.RegionID = 0;
+      }
+
+      this.loadExpenseStatus(); // ✅ names can bind
     }
   });
 }
 
 
 
-  onCompanyChange(): void {
-    sessionStorage.setItem('CompanyId', this.companyId.toString());
-    this.regionId = 0;
-    this.regions = [];
-    this.loadRegions();
-    this.expense.CompanyID = this.companyId;
-  }
+onCompanyChange(): void {
+  sessionStorage.setItem('CompanyId', this.companyId.toString());
+  this.regionId = 0;
+  this.expense.RegionID = 0; // 🔹 reset selected region
+  this.regions = [];
+  this.loadRegions();
+  this.expense.CompanyID = this.companyId;
+}
+
 
   onRegionChange(): void {
     sessionStorage.setItem('RegionId', this.regionId.toString());
@@ -173,15 +186,16 @@ loadRegions(): void {
     });
   }
 
- editExpense(e: ExpenseStatus): void {
+editExpense(e: ExpenseStatus): void {
   this.expense = { ...e };
   this.isEditMode = true;
 
   this.companyId = e.CompanyID || 0;
   this.regionId = e.RegionID || 0;
 
-  this.loadRegions();
+  this.loadRegions(); // ✅ loads regions for selected company
 }
+
 
 
   deleteExpense(item: ExpenseStatus): void {
@@ -208,10 +222,22 @@ loadRegions(): void {
     });
   }
 
-  resetForm(): void {
-    this.expense = this.getEmptyExpense();
-    this.isEditMode = false;
+resetForm(): void {
+  this.expense = this.getEmptyExpense();
+  this.isEditMode = false;
+
+  // 🔹 Reset dropdowns
+  this.companyId = this.expense.CompanyID || 0;
+  this.regionId = this.expense.RegionID || 0;
+
+  // If a company is selected, reload regions
+  if (this.companyId) {
+    this.loadRegions();
+  } else {
+    this.regions = [];
+    this.regionMap = {};
   }
+}
 
   // ================= FILTER / SORT =================
 
