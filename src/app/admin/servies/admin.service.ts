@@ -89,7 +89,11 @@ export interface ExpenseStatus {
   IsActive: boolean;
   CompanyID: number;
   RegionID: number;
+  CompanyName?: string;
+  RegionName?: string;
 }
+
+
 export interface Company {
   companyId: number;
   companyName: string;
@@ -825,6 +829,22 @@ deleteKpiCategory(id: number) {
 }
 
 
+// ---------- EXPENSE STATUS ----------
+getExpenseStatus() {
+  return this.http.get(`${this.baseUrl}/MasterData/expense-status`);
+}
+
+getExpenseStatusById(id: number) {
+  return this.http.get(`${this.baseUrl}/MasterData/expense-status/${id}`);
+}
+
+saveExpenseStatus(data: any) {
+  return this.http.post(`${this.baseUrl}/MasterData/expense-status`, data);
+}
+
+deleteExpenseStatus(id: number) {
+  return this.http.delete(`${this.baseUrl}/MasterData/expense-status/${id}`);
+}
 
 
 // ATTACHMENT TYPE CRUD
@@ -961,23 +981,7 @@ deleteLeaveType(id: number) {
     `${this.baseUrl}/LeaveStatus/DeleteLeaveStatus?LeaveStatusID=${id}`
   );
 }
-// EXPENSE STATUS CRUD
 
-getExpenseStatus(companyId: number, regionId: number) {
-  return this.http.get<any>(`${this.baseUrl}/GetExpenseStatus?companyId=${companyId}&regionId=${regionId}`);
-}
-
-createExpenseStatus(data: ExpenseStatus) {
-  return this.http.post<any>(`${this.baseUrl}/CreateExpenseStatus`, data);
-}
-
-updateExpenseStatus(data: ExpenseStatus) {
-  return this.http.put<any>(`${this.baseUrl}/UpdateExpenseStatus`, data);
-}
-
-deleteExpenseStatus(id: number) {
-  return this.http.delete<any>(`${this.baseUrl}/DeleteExpenseStatus/${id}`);
-}
  // ------------------ EXPENSE CATEGORY TYPE ------------------
 
 createExpenseCategoryType(model: ExpenseCategory) {
