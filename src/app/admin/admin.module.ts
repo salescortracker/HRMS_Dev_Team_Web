@@ -63,7 +63,7 @@ import { MenusComponent } from './master/menus/menus.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { SubmenuComponent } from './layout/submenu/submenu.component';
-
+import { MaritalStatus } from './layout/models/marital-status.model';
 @NgModule({
   declarations: [
     TopbarComponent,
@@ -126,6 +126,7 @@ import { SubmenuComponent } from './layout/submenu/submenu.component';
     MenusComponent,
     CommonUploadComponent,
     SubmenuComponent,
+    
   
 
   ],
