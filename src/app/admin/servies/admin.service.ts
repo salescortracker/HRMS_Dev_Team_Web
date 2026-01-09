@@ -132,11 +132,7 @@ export interface MaritalStatus {
   StatusName: string;
   IsActive: boolean;
 }
-export interface Relationship {
-  RelationshipID: number;
-  RelationshipName: string;
-  IsActive: boolean;
-}
+
 export interface MenuItem {
   label: string;           // <-- what UI expects
   link?: string;
@@ -216,6 +212,16 @@ export interface Department {
   modifiedBy?: string;
   modifiedAt?: Date;
   isDeleted?: boolean;
+}
+
+export interface Relationship {
+  RelationshipID: number;
+  RelationshipName: string;
+  IsActive: boolean;
+  CompanyID?: number;  // optional if backend returns
+  RegionID?: number;   // optional if backend returns
+   CompanyName?: string; // <-- add this
+  RegionName?: string;  // <-- add this
 }
 
 @Injectable({
@@ -580,23 +586,7 @@ updateMaritalStatus(id: number, data: any) {
 deleteMaritalStatus(id: number) {
   return this.http.delete<any>(`${this.baseUrl}/marital-status/${id}`);
 }
-// ---------------- RELATIONSHIP MASTER ---------------- //
 
-getRelationships() {
-  return this.http.get<any>(`${this.baseUrl}/relationship`);
-}
-
-createRelationship(data: any) {
-  return this.http.post<any>(`${this.baseUrl}/relationship`, data);
-}
-
-updateRelationship(id: number, data: any) {
-  return this.http.put<any>(`${this.baseUrl}/relationship/${id}`, data);
-}
-
-deleteRelationship(id: number) {
-  return this.http.delete<any>(`${this.baseUrl}/relationship/${id}`);
-}
  // Certification Type APIs
   getCertificationTypes(): Observable<CertificationType[]> {
     return this.http.get<CertificationType[]>(`${this.baseUrl}/CertificationType`);
@@ -825,4 +815,104 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
   );
 }
+
+// ----------------- Relationship Status -----------------
+
+// // GET ALL
+// getRelationshipStatuses(): Observable<Relationship[]> {
+//   // Backend uses [HttpPost("getall")]
+//   return this.http.post<Relationship[]>(
+//     `${this.baseUrl}/UserManagement/relationshipstatus/getall `,
+//     {}
+//   );
+// }
+
+// // CREATE
+// createRelationshipStatus(data: Relationship): Observable<any> {
+//   const fd = new FormData();
+//   fd.append('companyId', (data.CompanyID || 0).toString());
+//   fd.append('regionId', (data.RegionID || 0).toString());
+//   fd.append('relationshipName', data.RelationshipName);
+//   fd.append('isActive', data.IsActive.toString());
+
+//   return this.http.post(
+//     `${this.baseUrl}/relationshipstatus/create`,
+//     fd
+//   );
+// }
+
+// // UPDATE
+// updateRelationshipStatus(data: Relationship): Observable<any> {
+//   const fd = new FormData();
+//   fd.append('id', data.RelationshipID.toString());
+//   fd.append('companyId', (data.CompanyID || 0).toString());
+//   fd.append('regionId', (data.RegionID || 0).toString());
+//   fd.append('relationshipName', data.RelationshipName);
+//   fd.append('isActive', data.IsActive.toString());
+
+//   return this.http.post(
+//     `${this.baseUrl}/UserManagement/relationshipstatus/update`,
+//     fd
+//   );
+// }
+
+// // DELETE
+// deleteRelationshipStatus(id: number): Observable<any> {
+//   const fd = new FormData();
+//   fd.append('id', id.toString());
+
+//   return this.http.post(
+//     `${this.baseUrl}/UserManagement/relationshipstatus/delete`,
+//     fd
+//   );
+// }
+// ----------------- Relationship Status -----------------
+
+  // GET ALL
+  getRelationshipStatuses(): Observable<Relationship[]> {
+    return this.http.post<Relationship[]>(
+      `${this.baseUrl}/UserManagement/relationshipstatus/getall `,
+      {} // exact same as your working GET
+    );
+  }
+
+  // CREATE
+  createRelationshipStatus(data: Relationship): Observable<any> {
+    const fd = new FormData();
+    fd.append('companyId', (data.CompanyID || 0).toString());
+    fd.append('regionId', (data.RegionID || 0).toString());
+    fd.append('relationshipName', data.RelationshipName);
+    fd.append('isActive', data.IsActive.toString());
+
+    return this.http.post(
+      `${this.baseUrl}/UserManagement/relationshipstatus/create `,
+      fd
+    );
+  }
+
+  // UPDATE
+  updateRelationshipStatus(data: Relationship): Observable<any> {
+    const fd = new FormData();
+    fd.append('id', data.RelationshipID.toString());
+    fd.append('companyId', (data.CompanyID || 0).toString());
+    fd.append('regionId', (data.RegionID || 0).toString());
+    fd.append('relationshipName', data.RelationshipName);
+    fd.append('isActive', data.IsActive.toString());
+
+    return this.http.post(
+      `${this.baseUrl}/UserManagement/relationshipstatus/update `,
+      fd
+    );
+  }
+
+  // DELETE
+  deleteRelationshipStatus(id: number): Observable<any> {
+    const fd = new FormData();
+    fd.append('id', id.toString());
+
+    return this.http.post(
+      `${this.baseUrl}/UserManagement/relationshipstatus/delete `,
+      fd
+    );
+  }
 }
