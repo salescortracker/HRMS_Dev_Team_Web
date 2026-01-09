@@ -52,15 +52,15 @@ export interface ProjectStatus {
   CompanyID: number;
   RegionID: number;
 }
+// ===== Attendance Status =====
 export interface AttendanceStatus {
   AttendanceStatusID: number;
   AttendanceStatusName: string;
   IsActive: boolean;
   CompanyID: number;
   RegionID: number;
-
-  
 }
+
 export interface ExpenseCategory {
   ExpenseCategoryID: number;
   ExpenseCategoryName: string;
@@ -69,12 +69,14 @@ export interface ExpenseCategory {
   RegionID: number;
 }
 export interface LeaveStatus {
-  LeaveStatusID: number;
-  LeaveStatusName: string;
-  IsActive: boolean;
-  CompanyID: number;
-  RegionID: number;
+  leaveStatusID: number;
+  leaveStatusName: string;
+  description?: string;
+  isActive: boolean;
+  companyID: number;
+  regionID: number;
 }
+
 export interface LeaveType {
   LeaveTypeId: number;
   LeaveTypeName: string;
@@ -89,7 +91,11 @@ export interface ExpenseStatus {
   IsActive: boolean;
   CompanyID: number;
   RegionID: number;
+  CompanyName?: string;
+  RegionName?: string;
 }
+
+
 export interface Company {
   companyId: number;
   companyName: string;
@@ -126,12 +132,14 @@ export interface HelpdeskCategory {
   RegionID: number;
 }
 export interface KpiCategory {
-  KpiCategoryID?: number;
+  KpiCategoryID: number;       // required now to avoid undefined errors
   KpiCategoryName: string;
+  Description?: string;        // optional, can be empty
   IsActive: boolean;
-  CompanyID?: number;
-  RegionID?: number;
+  CompanyID: number;
+  RegionID: number;
 }
+
 export interface MaritalStatus {
   MaritalStatusID: number;
   StatusName: string;
@@ -388,7 +396,7 @@ export interface EmployeeImmigration {
   providedIn: 'root'
 })
 export class AdminService {
-  private baseUrl = 'https://localhost:44320/api'; // 🔹 Change this to your actual API URL
+  private baseUrl = 'https://localhost:44370/api'; // 🔹 Change this to your actual API URL
 
   constructor(private http: HttpClient) {}
   // -------------------------------------------------------------
@@ -801,28 +809,48 @@ deletePolicyCategory(id: number) {
 
     return this.http.get<PolicyCategory[]>(`${this.baseUrl}/PolicyCategory`, { params });
   }
-  // ---------- KPI CATEGORY ----------
-createKpiCategory(model: KpiCategory) {
-  return this.http.post(`${this.baseUrl}/KpiCategory/Create`, model);
-}
-
-getKpiCategories(companyId: number, regionId: number) {
-  return this.http.get(`${this.baseUrl}/KpiCategory/GetAll`, {
-    params: { companyId, regionId }
-  });
+// ---------- KPI CATEGORY ----------
+getKpiCategories() {
+  return this.http.get(`${this.baseUrl}/MasterData/kpi-categories`);
 }
 
 getKpiCategoryById(id: number) {
-  return this.http.get(`${this.baseUrl}/KpiCategory/GetById/${id}`);
+  return this.http.get(`${this.baseUrl}/MasterData/kpi-categories/${id}`);
 }
 
-updateKpiCategory(model: KpiCategory) {
-  return this.http.put(`${this.baseUrl}/KpiCategory/Update`, model);
+createKpiCategory(data: any) {
+  return this.http.post(`${this.baseUrl}/MasterData/kpi-categories`, data);
+}
+
+updateKpiCategory(data: any) {
+  return this.http.put(`${this.baseUrl}/MasterData/kpi-categories`, data);
 }
 
 deleteKpiCategory(id: number) {
-  return this.http.delete(`${this.baseUrl}/KpiCategory/Delete/${id}`);
+  return this.http.delete(`${this.baseUrl}/MasterData/kpi-categories/${id}`);
 }
+
+
+// ---------- EXPENSE STATUS ----------
+getExpenseStatus() {
+  return this.http.get(`${this.baseUrl}/MasterData/expense-status`);
+}
+
+getExpenseStatusById(id: number) {
+  return this.http.get(`${this.baseUrl}/MasterData/expense-status/${id}`);
+}
+
+saveExpenseStatus(data: any) {
+  return this.http.post(`${this.baseUrl}/MasterData/expense-status`, data);
+}
+
+deleteExpenseStatus(id: number) {
+  return this.http.delete(`${this.baseUrl}/MasterData/expense-status/${id}`);
+}
+
+
+// ATTACHMENT TYPE CRUD
+
 getAttachmentTypes(companyId: number, regionId: number) {
   return this.http.get<any>(`${this.baseUrl}/AttachmentType/Get?companyId=${companyId}&regionId=${regionId}`);
 }
@@ -897,52 +925,57 @@ deleteAttachmentType(id: number) {
   deleteHelpdeskCategory(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/helpdesk-category/${id}`);
   }
- getAttendanceStatus(companyId: number, regionId: number) {
-  return this.http.get<any>(`${this.baseUrl}/AttendanceStatus/GetAll?companyId=${companyId}&regionId=${regionId}`);
+  // ===================== ATTENDANCE STATUS =====================
+   // Attendance Status CRUD
+getAttendanceStatus() {
+    return this.http.get<any>(`${this.baseUrl}/MasterData/GetAttendanceStatus`);
 }
 
-createAttendanceStatus(model: AttendanceStatus) {
-  return this.http.post(`${this.baseUrl}/AttendanceStatus/Create`, model);
+createAttendanceStatus(payload: AttendanceStatus) {
+    return this.http.post(`${this.baseUrl}/MasterData/CreateAttendanceStatus`, payload);
 }
 
-updateAttendanceStatus(model: AttendanceStatus) {
-  return this.http.put(`${this.baseUrl}/AttendanceStatus/Update`, model);
+updateAttendanceStatus(payload: AttendanceStatus) {
+    return this.http.put(`${this.baseUrl}/MasterData/UpdateAttendanceStatus`, payload);
 }
 
 deleteAttendanceStatus(id: number) {
-  return this.http.delete(`${this.baseUrl}/AttendanceStatus/Delete?id=${id}`);
-}
-// ================= LEAVE STATUS ===================
-
-// Get All
-getLeaveStatus(companyId: number, regionId: number) {
-  return this.http.get<any>(
-    `${this.baseUrl}/LeaveStatus/GetLeaveStatus?CompanyID=${companyId}&RegionID=${regionId}`
-  );
+    return this.http.delete(`${this.baseUrl}/MasterData/DeleteAttendanceStatus/${id}`);
 }
 
-// Create
-createLeaveStatus(data: LeaveStatus) {
-  return this.http.post<any>(`${this.baseUrl}/LeaveStatus/CreateLeaveStatus`, data);
+
+// ===================== LEAVE STATUS =====================
+
+// Get all leave status
+getLeaveStatus() {
+  return this.http.get<any>(`${this.baseUrl}/MasterData/leave-status`);
 }
 
-// Update
-updateLeaveStatus(data: LeaveStatus) {
-  return this.http.put<any>(`${this.baseUrl}/LeaveStatus/UpdateLeaveStatus`, data);
+// Get leave status by id
+getLeaveStatusById(id: number) {
+  return this.http.get<any>(`${this.baseUrl}/MasterData/leave-status/${id}`);
 }
 
-// Delete
+// Create leave status
+createLeaveStatus(payload: LeaveStatus) {
+  return this.http.post<any>(`${this.baseUrl}/MasterData/leave-status`, payload);
+}
+
+// Update leave status
+updateLeaveStatus(payload: LeaveStatus) {
+  return this.http.put<any>(`${this.baseUrl}/MasterData/leave-status`, payload);
+}
+
+// Delete leave status
 deleteLeaveStatus(id: number) {
-  return this.http.delete<any>(
-    `${this.baseUrl}/LeaveStatus/DeleteLeaveStatus?LeaveStatusID=${id}`
-  );
+  return this.http.delete<any>(`${this.baseUrl}/MasterData/leave-status/${id}`);
 }
 getLeaveType(companyId: number, regionId: number) {
   return this.http.get<any>(
     `${this.baseUrl}/LeaveStatus/GetLeaveStatus?CompanyID=${companyId}&RegionID=${regionId}`
   );
 }
-
+//-----------leavetype----------------//
   createLeaveType(model: LeaveType): Observable<any> {
     return this.http.post(`${this.baseUrl}/Create`, model);
   }
@@ -955,23 +988,7 @@ deleteLeaveType(id: number) {
     `${this.baseUrl}/LeaveStatus/DeleteLeaveStatus?LeaveStatusID=${id}`
   );
 }
-// EXPENSE STATUS CRUD
 
-getExpenseStatus(companyId: number, regionId: number) {
-  return this.http.get<any>(`${this.baseUrl}/GetExpenseStatus?companyId=${companyId}&regionId=${regionId}`);
-}
-
-createExpenseStatus(data: ExpenseStatus) {
-  return this.http.post<any>(`${this.baseUrl}/CreateExpenseStatus`, data);
-}
-
-updateExpenseStatus(data: ExpenseStatus) {
-  return this.http.put<any>(`${this.baseUrl}/UpdateExpenseStatus`, data);
-}
-
-deleteExpenseStatus(id: number) {
-  return this.http.delete<any>(`${this.baseUrl}/DeleteExpenseStatus/${id}`);
-}
  // ------------------ EXPENSE CATEGORY TYPE ------------------
 
 createExpenseCategoryType(model: ExpenseCategory) {
@@ -1046,7 +1063,7 @@ uploadDDCopy(formData: FormData): Observable<{ fileName: string }> {
 downloadDDCopy(fileName: string): Observable<Blob> {
   return this.http.get(`${this.baseUrl}/UserManagement/DownloadDDCopy/${fileName}`, { responseType: 'blob' });
 
-
+}
 // -------------------------------------------------------------
 // 🔹 EMPLOYEE  Letters  OPERATIONS
 // -------------------------------------------------------------
@@ -1097,6 +1114,7 @@ updateEmployeeForms(id: number, formData: FormData): Observable<any> {
 deleteEmployeeForms(id: number): Observable<any> {
   return this.http.delete(`${this.baseUrl}/UserManagement/forms/${id}`);
 }
+
 // -------------------------------------------------------------
 // 🔹 EMPLOYEE  Document  OPERATIONS
 // -------------------------------------------------------------
@@ -1125,6 +1143,7 @@ deleteEmployeeDocument(id: number): Observable<any> {
   getEmployeeImmigrationById(id: number) : Observable <EmployeeImmigration> {
     return this.http.get<EmployeeImmigration>(`${this.baseUrl}/UserManagement/GetByIdImmigration/${id}`);
   }
+
 
  CreateEmployeeImmigration(formData: FormData): Observable<any> {
   return this.http.post(`${this.baseUrl}/UserManagement/CreateImmigration`, formData, {
@@ -1262,9 +1281,6 @@ updateCertification(id: number, formData: FormData): Observable<any> {
 
 deleteCertification(id: number): Observable<any> {
   return this.http.delete(`${this.baseUrl}/UserManagement/certifications/${id}`);
-}
-
-
 }
 
 

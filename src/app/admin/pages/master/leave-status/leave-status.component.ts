@@ -3,8 +3,13 @@ import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { AdminService,LeaveStatus } from '../../../servies/admin.service';
+import { AdminService,Company,LeaveStatus, Region } from '../../../servies/admin.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+export interface LeaveStatusView extends LeaveStatus {
+  companyName: string;
+  regionName: string;
+}
+
 @Component({
   selector: 'app-leave-status',
   standalone: false,
@@ -12,108 +17,209 @@ import { NgxSpinnerService } from 'ngx-spinner';
   styleUrl: './leave-status.component.css'
 })
 export class LeaveStatusComponent {
-  companyId = 1;
-  regionId = 1;
-
-  leave: LeaveStatus = this.getEmptyLeave();
-  leaveList: LeaveStatus[] = [];
-  leaveModel: any = {};
+   leaveList: LeaveStatusView[] = [];
+  leave!: LeaveStatusView;
 
   isEditMode = false;
   searchText = '';
   statusFilter: boolean | '' = '';
-
-  currentPage = 1;
   pageSize = 5;
-
-  sortColumn = 'LeaveStatusID';
-  sortDirection: 'asc' | 'desc' = 'desc';
-
+  currentPage = 1;
   showUploadPopup = false;
 
-  constructor(private admin: AdminService, private spinner: NgxSpinnerService) {}
+  companies: Company[] = [];
+  regions: Region[] = [];
+
+  companyMap: { [key: number]: string } = {};
+  regionMap: { [key: number]: string } = {};
+
+  companyId: number = +(sessionStorage.getItem('CompanyId') || 0);
+  regionId: number = +(sessionStorage.getItem('RegionId') || 0);
+
+  constructor(
+    private adminService: AdminService,
+    private spinner: NgxSpinnerService
+  ) {}
 
   ngOnInit(): void {
-    this.loadLeaveStatus();
+    this.leave = this.getEmptyLeave();
+    this.companyId = this.leave.companyID;
+    this.regionId = this.leave.regionID;
+
+    this.loadCompanies();
   }
 
-  /** Default new record */
-  getEmptyLeave(): LeaveStatus {
+  /* ================= HELPERS ================= */
+  getEmptyLeave(): LeaveStatusView {
     return {
-      LeaveStatusID: 0,
-      LeaveStatusName: '',
-      IsActive: true,
-      CompanyID: this.companyId,
-      RegionID: this.regionId
+      leaveStatusID: 0,
+      leaveStatusName: '',
+      isActive: true,
+      companyID: this.companyId,
+      regionID: this.regionId,
+      companyName: this.companyMap[this.companyId] || '',
+      regionName: this.regionMap[this.regionId] || ''
     };
   }
 
-  /** Load Data */
+  /* ================= COMPANY / REGION ================= */
+  loadCompanies(): void {
+    this.adminService.getCompanies().subscribe({
+      next: (res: Company[]) => {
+        this.companies = res || [];
+        this.companyMap = {};
+        this.companies.forEach(c => (this.companyMap[c.companyId] = c.companyName));
+
+        if (this.companyId) {
+          this.loadRegions();
+        } else {
+          this.loadLeaveStatus();
+        }
+      },
+      error: () => Swal.fire('Error', 'Failed to load companies', 'error')
+    });
+  }
+
+  loadRegions(): void {
+    if (!this.companyId) {
+      this.loadLeaveStatus();
+      return;
+    }
+
+    this.adminService.getRegions(this.companyId).subscribe({
+      next: (res: Region[]) => {
+        this.regions = res || [];
+        this.regionMap = {};
+        this.regions.forEach(r => (this.regionMap[r.regionID] = r.regionName));
+
+        // Preserve region selection if exists
+        if (!this.regionMap[this.regionId]) {
+          this.regionId = this.regions.length ? this.regions[0].regionID : 0;
+        }
+
+        sessionStorage.setItem('RegionId', this.regionId.toString());
+        this.leave.regionID = this.regionId;
+
+        this.loadLeaveStatus();
+      },
+      error: () => Swal.fire('Error', 'Failed to load regions', 'error')
+    });
+  }
+
+  onCompanyChange(): void {
+    sessionStorage.setItem('CompanyId', this.companyId.toString());
+    this.leave.companyID = this.companyId;
+
+    // Reset region dropdown
+    this.regionId = 0;
+    this.leave.regionID = 0;
+    this.regions = [];
+    this.regionMap = {};
+
+    this.loadRegions();
+  }
+
+  onRegionChange(): void {
+    if (!this.regionId) return;
+    sessionStorage.setItem('RegionId', this.regionId.toString());
+    this.leave.regionID = this.regionId;
+  }
+
+  /* ================= CRUD ================= */
   loadLeaveStatus(): void {
     this.spinner.show();
-    this.admin.getLeaveStatus(this.companyId, this.regionId).subscribe({
-      next: res => {
-        this.leaveList = res.data?.data || res;
+    this.adminService.getLeaveStatus().subscribe({
+      next: (res: any) => {
+        const data = res.data || [];
+        this.leaveList = data.map((l: any) => ({
+          leaveStatusID: l.leaveStatusID,
+          leaveStatusName: l.leaveStatusName,
+          isActive: l.isActive,
+          companyID: l.companyID,
+          regionID: l.regionID,
+          companyName: this.companyMap[l.companyID] ?? '—',
+          regionName: this.regionMap[l.regionID] ?? '—'
+        }));
+        this.currentPage = 1;
         this.spinner.hide();
       },
       error: () => {
         this.spinner.hide();
-        Swal.fire('Error', 'Failed to load Leave Status.', 'error');
+        Swal.fire('Error', 'Failed to load Leave Status', 'error');
       }
     });
   }
 
-  /** Submit Create / Update */
   onSubmit(): void {
+    this.leave.companyID = this.companyId;
+    this.leave.regionID = this.regionId;
+
     this.spinner.show();
-    if (this.isEditMode) {
-      this.admin.updateLeaveStatus(this.leave).subscribe({
-        next: () => {
-          this.spinner.hide();
-          Swal.fire('Updated', 'Leave Status updated successfully!', 'success');
-          this.loadLeaveStatus();
-          this.resetForm();
-        },
-        error: () => {
-          this.spinner.hide();
-          Swal.fire('Error', 'Update failed.', 'error');
-        }
-      });
-    } else {
-      this.admin.createLeaveStatus(this.leave).subscribe({
-        next: () => {
-          this.spinner.hide();
-          Swal.fire('Created', 'Leave Status created successfully!', 'success');
-          this.loadLeaveStatus();
-          this.resetForm();
-        },
-        error: () => {
-          this.spinner.hide();
-          Swal.fire('Error', 'Create failed.', 'error');
-        }
-      });
-    }
+    const obs = this.isEditMode
+      ? this.adminService.updateLeaveStatus(this.leave)
+      : this.adminService.createLeaveStatus(this.leave);
+
+    obs.subscribe({
+      next: () => {
+        this.spinner.hide();
+        Swal.fire(
+          this.isEditMode ? 'Updated!' : 'Added!',
+          `Leave status ${this.isEditMode ? 'updated' : 'created'} successfully.`,
+          'success'
+        );
+        this.loadLeaveStatus();
+        this.resetForm();
+      },
+      error: () => {
+        this.spinner.hide();
+        Swal.fire('Error', 'Operation failed.', 'error');
+      }
+    });
   }
 
-  /** Edit */
-  editLeave(item: LeaveStatus): void {
-    this.leave = { ...item };
+  editLeave(l: LeaveStatusView): void {
+    this.leave = { ...l };
     this.isEditMode = true;
+
+    // Pre-select dropdowns
+    this.companyId = l.companyID;
+    this.regionId = l.regionID;
+
+    this.loadRegionsForEdit();
   }
 
-  /** Delete */
-  deleteLeave(item: LeaveStatus): void {
+  loadRegionsForEdit(): void {
+    if (!this.companyId) return;
+    this.adminService.getRegions(this.companyId).subscribe({
+      next: (res: Region[]) => {
+        this.regions = res || [];
+        this.regionMap = {};
+        this.regions.forEach(r => (this.regionMap[r.regionID] = r.regionName));
+
+        // Ensure selected region exists
+        if (!this.regionMap[this.regionId]) {
+          this.regionId = this.regions.length ? this.regions[0].regionID : 0;
+        }
+        this.leave.regionID = this.regionId;
+      },
+      error: () => Swal.fire('Error', 'Failed to load regions', 'error')
+    });
+  }
+
+  deleteLeave(l: LeaveStatusView): void {
     Swal.fire({
-      title: `Delete "${item.LeaveStatusName}"?`,
+      title: `Delete "${l.leaveStatusName}"?`,
+      text: 'This action will permanently delete the leave status.',
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Delete'
+      confirmButtonColor: '#d33'
     }).then(result => {
       if (result.isConfirmed) {
         this.spinner.show();
-        this.admin.deleteLeaveStatus(item.LeaveStatusID).subscribe({
+        this.adminService.deleteLeaveStatus(l.leaveStatusID).subscribe({
           next: () => {
             this.spinner.hide();
-            Swal.fire('Deleted', 'Leave Status deleted successfully.', 'success');
+            Swal.fire('Deleted!', 'Leave status deleted successfully.', 'success');
             this.loadLeaveStatus();
           },
           error: () => {
@@ -125,104 +231,81 @@ export class LeaveStatusComponent {
     });
   }
 
-  /** Reset form */
+  /* ================= RESET FORM ================= */
   resetForm(): void {
     this.leave = this.getEmptyLeave();
     this.isEditMode = false;
-  }
 
-  /** Filtered Data */
-  filteredLeave(): LeaveStatus[] {
-    return this.leaveList.filter(c => {
-      const matchSearch = c.LeaveStatusName.toLowerCase().includes(this.searchText.toLowerCase());
-      const matchStatus = this.statusFilter === '' || c.IsActive === this.statusFilter;
-      return matchSearch && matchStatus;
-    });
-  }
+    this.companyId = this.leave.companyID;
+    this.regionId = this.leave.regionID;
 
-  /** Sorting */
-  sortTable(column: string) {
-    if (this.sortColumn === column)
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    else {
-      this.sortColumn = column;
-      this.sortDirection = 'asc';
+    if (this.companyId) {
+      this.loadRegions();
+    } else {
+      this.regions = [];
+      this.regionMap = {};
     }
   }
 
-  /** Pagination + Sorted List */
-  get pagedLeave(): LeaveStatus[] {
-    const filtered = this.filteredLeave();
+  /* ================= FILTER / PAGINATION ================= */
+  filteredLeave(): LeaveStatusView[] {
+    const search = this.searchText.toLowerCase();
+    return this.leaveList.filter(l =>
+      l.leaveStatusName.toLowerCase().includes(search) &&
+      (this.statusFilter === '' || l.isActive === this.statusFilter)
+    );
+  }
 
-    filtered.sort((a: any, b: any) => {
-      const valA = a[this.sortColumn]?.toString().toLowerCase() || '';
-      const valB = b[this.sortColumn]?.toString().toLowerCase() || '';
-
-      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
-      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
-      return 0;
-    });
-
+  get pagedLeave(): LeaveStatusView[] {
     const start = (this.currentPage - 1) * this.pageSize;
-    return filtered.slice(start, start + this.pageSize);
+    return this.filteredLeave().slice(start, start + this.pageSize);
   }
 
   get totalPages(): number {
-    return Math.ceil(this.filteredLeave().length / this.pageSize) || 1;
+    return Math.ceil(this.filteredLeave().length / this.pageSize);
   }
 
-  goToPage(page: number): void {
-    if (page < 1) page = 1;
-    if (page > this.totalPages) page = this.totalPages;
-    this.currentPage = page;
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
   }
 
-  getSortIcon(column: string): string {
-    if (this.sortColumn !== column) return 'fa-sort';
-    return this.sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
-  }
-
-  /** Export */
-  exportAs(type: 'excel' | 'pdf') {
+  /* ================= EXPORT ================= */
+  exportAs(type: 'excel' | 'pdf'): void {
     type === 'excel' ? this.exportExcel() : this.exportPDF();
   }
 
-  exportExcel() {
-    const data = this.leaveList.map(c => ({
-      'Leave Status Name': c.LeaveStatusName,
-      'Active': c.IsActive ? 'Yes' : 'No'
+  exportExcel(): void {
+    const data = this.filteredLeave().map(l => ({
+      'Leave Status': l.leaveStatusName,
+      'Company': l.companyName,
+      'Region': l.regionName,
+      'Status': l.isActive ? 'Active' : 'Inactive'
     }));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Leave Status');
-    XLSX.writeFile(wb, 'LeaveStatus.xlsx');
+    XLSX.writeFile(wb, 'LeaveStatusList.xlsx');
   }
 
-  exportPDF() {
+  exportPDF(): void {
     const doc = new jsPDF();
-    const data = this.leaveList.map(c => [c.LeaveStatusName, c.IsActive ? 'Yes' : 'No']);
-    autoTable(doc, { head: [['Leave Status Name', 'Active']], body: data });
-    doc.save('LeaveStatus.pdf');
+    const data = this.filteredLeave().map(l => [
+      l.leaveStatusName,
+      l.companyName,
+      l.regionName,
+      l.isActive ? 'Active' : 'Inactive'
+    ]);
+    autoTable(doc, { head: [['Leave Status', 'Company', 'Region', 'Status']], body: data });
+    doc.save('LeaveStatusList.pdf');
   }
 
-  /** Bulk Upload */
-  openUploadPopup() { this.showUploadPopup = true; }
-  closeUploadPopup() { this.showUploadPopup = false; }
-
-  onBulkUploadComplete(data: any): void {
-    if (!data || !data.length) {
-      Swal.fire('Info', 'No valid data found in uploaded file.', 'info');
-      return;
-    }
-
-    this.admin.bulkInsertData('LeaveStatus', data).subscribe({
-      next: () => {
-        Swal.fire('Success', 'Leave Status uploaded successfully!', 'success');
-        this.loadLeaveStatus();
-        this.closeUploadPopup();
-      },
-      error: () => Swal.fire('Error', 'Failed to upload data.', 'error')
-    });
+  /* ================= BULK UPLOAD ================= */
+  openUploadPopup(): void { this.showUploadPopup = true; }
+  closeUploadPopup(): void { this.showUploadPopup = false; }
+  onBulkUploadComplete(event: any): void {
+    this.showUploadPopup = false;
+    this.loadLeaveStatus();
   }
-
 }

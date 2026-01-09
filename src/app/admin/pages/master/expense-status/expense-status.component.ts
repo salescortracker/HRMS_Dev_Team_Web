@@ -3,44 +3,61 @@ import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { AdminService } from '../../../servies/admin.service';
+import { AdminService, Company, Region } from '../../../servies/admin.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ExpenseStatus } from '../../../servies/admin.service';
+export interface ExpenseStatusView extends ExpenseStatus {
+  companyName: string;
+  regionName: string;
+}
+
 @Component({
   selector: 'app-expense-status',
   standalone: false,
   templateUrl: './expense-status.component.html',
   styleUrl: './expense-status.component.css'
 })
-export class ExpenseStatusComponent {
- 
-  companyId = 1;
-  regionId = 1;
+export class ExpenseStatusComponent implements OnInit {
+    expenseList: ExpenseStatus[] = [];
+  expense!: ExpenseStatus;
 
-  expense: ExpenseStatus = this.getEmptyExpense();
-  expenseList: ExpenseStatus[] = [];
-  expenseModel: any = {};
-
+  isEditMode = false;
   searchText = '';
   statusFilter: boolean | '' = '';
 
-  isEditMode = false;
-
-  // Pagination
-  currentPage = 1;
   pageSize = 5;
+  currentPage = 1;
 
-  // Sorting
   sortColumn = 'ExpenseStatusID';
   sortDirection: 'asc' | 'desc' = 'desc';
 
   showUploadPopup = false;
+companyMap: { [key: number]: string } = {};
+regionMap: { [key: number]: string } = {};
 
-  constructor(private admin: AdminService, private spinner: NgxSpinnerService) {}
+  // 🔹 Company / Region
+  companies: Company[] = [];
+  regions: Region[] = [];
 
-  ngOnInit(): void {
-    this.loadExpenseStatus();
-  }
+  companyId: number = +(sessionStorage.getItem('CompanyId') || 0);
+  regionId: number = +(sessionStorage.getItem('RegionId') || 0);
+
+  constructor(
+    private adminService: AdminService,
+    private spinner: NgxSpinnerService
+  ) {}
+
+ngOnInit(): void {
+  this.expense = this.getEmptyExpense();
+
+  // 🔹 Reset dropdowns
+  this.companyId = this.expense.CompanyID || 0;
+  this.regionId = this.expense.RegionID || 0;
+
+  this.loadCompanies(); 
+}
+
+
 
   getEmptyExpense(): ExpenseStatus {
     return {
@@ -52,181 +69,269 @@ export class ExpenseStatusComponent {
     };
   }
 
-  loadExpenseStatus(): void {
+  // ================= LOAD COMPANY & REGION =================
+
+  loadCompanies(): void {
+  this.adminService.getCompanies().subscribe({
+    next: res => {
+      this.companies = res || [];
+      this.companyMap = {};
+
+      this.companies.forEach(c =>
+        this.companyMap[c.companyId] = c.companyName
+      );
+
+      if (this.companyId) {
+        this.loadRegions();
+      } else {
+        this.loadExpenseStatus(); // fallback
+      }
+    }
+  });
+}
+
+loadRegions(): void {
+  if (!this.companyId) return;
+
+  this.adminService.getRegions(this.companyId).subscribe({
+    next: res => {
+      this.regions = res || [];
+      this.regionMap = {};
+
+      this.regions.forEach(r =>
+        this.regionMap[r.regionID] = r.regionName
+      );
+
+      // 🔹 Ensure regionId is preserved after loading regions
+      if (!this.regions.find(r => r.regionID === this.regionId)) {
+        this.regionId = 0;
+        this.expense.RegionID = 0;
+      }
+
+      this.loadExpenseStatus(); // ✅ names can bind
+    }
+  });
+}
+
+
+
+onCompanyChange(): void {
+  sessionStorage.setItem('CompanyId', this.companyId.toString());
+  this.regionId = 0;
+  this.expense.RegionID = 0; // 🔹 reset selected region
+  this.regions = [];
+  this.loadRegions();
+  this.expense.CompanyID = this.companyId;
+}
+
+
+  onRegionChange(): void {
+    sessionStorage.setItem('RegionId', this.regionId.toString());
+    this.expense.RegionID = this.regionId;
+  }
+
+  // ================= LOAD =================
+
+ loadExpenseStatus(): void {
+  this.spinner.show();
+
+  this.adminService.getExpenseStatus().subscribe({
+    next: (res: any) => {
+      const rawList = res.data || [];
+
+      this.expenseList = rawList.map((x: any) => ({
+        ExpenseStatusID: x.expenseStatusID,
+        ExpenseStatusName: x.expenseStatusName,
+        CompanyID: x.companyID,
+        RegionID: x.regionID,
+        IsActive: x.isActive,
+        CompanyName: this.companyMap[x.companyID] || '—',
+        RegionName: this.regionMap[x.regionID] || '—'
+      }));
+
+      this.currentPage = 1;
+      this.spinner.hide();
+    },
+    error: () => {
+      this.spinner.hide();
+      Swal.fire('Error', 'Failed to load Expense Status', 'error');
+    }
+  });
+}
+
+
+  // ================= SAVE =================
+
+  onSubmit(): void {
+    this.expense.CompanyID = this.companyId;
+    this.expense.RegionID = this.regionId;
+
     this.spinner.show();
-    this.admin.getExpenseStatus(this.companyId, this.regionId).subscribe({
-      next: res => {
-        this.expenseList = res.data?.data || res;
+
+    this.adminService.saveExpenseStatus(this.expense).subscribe({
+      next: () => {
         this.spinner.hide();
+        Swal.fire(
+          this.isEditMode ? 'Updated!' : 'Created!',
+          `Expense Status ${this.isEditMode ? 'updated' : 'created'} successfully.`,
+          'success'
+        );
+        this.resetForm();
+        this.loadExpenseStatus();
       },
       error: () => {
         this.spinner.hide();
-        Swal.fire('Error', 'Failed to load Expense Status', 'error');
+        Swal.fire('Error', 'Save failed', 'error');
       }
     });
   }
 
-  onSubmit(): void {
-    this.spinner.show();
+editExpense(e: ExpenseStatus): void {
+  this.expense = { ...e };
+  this.isEditMode = true;
 
-    if (this.isEditMode) {
-      this.admin.updateExpenseStatus(this.expense).subscribe({
-        next: () => {
-          Swal.fire('Updated!', 'Expense Status updated successfully!', 'success');
-          this.loadExpenseStatus();
-          this.resetForm();
-          this.spinner.hide();
-        },
-        error: () => {
-          Swal.fire('Error', 'Update failed', 'error');
-          this.spinner.hide();
-        }
-      });
+  this.companyId = e.CompanyID || 0;
+  this.regionId = e.RegionID || 0;
 
-    } else {
-      this.admin.createExpenseStatus(this.expense).subscribe({
-        next: () => {
-          Swal.fire('Created!', 'Expense Status saved successfully!', 'success');
-          this.loadExpenseStatus();
-          this.resetForm();
-          this.spinner.hide();
-        },
-        error: () => {
-          Swal.fire('Error', 'Create failed', 'error');
-          this.spinner.hide();
-        }
-      });
-    }
-  }
+  this.loadRegions(); // ✅ loads regions for selected company
+}
 
-  editExpense(item: ExpenseStatus): void {
-    this.expense = { ...item };
-    this.isEditMode = true;
-  }
+
 
   deleteExpense(item: ExpenseStatus): void {
     Swal.fire({
       title: `Delete "${item.ExpenseStatusName}"?`,
+      icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Delete'
     }).then(res => {
       if (res.isConfirmed) {
         this.spinner.show();
-        this.admin.deleteExpenseStatus(item.ExpenseStatusID).subscribe({
+        this.adminService.deleteExpenseStatus(item.ExpenseStatusID).subscribe({
           next: () => {
-            Swal.fire('Deleted!', 'Expense Status deleted', 'success');
-            this.loadExpenseStatus();
             this.spinner.hide();
+            Swal.fire('Deleted!', 'Expense Status deleted.', 'success');
+            this.loadExpenseStatus();
           },
           error: () => {
-            Swal.fire('Error', 'Delete failed', 'error');
             this.spinner.hide();
+            Swal.fire('Error', 'Delete failed', 'error');
           }
         });
       }
     });
   }
 
-  resetForm(): void {
-    this.expense = this.getEmptyExpense();
-    this.isEditMode = false;
+resetForm(): void {
+  this.expense = this.getEmptyExpense();
+  this.isEditMode = false;
+
+  // 🔹 Reset dropdowns
+  this.companyId = this.expense.CompanyID || 0;
+  this.regionId = this.expense.RegionID || 0;
+
+  // If a company is selected, reload regions
+  if (this.companyId) {
+    this.loadRegions();
+  } else {
+    this.regions = [];
+    this.regionMap = {};
   }
+}
+
+  // ================= FILTER / SORT =================
 
   filteredExpense(): ExpenseStatus[] {
-    return this.expenseList.filter(x => {
-      const matchText = x.ExpenseStatusName.toLowerCase().includes(this.searchText.toLowerCase());
-      const matchStatus = this.statusFilter === '' || x.IsActive === this.statusFilter;
-      return matchText && matchStatus;
-    });
-  }
-
-  sortTable(column: string) {
-    if (this.sortColumn === column)
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    else {
-      this.sortColumn = column;
-      this.sortDirection = 'asc';
-    }
+    const search = this.searchText.toLowerCase();
+    return this.expenseList.filter(x =>
+      x.ExpenseStatusName.toLowerCase().includes(search) &&
+      (this.statusFilter === '' || x.IsActive === this.statusFilter)
+    );
   }
 
   get pagedExpense(): ExpenseStatus[] {
     const filtered = this.filteredExpense();
-
-    filtered.sort((a: any, b: any) => {
-      const A = (a[this.sortColumn] ?? '').toString().toLowerCase();
-      const B = (b[this.sortColumn] ?? '').toString().toLowerCase();
-
-      if (A < B) return this.sortDirection === 'asc' ? -1 : 1;
-      if (A > B) return this.sortDirection === 'asc' ? 1 : -1;
-      return 0;
-    });
-
     const start = (this.currentPage - 1) * this.pageSize;
     return filtered.slice(start, start + this.pageSize);
   }
 
   get totalPages(): number {
-    return Math.ceil(this.filteredExpense().length / this.pageSize) || 1;
+    return Math.ceil(this.filteredExpense().length / this.pageSize);
   }
 
-  goToPage(page: number): void {
-    if (page < 1) page = 1;
-    if (page > this.totalPages) page = this.totalPages;
-
-    this.currentPage = page;
-  }
-
-  getSortIcon(column: string) {
-    if (this.sortColumn !== column) return 'fa-sort';
-    return this.sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
-  }
-
-  exportAs(type: 'excel' | 'pdf') {
-    if (type === 'excel') this.exportExcel();
-    else this.exportPDF();
-  }
+  // ================= EXPORT =================
+exportAs(type: 'excel' | 'pdf'): void {
+  type === 'excel' ? this.exportExcel() : this.exportPDF();
+}
 
   exportExcel() {
-    const data = this.expenseList.map(c => ({
-      'Expense Status Name': c.ExpenseStatusName,
-      'Active': c.IsActive ? 'Yes' : 'No'
+    const data = this.filteredExpense().map(e => ({
+      'Expense Status': e.ExpenseStatusName,
+      'Active': e.IsActive ? 'Yes' : 'No'
     }));
 
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-
     XLSX.utils.book_append_sheet(wb, ws, 'Expense Status');
     XLSX.writeFile(wb, 'ExpenseStatus.xlsx');
   }
 
   exportPDF() {
     const doc = new jsPDF();
-    const data = this.expenseList.map(c => [c.ExpenseStatusName, c.IsActive ? 'Yes' : 'No']);
+    const data = this.filteredExpense().map(e => [
+      e.ExpenseStatusName,
+      e.IsActive ? 'Active' : 'Inactive'
+    ]);
 
     autoTable(doc, {
-      head: [['Expense Status', 'Active']],
+      head: [['Expense Status', 'Status']],
       body: data
     });
 
     doc.save('ExpenseStatus.pdf');
   }
+  openUploadPopup(): void {
+  this.showUploadPopup = true;
+}
 
-  openUploadPopup() { this.showUploadPopup = true; }
-  closeUploadPopup() { this.showUploadPopup = false; }
+closeUploadPopup(): void {
+  this.showUploadPopup = false;
+}
 
-  onBulkUploadComplete(data: any) {
-    if (!data || !data.length) {
-      Swal.fire('Warning', 'No valid data in uploaded file!', 'warning');
-      return;
-    }
+onBulkUploadComplete(event: any): void {
+  this.showUploadPopup = false;
+  this.loadExpenseStatus();
+}
 
-    this.admin.bulkInsertData('ExpenseStatus', data).subscribe({
-      next: () => {
-        Swal.fire('Success', 'Expense Status uploaded!', 'success');
-        this.loadExpenseStatus();
-        this.closeUploadPopup();
-      },
-      error: () => Swal.fire('Error', 'Upload failed!', 'error')
-    });
+sortTable(column: string): void {
+  if (this.sortColumn === column) {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    this.sortColumn = column;
+    this.sortDirection = 'asc';
   }
+
+  this.expenseList.sort((a: any, b: any) => {
+    const valA = a[column];
+    const valB = b[column];
+    return valA < valB
+      ? (this.sortDirection === 'asc' ? -1 : 1)
+      : valA > valB
+      ? (this.sortDirection === 'asc' ? 1 : -1)
+      : 0;
+  });
+}
+
+getSortIcon(column: string): string {
+  if (this.sortColumn !== column) return 'fa-sort';
+  return this.sortDirection === 'asc'
+    ? 'fa-sort-up'
+    : 'fa-sort-down';
+}
+changePage(page: number): void {
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+  }
+}
+
 }

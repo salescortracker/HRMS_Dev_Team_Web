@@ -125,10 +125,10 @@ import { EmployeeCertificationsComponent } from './features/employee-profile/emp
     CommonUploadComponent,
     BankDetailsComponent,
     DdListComponent,
-    W4Component
+    W4Component,
     EmployeeLettersComponent,
     EmployeeFormsComponent,
-    EmployeeDocumentComponent
+    EmployeeDocumentComponent,
     EmployeeJobhistoryComponent,
     EmployeeEducationComponent,
     EmployeeCertificationsComponent

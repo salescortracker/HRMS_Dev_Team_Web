@@ -1,24 +1,26 @@
 import { Component, OnInit } from '@angular/core';
-import { AdminService, KpiCategory } from '../../../servies/admin.service';
+import { AdminService, Company, KpiCategory, Region } from '../../../servies/admin.service';
 import Swal from 'sweetalert2';
 import { NgxSpinnerService } from 'ngx-spinner';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+// Extend backend KpiCategory to include display fields
+export interface KpiCategoryView extends KpiCategory {
+  companyName: string;
+  regionName: string;
+}
 @Component({
   selector: 'app-kpi-category',
   standalone: false,
   templateUrl: './kpi-category.component.html',
   styleUrl: './kpi-category.component.css'
 })
-export class KpiCategoryComponent {
-
-  kpi: KpiCategory = this.getEmptyKpi();
-  kpiList: KpiCategory[] = [];
+export class KpiCategoryComponent implements OnInit {
+  kpiList: KpiCategoryView[] = [];
+  kpi!: KpiCategoryView;
 
   isEditMode = false;
-  showUploadPopup = false;
-
   searchText = '';
   statusFilter: boolean | '' = '';
 
@@ -28,8 +30,16 @@ export class KpiCategoryComponent {
   sortColumn = 'KpiCategoryID';
   sortDirection: 'asc' | 'desc' = 'desc';
 
-  companyId = 1;
-  regionId = 1;
+  showUploadPopup = false;
+
+  companyMap: { [key: number]: string } = {};
+  regionMap: { [key: number]: string } = {};
+
+  companies: Company[] = [];
+  regions: Region[] = [];
+
+  companyId: number = +(sessionStorage.getItem('CompanyId') || 0);
+  regionId: number = +(sessionStorage.getItem('RegionId') || 0);
 
   constructor(
     private adminService: AdminService,
@@ -37,264 +47,256 @@ export class KpiCategoryComponent {
   ) {}
 
   ngOnInit(): void {
-    this.loadKpiCategories();
+    this.kpi = this.getEmptyKpi();
+    this.companyId = this.kpi.CompanyID || 0;
+    this.regionId = this.kpi.RegionID || 0;
+
+    this.loadCompanies();
   }
 
-  // --------------------------
-  // Empty Model
-  // --------------------------
-  getEmptyKpi(): KpiCategory {
+  getEmptyKpi(): KpiCategoryView {
     return {
       KpiCategoryID: 0,
       KpiCategoryName: '',
-     
+      Description: '',
       IsActive: true,
       CompanyID: this.companyId,
-      RegionID: this.regionId
+      RegionID: this.regionId,
+      companyName: this.companyMap[this.companyId] || '',
+      regionName: this.regionMap[this.regionId] || ''
     };
   }
 
-  // --------------------------
-  // Load
-  // --------------------------
-  loadKpiCategories(): void {
-    this.spinner.show();
+  // ================= LOAD COMPANIES & REGIONS =================
+  loadCompanies(): void {
+    this.adminService.getCompanies().subscribe({
+      next: res => {
+        this.companies = res || [];
+        this.companyMap = {};
+        this.companies.forEach(c => (this.companyMap[c.companyId] = c.companyName));
 
-    this.adminService.getKpiCategories(this.companyId, this.regionId).subscribe({
+        if (this.companyId) {
+          this.loadRegions();
+        } else {
+          this.loadKpis();
+        }
+      },
+      error: () => Swal.fire('Error', 'Failed to load companies', 'error')
+    });
+  }
+
+  loadRegions(): void {
+    if (!this.companyId) {
+      this.regions = [];
+      this.regionMap = {};
+      this.loadKpis();
+      return;
+    }
+
+    this.adminService.getRegions(this.companyId).subscribe({
+      next: res => {
+        this.regions = res || [];
+        this.regionMap = {};
+        this.regions.forEach(r => (this.regionMap[r.regionID] = r.regionName));
+
+        if (!this.regions.find(r => r.regionID === this.regionId)) {
+          this.regionId = this.regions.length > 0 ? this.regions[0].regionID : 0;
+        }
+        this.kpi.RegionID = this.regionId;
+
+        this.loadKpis();
+      },
+      error: () => Swal.fire('Error', 'Failed to load regions', 'error')
+    });
+  }
+
+  onCompanyChange(): void {
+    sessionStorage.setItem('CompanyId', this.companyId.toString());
+    this.regionId = 0;
+    this.kpi.RegionID = 0;
+    this.regions = [];
+    this.regionMap = {};
+    this.kpi.CompanyID = this.companyId;
+    this.loadRegions();
+  }
+
+  onRegionChange(): void {
+    sessionStorage.setItem('RegionId', this.regionId.toString());
+    this.kpi.RegionID = this.regionId;
+    this.loadKpis();
+  }
+
+  // ================= LOAD KPI CATEGORIES =================
+  loadKpis(): void {
+    this.spinner.show();
+    this.adminService.getKpiCategories().subscribe({
       next: (res: any) => {
-        this.kpiList = res.data?.data || res;
-        this.kpiList.sort((a: any, b: any) => b.KpiCategoryID - a.KpiCategoryID);
+        const data = res.data || [];
+        this.kpiList = data.map((k: any) => ({
+          KpiCategoryID: k.kpiCategoryID,
+          KpiCategoryName: k.kpiCategoryName,
+          Description: k.description,
+          IsActive: k.isActive,
+          CompanyID: k.companyID,
+          RegionID: k.regionID,
+          companyName: this.companyMap[k.companyID] || '—',
+          regionName: this.regionMap[k.regionID] || '—'
+        }));
+        this.currentPage = 1;
         this.spinner.hide();
       },
       error: () => {
         this.spinner.hide();
-        Swal.fire('Error', 'Failed to load KPI Category data.', 'error');
+        Swal.fire('Error', 'Failed to load KPI categories', 'error');
       }
     });
   }
 
-  // --------------------------
-  // Create + Update
-  // --------------------------
+  // ================= SAVE =================
   onSubmit(): void {
-    this.spinner.show();
+    this.kpi.CompanyID = this.companyId;
+    this.kpi.RegionID = this.regionId;
 
-    if (this.isEditMode) {
-      this.adminService.updateKpiCategory(this.kpi).subscribe({
-        next: () => {
-          this.spinner.hide();
-          Swal.fire('Updated', `${this.kpi.KpiCategoryName} updated successfully!`, 'success');
-          this.loadKpiCategories();
-          this.resetForm();
-        },
-        error: () => {
-          this.spinner.hide();
-          Swal.fire('Error', 'Update failed.', 'error');
-        }
-      });
-    } else {
-      this.adminService.createKpiCategory(this.kpi).subscribe({
-        next: () => {
-          this.spinner.hide();
-          Swal.fire('Added', `${this.kpi.KpiCategoryName} added successfully!`, 'success');
-          this.loadKpiCategories();
-          this.resetForm();
-        },
-        error: () => {
-          this.spinner.hide();
-          Swal.fire('Error', 'Create failed.', 'error');
-        }
-      });
-    }
+    this.spinner.show();
+    const obs = this.isEditMode
+      ? this.adminService.updateKpiCategory(this.kpi)
+      : this.adminService.createKpiCategory(this.kpi);
+
+    obs.subscribe({
+      next: () => {
+        this.spinner.hide();
+        Swal.fire(
+          this.isEditMode ? 'Updated!' : 'Created!',
+          `KPI Category ${this.isEditMode ? 'updated' : 'created'} successfully.`,
+          'success'
+        );
+        this.resetForm();
+        this.loadKpis();
+      },
+      error: () => {
+        this.spinner.hide();
+        Swal.fire('Error', 'Save failed', 'error');
+      }
+    });
   }
 
-  // --------------------------
-  // Edit
-  // --------------------------
-  editKpi(k: KpiCategory): void {
+  editKpi(k: KpiCategoryView): void {
     this.kpi = { ...k };
     this.isEditMode = true;
+
+    this.companyId = k.CompanyID;
+    this.regionId = k.RegionID;
+
+    this.loadRegions();
   }
 
-  // --------------------------
-  // Delete
-  // --------------------------
-  deleteKpi(k: KpiCategory): void {
+  deleteKpi(k: KpiCategoryView): void {
     Swal.fire({
-      title: `Are you sure you want to delete ${k.KpiCategoryName}?`,
-      showDenyButton: true,
-      confirmButtonText: 'Confirm'
-    }).then(result => {
-      if (result.isConfirmed) {
+      title: `Delete "${k.KpiCategoryName}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Delete'
+    }).then(res => {
+      if (res.isConfirmed) {
         this.spinner.show();
-        this.adminService.deleteKpiCategory(k.KpiCategoryID!).subscribe({
+        this.adminService.deleteKpiCategory(k.KpiCategoryID).subscribe({
           next: () => {
             this.spinner.hide();
-            Swal.fire('Deleted', `${k.KpiCategoryName} deleted successfully.`, 'success');
-            this.loadKpiCategories();
+            Swal.fire('Deleted!', 'KPI Category deleted.', 'success');
+            this.resetForm();
+            this.loadKpis();
           },
           error: () => {
             this.spinner.hide();
-            Swal.fire('Error', 'Delete failed.', 'error');
+            Swal.fire('Error', 'Delete failed', 'error');
           }
         });
       }
     });
   }
 
-  // --------------------------
-  // Reset Form
-  // --------------------------
   resetForm(): void {
     this.kpi = this.getEmptyKpi();
     this.isEditMode = false;
-  }
+    this.companyId = this.kpi.CompanyID || 0;
+    this.regionId = this.kpi.RegionID || 0;
 
-  // --------------------------
-  // Filter
-  // --------------------------
-  filteredKpiList(): KpiCategory[] {
-    const search = this.searchText.toLowerCase();
-    return this.kpiList.filter(k => {
-      const matchSearch = k.KpiCategoryName.toLowerCase().includes(search);
-      const matchStatus = this.statusFilter === '' || k.IsActive === this.statusFilter;
-      return matchSearch && matchStatus;
-    });
-  }
-
-  // --------------------------
-  // Pagination
-  // --------------------------
-
-  goToPage(pg: number): void {
-    this.currentPage = pg;
-  }
-
-  // --------------------------
-  // Sorting
-  // --------------------------
-  sortTable(column: string): void {
-    if (this.sortColumn === column) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    if (this.companyId) {
+      this.loadRegions();
     } else {
-      this.sortColumn = column;
-      this.sortDirection = 'asc';
+      this.regions = [];
+      this.regionMap = {};
     }
-    this.applySorting();
   }
 
-  applySorting(): void {
-    this.kpiList.sort((a: any, b: any) => {
-      const valA = a[this.sortColumn];
-      const valB = b[this.sortColumn];
+  // ================= FILTER / SORT / PAGINATION =================
+  filteredKpis(): KpiCategoryView[] {
+    const search = this.searchText.toLowerCase();
+    return this.kpiList.filter(
+      k =>
+        k.KpiCategoryName.toLowerCase().includes(search) &&
+        (this.statusFilter === '' || k.IsActive === this.statusFilter)
+    );
+  }
 
-      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
-      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
-      return 0;
+  get pagedKpis(): KpiCategoryView[] {
+    const filtered = this.filteredKpis();
+    const start = (this.currentPage - 1) * this.pageSize;
+    return filtered.slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredKpis().length / this.pageSize);
+  }
+
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) this.currentPage = page;
+  }
+
+  sortTable(column: string): void {
+    if (this.sortColumn === column) this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    else this.sortColumn = column;
+    this.kpiList.sort((a: any, b: any) => {
+      const valA = a[column], valB = b[column];
+      return valA < valB ? (this.sortDirection === 'asc' ? -1 : 1) : valA > valB ? (this.sortDirection === 'asc' ? 1 : -1) : 0;
     });
   }
 
-  getSortIcon(col: string): string {
-    if (this.sortColumn !== col) return 'fa-sort';
+  getSortIcon(column: string): string {
+    if (this.sortColumn !== column) return 'fa-sort';
     return this.sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 
-  get pagedKpiList(): KpiCategory[] {
-    const sorted = [...this.filteredKpiList()];
-    this.applySorting();
-    const start = (this.currentPage - 1) * this.pageSize;
-    return sorted.slice(start, start + this.pageSize);
-  }
-
-  // --------------------------
-  // Excel & PDF Export
-  // --------------------------
+  // ================= EXPORT =================
   exportAs(type: 'excel' | 'pdf'): void {
-    if (type === 'excel') this.exportExcel();
-    else this.exportPDF();
+    type === 'excel' ? this.exportExcel() : this.exportPDF();
   }
 
   exportExcel(): void {
-    const exportData = this.kpiList.map(k => ({
+    const data = this.filteredKpis().map(k => ({
       'KPI Category': k.KpiCategoryName,
-    
+      'Company': k.companyName,
+      'Region': k.regionName,
       'Status': k.IsActive ? 'Active' : 'Inactive'
     }));
-
-    const ws = XLSX.utils.json_to_sheet(exportData);
+    const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'KPI Category');
+    XLSX.utils.book_append_sheet(wb, ws, 'KPI Categories');
     XLSX.writeFile(wb, 'KpiCategoryList.xlsx');
   }
 
   exportPDF(): void {
     const doc = new jsPDF();
-    const data = this.kpiList.map(k => [
-      k.KpiCategoryName,     
-      k.IsActive ? 'Active' : 'Inactive'
-    ]);
-
-    autoTable(doc, {
-      head: [['KPI Category', 'Description', 'Status']],
-      body: data
-    });
-
+    const data = this.filteredKpis().map(k => [k.KpiCategoryName, k.companyName, k.regionName, k.IsActive ? 'Active' : 'Inactive']);
+    autoTable(doc, { head: [['KPI Category', 'Company', 'Region', 'Status']], body: data });
     doc.save('KpiCategoryList.pdf');
   }
 
-  // --------------------------
-  // Bulk Upload
-  // --------------------------
-  onBulkUploadComplete(data: any): void {
-    if (data && data.length > 0) {
-      this.adminService.bulkInsertData('KpiCategory', data).subscribe({
-        next: () => {
-          Swal.fire('Success', 'KPI Category data uploaded successfully!', 'success');
-          this.loadKpiCategories();
-          this.closeUploadPopup();
-        },
-        error: () =>
-          Swal.fire('Error', 'Failed to upload KPI Category data.', 'error')
-      });
-    } else {
-      Swal.fire('Info', 'No valid data found in uploaded file.', 'info');
-    }
-  }
-// ----------------------------------------
-// Pagination Helpers
-// ----------------------------------------
-
-changePage(page: number): void {
-  if (page < 1 || page > this.totalPages()) return;
-  this.currentPage = page;
-}
-totalPages(): number {
-  return Math.ceil(this.filteredKpis().length / this.pageSize);
-}
-pagesArray(): number[] {
-  return Array(this.totalPages())
-    .fill(0)
-    .map((x, i) => i + 1);
-}
-
-filteredKpis() {
-  const search = this.searchText?.toLowerCase() || '';
-
-  return this.kpiList.filter(k =>
-    k.KpiCategoryName?.toLowerCase().includes(search)
-  );
-}
-
-paginatedKpis(): any[] {
-  const start = (this.currentPage - 1) * this.pageSize;
-  return this.filteredKpis().slice(start, start + this.pageSize);
-}
-  openUploadPopup() {
+  // ================= BULK UPLOAD =================
+  openUploadPopup(): void { this.showUploadPopup = true; }
+  closeUploadPopup(): void { this.showUploadPopup = false; }
+  onBulkUploadComplete(event: any): void {
     this.showUploadPopup = false;
-    setTimeout(() => (this.showUploadPopup = true), 0);
-  }
-
-  closeUploadPopup() {
-    this.showUploadPopup = false;
+    this.loadKpis();
   }
 }
