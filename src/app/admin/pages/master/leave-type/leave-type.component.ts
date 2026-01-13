@@ -11,9 +11,12 @@ import { NgxSpinnerService } from 'ngx-spinner';
   templateUrl: './leave-type.component.html',
   styleUrl: './leave-type.component.css'
 })
-export class LeaveTypeComponent {
-  companyId = 1;
-  regionId = 1;
+export class LeaveTypeComponent implements OnInit {
+  
+  companyId: number = 0;
+  regionId: number = 0;
+  CompanyID: number=this.companyId;
+  RegionID: number=this.regionId;
 
   leave: LeaveType = this.getEmptyLeaveType();
   leaveTypeList: LeaveType[] = [];
@@ -35,7 +38,10 @@ export class LeaveTypeComponent {
 
   ngOnInit(): void {
     this.loadLeaveType();
-  }
+    this.companyId = Number(sessionStorage.getItem('CompanyId')) || 0;
+    this.regionId = Number(sessionStorage.getItem('RegionId')) || 0;
+
+}
 
   getEmptyLeaveType(): LeaveType {
     return {

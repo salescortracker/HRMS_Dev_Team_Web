@@ -35,6 +35,14 @@
       <div class="card-body">
         <form (ngSubmit)="onSubmit()" #leaveTypeForm="ngForm" novalidate>
           <div class="row g-3">
+            <div class="col-md-6">
+          <label class="form-label">Company ID</label>
+          <input type="text" class="form-control" [value]="companyId" placeholder="Auto-filled Company ID" readonly>
+        </div>
+             <div class="col-md-6">
+          <label class="form-label">Region ID</label>
+          <input type="text" class="form-control" [value]="regionId" placeholder="Auto-filled Region ID" readonly>
+        </div>
 
             <div class="col-md-6">
               <label class="form-label fw-semibold">Leave Type</label>
