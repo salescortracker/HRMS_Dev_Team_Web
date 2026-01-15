@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { AdminService, LeaveType } from '../../../servies/admin.service';
+import { AdminService,User,Department ,LeaveType } from '../../../servies/admin.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 @Component({
   selector: 'app-leave-type',
@@ -13,12 +13,12 @@ import { NgxSpinnerService } from 'ngx-spinner';
 })
 export class LeaveTypeComponent implements OnInit {
   
-  companyId: number = 0;
-  regionId: number = 0;
-  CompanyID: number=this.companyId;
-  RegionID: number=this.regionId;
+  
+  companies: any[] = [];
+  regions: any[] = [];
 
-  leave: LeaveType = this.getEmptyLeaveType();
+  // Form Model
+  leave: any = this.getEmptyLeaveType();
   leaveTypeList: LeaveType[] = [];
   leaveTypeModel: any = {};
 
@@ -38,8 +38,8 @@ export class LeaveTypeComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadLeaveType();
-    this.companyId = Number(sessionStorage.getItem('CompanyId')) || 0;
-    this.regionId = Number(sessionStorage.getItem('RegionId')) || 0;
+    this.loadCompanies();
+    this.loadRegions();
 
 }
 
@@ -49,14 +49,31 @@ export class LeaveTypeComponent implements OnInit {
       LeaveTypeName: '',
       LeaveDays: 1,
       IsActive: true,
-      CompanyID: this.companyId,
-      RegionID: this.regionId
+      CompanyID: 0,
+      RegionID: 0,
     };
   }
 
+
+  loadCompanies(): void {
+    this.admin.getCompanies().subscribe({
+          next: (res:any) => (this.companies = res),
+          error: () => Swal.fire('Error', 'Failed to load companies.', 'error')
+        });
+  }
+  
+
+    loadRegions(): void {
+    this.admin.getRegions().subscribe({
+          next: (res:any) => (this.regions = res),
+          error: () => Swal.fire('Error', 'Failed to load regions.', 'error')
+        });
+  }
+
+  
   loadLeaveType(): void {
     this.spinner.show();
-    this.admin.getLeaveType(this.companyId, this.regionId).subscribe({
+    this.admin.getLeaveType(this.leave.companyId, this.leave.regionId).subscribe({
       next: res => {
         this.leaveTypeList = res.data?.data || res;
         this.spinner.hide();
@@ -240,3 +257,7 @@ export class LeaveTypeComponent implements OnInit {
     });
   }
 }
+function loadRegions(): ((error: any) => void) | null | undefined {
+  throw new Error('Function not implemented.');
+}
+

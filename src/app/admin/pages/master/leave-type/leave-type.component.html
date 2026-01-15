@@ -35,15 +35,25 @@
       <div class="card-body">
         <form (ngSubmit)="onSubmit()" #leaveTypeForm="ngForm" novalidate>
           <div class="row g-3">
+                        <!-- Company -->
             <div class="col-md-6">
-          <label class="form-label">Company ID</label>
-          <input type="text" class="form-control" [value]="companyId" placeholder="Auto-filled Company ID" readonly>
-        </div>
-             <div class="col-md-6">
-          <label class="form-label">Region ID</label>
-          <input type="text" class="form-control" [value]="regionId" placeholder="Auto-filled Region ID" readonly>
-        </div>
+              <label class="form-label fw-semibold">Company <span class="text-danger">*</span></label>
+              <select class="form-select" name="CompanyID" [(ngModel)]="leave.companyId" required>
+                <option value="">Select Company</option>
+                <option *ngFor="let c of companies" [value]="c.companyId">{{ c.companyName }}</option>
+              </select>
+            </div>
 
+            <!-- Region -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Region <span class="text-danger">*</span></label>
+              <select class="form-select" name="RegionID" [(ngModel)]="leave.regionId" required>
+                <option value="">Select Region</option>
+                <option *ngFor="let r of regions" [value]="r.regionID">{{ r.regionName }}</option>
+              </select>
+            </div>
+
+            <!-- Leave Type -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Leave Type</label>
               <input type="text" class="form-control" name="LeaveTypeName"
