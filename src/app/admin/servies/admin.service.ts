@@ -157,10 +157,14 @@ export interface CertificationType {
   IsActive: boolean;
 }
 export interface BloodGroup {
-  bloodGroupID: number;
+    bloodGroupId: number;   // ✅ FIXED
+
   bloodGroupName: string;
   isActive: boolean;
+  companyId?: number;
+  regionId?: number;
 }
+
 export interface Gender {
   genderID: number;
   genderName: string;
@@ -636,22 +640,41 @@ updateGender(id: number, gender: Gender) {
 deleteGender(id: number) {
   return this.http.delete(`${this.baseUrl}/Gender/Delete/${id}`);
 }
-// Example endpoints
-getBloodGroups() {
-  return this.http.get(`${this.baseUrl}/bloodgroups`);
-}
 
-createBloodGroup(data: any) {
-  return this.http.post(`${this.baseUrl}/bloodgroups`, data);
-}
+  // ============================
+  // BLOOD GROUP MASTER
+  // ============================
 
-updateBloodGroup(id: number, data: any) {
-  return this.http.put(`${this.baseUrl}/bloodgroups/${id}`, data);
-}
+  getBloodGroups(): Observable<BloodGroup[]> {
+    return this.http.get<BloodGroup[]>(
+      `${this.baseUrl}/MasterData/bloodgroups`
+    );
+  }
+  getBloodGroupById(id: number): Observable<BloodGroup> {
+    return this.http.get<BloodGroup>(
+      `${this.baseUrl}/MasterData/bloodgroups/${id}`
+    );
+  }
 
-deleteBloodGroup(id: number) {
-  return this.http.delete(`${this.baseUrl}/bloodgroups/${id}`);
-}
+  createBloodGroup(data: BloodGroup) {
+    return this.http.post(
+      `${this.baseUrl}/MasterData/bloodgroups`,
+      data
+    );
+  }
+
+  updateBloodGroup(id: number, data: BloodGroup) {
+    return this.http.put(
+      `${this.baseUrl}/MasterData/bloodgroups/${id}`,
+      data
+    );
+  }
+
+  deleteBloodGroup(id: number) {
+    return this.http.delete(
+      `${this.baseUrl}/MasterData/bloodgroups/${id}`
+    );
+  }
 // ---------------- MARITAL STATUS MASTER ---------------- //
 
 getMaritalStatuses() {
