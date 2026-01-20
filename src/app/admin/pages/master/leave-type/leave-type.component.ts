@@ -3,21 +3,28 @@ import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { AdminService, LeaveType } from '../../../servies/admin.service';
+import { AdminService, LeaveType, Company, Region } from '../../../servies/admin.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+
 @Component({
   selector: 'app-leave-type',
   standalone: false,
   templateUrl: './leave-type.component.html',
   styleUrl: './leave-type.component.css'
 })
-export class LeaveTypeComponent {
-  companyId = 1;
-  regionId = 1;
+export class LeaveTypeComponent implements OnInit {
 
+  companies: Company[] = [];
+  regions: Region[] = [];
+companyLoaded = false;
+
+  companyId: number = Number(sessionStorage.getItem('CompanyId')) || 0;
+  regionId: number = Number(sessionStorage.getItem('RegionId')) || 0;
+companyMap: { [key: number]: string } = {};
+  regionMap: { [key: number]: string } = {};
   leave: LeaveType = this.getEmptyLeaveType();
+  
   leaveTypeList: LeaveType[] = [];
-  leaveTypeModel: any = {};
 
   isEditMode = false;
   searchText = '';
@@ -26,125 +33,218 @@ export class LeaveTypeComponent {
   currentPage = 1;
   pageSize = 5;
 
-  sortColumn = 'LeaveTypeID';
+  sortColumn = 'LeaveTypeName';
   sortDirection: 'asc' | 'desc' = 'asc';
 
   showUploadPopup = false;
 
-  constructor(private admin: AdminService, private spinner: NgxSpinnerService) {}
+  constructor(
+    private admin: AdminService,
+    private spinner: NgxSpinnerService
+  ) {}
 
+  // ================= INIT =================
   ngOnInit(): void {
+    this.loadCompanies();
+  }
+
+  // ================= MASTER DATA =================
+getEmptyLeaveType(): LeaveType {
+  return {
+    leaveTypeID: 0,
+    leaveTypeName: '',
+    leaveDays: 1,
+    IsActive: true,
+    CompanyID: this.companyId,
+    RegionID: this.regionId,
+    companyName: this.companyMap[this.companyId] || '',
+    regionName: this.regionMap[this.regionId] || ''
+  };
+}
+
+  
+
+  loadCompanies(): void {
+    this.admin.getCompanies().subscribe({
+      next: (res: Company[]) => {
+        this.companies = res || [];
+      this.companyMap = {};
+      this.companies.forEach(c =>
+        this.companyMap[c.companyId] = c.companyName
+      );
+            this.companyLoaded = true; 
+
+        if (this.companyId) {
+          this.loadRegions();
+        }
+      },
+      error: () => Swal.fire('Error', 'Failed to load companies', 'error')
+    });
+  }
+
+  loadRegions(): void {
+    if (!this.companyId) return;
+
+    this.admin.getRegions(this.companyId).subscribe({
+      next: (res: Region[]) => {
+        this.regions = res || [];
+          this.regionMap = {};
+          this.regions.forEach(r =>
+            this.regionMap[r.regionID] = r.regionName
+          );
+
+        if (!this.regionId || !this.regions.find(r => r.regionID === this.regionId)) {
+          this.regionId = this.regions.length ? this.regions[0].regionID : 0;
+        }
+
+        sessionStorage.setItem('RegionId', this.regionId.toString());
+        this.loadLeaveType();
+      },
+      error: () => Swal.fire('Error', 'Failed to load regions', 'error')
+    });
+  }
+
+  // ================= DROPDOWN EVENTS =================
+  onCompanyChange(): void {
+    sessionStorage.setItem('CompanyId', this.companyId.toString());
+
+    this.regionId = 0;
+    this.regions = [];
+    this.leave.CompanyID = this.companyId;
+
+    this.loadRegions();
+  }
+
+  onRegionChange(): void {
+    sessionStorage.setItem('RegionId', this.regionId.toString());
+    this.leave.RegionID = this.regionId;
     this.loadLeaveType();
   }
 
-  getEmptyLeaveType(): LeaveType {
-    return {
-      LeaveTypeId: 0,
-      LeaveTypeName: '',
-      LeaveDays: 1,
-      IsActive: true,
-      CompanyID: this.companyId,
-      RegionID: this.regionId
-    };
+  // ================= CRUD =================
+loadLeaveType(): void {
+  if (!this.companyId || !this.regionId) return;
+  this.spinner.show();
+  this.admin.getLeaveType().subscribe({
+  next: (res: LeaveType[]) => {
+   this.leaveTypeList = res;
+    this.spinner.hide();
+  },
+  error: () => {
+    this.spinner.hide();
+    Swal.fire('Error', 'Failed to load Leave Types.', 'error');
   }
+});
 
-  loadLeaveType(): void {
+}
+
+  onSubmit(): void {
+ 
+    this.leave.CompanyID = this.companyId;
+    this.leave.RegionID = this.regionId;
+ 
+  this.leave.companyName = this.companyMap[this.companyId] || '';
+  this.leave.regionName = this.regionMap[this.regionId] || '';
     this.spinner.show();
-    this.admin.getLeaveType(this.companyId, this.regionId).subscribe({
-      next: res => {
-        this.leaveTypeList = res.data?.data || res;
+    const obs = this.isEditMode
+      ? this.admin.updateLeaveType(this.leave)
+      : this.admin.createLeaveType(this.leave);
+
+    obs.subscribe({
+      next: () => {
         this.spinner.hide();
+        Swal.fire(
+          this.isEditMode ? 'Updated' : 'Created',
+          `Leave Type ${this.isEditMode ? 'updated' : 'created'} successfully`,
+          'success'
+        );
+        
+      this.loadLeaveType();  
+      this.resetForm();      
+      this.spinner.hide();    
       },
       error: () => {
         this.spinner.hide();
-        Swal.fire('Error', 'Failed to load Leave Type.', 'error');
+        Swal.fire('Error', 'Operation failed', 'error');
       }
     });
   }
 
-  onSubmit(): void {
-    this.spinner.show();
+ editLeaveType(item: LeaveType): void {
+  
+  this.isEditMode = true;
 
-    if (this.isEditMode) {
-      this.admin.updateLeaveType(this.leave).subscribe({
-        next: () => {
-          this.spinner.hide();
-          Swal.fire('Updated', 'Leave Type updated successfully!', 'success');
-          this.loadLeaveType();
-          this.resetForm();
-        },
-        error: () => {
-          this.spinner.hide();
-          Swal.fire('Error', 'Update failed.', 'error');
-        }
-      });
-    } else {
-      this.admin.createLeaveType(this.leave).subscribe({
-        next: () => {
-          this.spinner.hide();
-          Swal.fire('Created', 'Leave Type created successfully!', 'success');
-          this.loadLeaveType();
-          this.resetForm();
-        },
-        error: () => {
-          this.spinner.hide();
-          Swal.fire('Error', 'Create failed.', 'error');
-        }
-      });
-    }
-  }
+  this.leave = { ...item };
 
-  editLeaveType(item: LeaveType): void {
-    this.leave = { ...item };
-    this.isEditMode = true;
-  }
+  this.companyId = item.CompanyID;
+  this.admin.getRegions(this.companyId).subscribe({
+    next: (res: Region[]) => {
+      this.regions = res || [];
+      this.regionId = item.RegionID;
+      this.leave.CompanyID = this.companyId;
+      this.leave.RegionID = this.regionId;
+      this.loadLeaveType(); 
+             this.spinner.hide();
+
+    },
+    error: () => Swal.fire('Error', 'Failed to load regions', 'error')
+  });
+}
+
 
   deleteLeaveType(item: LeaveType): void {
+      console.log('Deleting ID:', item.leaveTypeID); 
+
     Swal.fire({
-      title: `Delete "${item.LeaveTypeName}"?`,
+      title: `Delete "${item.leaveTypeName}"?`,
       showCancelButton: true,
       confirmButtonText: 'Delete'
     }).then(result => {
       if (result.isConfirmed) {
         this.spinner.show();
-        this.admin.deleteLeaveType(item.LeaveTypeId).subscribe({
+   this.admin.deleteLeaveType(item.leaveTypeID).subscribe({
           next: () => {
-            this.spinner.hide();
-            Swal.fire('Deleted', 'Leave Type deleted successfully.', 'success');
+            Swal.fire('Deleted', 'Leave Type deleted successfully', 'success');
             this.loadLeaveType();
+                   this.spinner.hide();
+
           },
-          error: () => {
-            this.spinner.hide();
-            Swal.fire('Error', 'Delete failed.', 'error');
+          error: (err) => {
+            Swal.fire(
+              'Error',
+              err?.error ?? 'Leave Type already deleted or not found',
+              'error'
+            );
           }
         });
+
+
       }
     });
   }
 
   resetForm(): void {
-    this.leave = this.getEmptyLeaveType();
+  this.leave = {
+      leaveTypeID: 0,
+      leaveTypeName: '',
+      leaveDays: 1,
+      IsActive: true,
+      CompanyID: this.companyId,
+      RegionID: this.regionId,
+      companyName: this.companyMap[this.companyId],
+      regionName: this.regionMap[this.regionId]
+    };
+
     this.isEditMode = false;
   }
 
+  // ================= FILTER + SORT + PAGE =================
   filteredLeaveType(): LeaveType[] {
     return this.leaveTypeList.filter(c => {
-      const matchSearch =
-        c.LeaveTypeName.toLowerCase().includes(this.searchText.toLowerCase());
-
+      const matchSearch = c.leaveTypeName.toLowerCase().includes(this.searchText.toLowerCase());
       const matchStatus = this.statusFilter === '' || c.IsActive === this.statusFilter;
-
       return matchSearch && matchStatus;
     });
-  }
-
-  sortTable(column: string) {
-    if (this.sortColumn === column)
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    else {
-      this.sortColumn = column;
-      this.sortDirection = 'asc';
-    }
   }
 
   get pagedLeaveType(): LeaveType[] {
@@ -153,7 +253,6 @@ export class LeaveTypeComponent {
     filtered.sort((a: any, b: any) => {
       const valA = a[this.sortColumn];
       const valB = b[this.sortColumn];
-
       return this.sortDirection === 'asc'
         ? valA < valB ? -1 : 1
         : valA > valB ? -1 : 1;
@@ -173,64 +272,66 @@ export class LeaveTypeComponent {
     this.currentPage = page;
   }
 
+  sortTable(column: string) {
+    if (this.sortColumn === column)
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+  }
+
   getSortIcon(column: string): string {
     if (this.sortColumn !== column) return 'fa-sort';
     return this.sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 
+  // ================= EXPORT =================
   exportAs(type: 'excel' | 'pdf') {
     type === 'excel' ? this.exportExcel() : this.exportPDF();
   }
 
   exportExcel() {
     const data = this.leaveTypeList.map(c => ({
-      'Leave Type Name': c.LeaveTypeName,
-      'Days': c.LeaveDays,
+      'Company': c.companyName,
+      'Region': c.regionName,
+      'Leave Type': c.leaveTypeName,
+      'Days': c.leaveDays,
       'Active': c.IsActive ? 'Yes' : 'No'
     }));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Leave Type');
+    XLSX.utils.book_append_sheet(wb, ws, 'Leave Types');
     XLSX.writeFile(wb, 'LeaveType.xlsx');
   }
 
   exportPDF() {
     const doc = new jsPDF();
     const data = this.leaveTypeList.map(c => [
-      c.LeaveTypeName,
-      c.LeaveDays,
+      c.companyName || '',
+      c.regionName || '',
+      c.leaveTypeName || '',
+      c.leaveDays || '',
       c.IsActive ? 'Yes' : 'No'
     ]);
-
-    autoTable(doc, {
-      head: [['Leave Type Name', 'Days', 'Active']],
-      body: data
-    });
-
+    autoTable(doc, { head: [['Company', 'Region', 'Leave Type', 'Days', 'Active']], body: data });
     doc.save('LeaveType.pdf');
   }
 
-  openUploadPopup() {
-    this.showUploadPopup = true;
+  // ================= BULK UPLOAD =================
+  openUploadPopup() { 
+    this.leaveTypeModel = {};
+    this.showUploadPopup = true; 
   }
+  closeUploadPopup() { this.showUploadPopup = false; }
 
-  closeUploadPopup() {
-    this.showUploadPopup = false;
-  }
 
-  onBulkUploadComplete(data: any): void {
-    if (!data || !data.length) {
-      Swal.fire('Info', 'No valid data found in uploaded file.', 'info');
-      return;
-    }
+  leaveTypeModel: any = {};
 
-    this.admin.bulkInsertData('LeaveType', data).subscribe({
-      next: () => {
-        Swal.fire('Success', 'Leave Type uploaded successfully!', 'success');
-        this.loadLeaveType();
-        this.closeUploadPopup();
-      },
-      error: () => Swal.fire('Error', 'Failed to upload data.', 'error')
-    });
-  }
+onBulkUploadComplete(event: any) {
+  console.log('Bulk upload completed', event);
+  this.closeUploadPopup();
+  this.loadLeaveType();
+}
+
 }
