@@ -384,6 +384,21 @@ export interface EmployeeImmigration {
 
 
 
+export interface TaxSetting {
+  TaxId?: number;          // backend uses TaxId
+  TaxName: string;
+  TaxTypeId: number;
+  TaxTypeName?: string;    // optional, for display
+  Rate: number;
+  EffectiveDate: Date;     // converted to JS Date
+  IsActive: boolean;
+}
+export interface TaxType {
+  taxTypeId: number;     // matches UI binding
+  taxTypeName: string;   // matches UI binding
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
