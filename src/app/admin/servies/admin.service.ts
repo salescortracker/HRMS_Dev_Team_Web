@@ -218,6 +218,21 @@ export interface Department {
   isDeleted?: boolean;
 }
 
+export interface TaxSetting {
+  TaxId?: number;          // backend uses TaxId
+  TaxName: string;
+  TaxTypeId: number;
+  TaxTypeName?: string;    // optional, for display
+  Rate: number;
+  EffectiveDate: Date;     // converted to JS Date
+  IsActive: boolean;
+}
+export interface TaxType {
+  taxTypeId: number;     // matches UI binding
+  taxTypeName: string;   // matches UI binding
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -823,6 +838,132 @@ deleteExpenseCategoryType(id: number) {
 getAllExpenseCategoryTypes(companyId: number, regionId: number) {
   return this.http.get<any>(
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
+  );
+}
+
+
+//  //---------------- GET ALL TAX SETTINGS
+// getAllTaxSettings(): Observable<TaxSetting[]> {
+//   const formData = new FormData();
+//   formData.append('dummy', '1');
+//   return this.http.post<{ success: boolean, data: TaxSetting[] }>(
+//     `${this.baseUrl}/UserManagement/GetAllTaxSettings`, formData
+//   ).pipe(map(res => res.data));
+// }
+// // GET ALL TAX TYPES
+// getTaxTypes(): Observable<TaxType[]> {
+//   const formData = new FormData();
+//   formData.append('dummy', '1'); // backend expects [FromForm] int? dummy
+//   return this.http.post<{ success: boolean; data: TaxType[] }>(
+//     `${this.baseUrl}/UserManagement/GetTaxTypes`, // make sure the controller route is correct
+//     formData
+//   ).pipe(
+//     map(res => res.data)
+//   );
+// }
+// // CREATE TAX SETTING
+// createTaxSetting(model: TaxSetting): Observable<any> {
+//   const formData = new FormData();
+//   formData.append('TaxName', model.TaxName);
+//   formData.append('TaxTypeId', model.TaxTypeId.toString());
+//   formData.append('Rate', model.Rate.toString());
+//   formData.append('EffectiveDate', model.EffectiveDate.toISOString());
+//   formData.append('IsActive', model.IsActive ? 'true' : 'false');
+
+//   return this.http.post(`${this.baseUrl}/UserManagement/SaveTaxSettings`, formData);
+// }
+
+// // UPDATE TAX SETTING
+// updateTaxSetting(id: number, model: TaxSetting): Observable<any> {
+//   const formData = new FormData();
+//   formData.append('id', id.toString());
+//   formData.append('TaxName', model.TaxName);
+//   formData.append('TaxTypeId', model.TaxTypeId.toString());
+//   formData.append('Rate', model.Rate.toString());
+//   formData.append('EffectiveDate', model.EffectiveDate.toISOString());
+//   formData.append('IsActive', model.IsActive ? 'true' : 'false');
+
+//   return this.http.post(`${this.baseUrl}/UserManagement/UpdateTaxSettings`, formData);
+// }
+
+// // DELETE TAX SETTING
+// deleteTaxSetting(id: number): Observable<any> {
+//   const formData = new FormData();
+//   formData.append('id', id.toString());
+
+//   return this.http.post(`${this.baseUrl}/UserManagement/DeleteTaxSettings`, formData);
+// }
+// }
+// ---------------- GET ALL TAX SETTINGS ----------------
+getAllTaxSettings(): Observable<TaxSetting[]> {
+  const formData = new FormData();
+  formData.append('dummy', '1');
+  return this.http
+    .post<{ success: boolean; data: TaxSetting[] }>(
+      `${this.baseUrl}/UserManagement/GetAllTaxSettings`,
+      formData
+    )
+    .pipe(
+      map(res =>
+        res.data.map(t => ({
+          ...t,
+          EffectiveDate: new Date(t.EffectiveDate) // convert string to Date
+        }))
+      )
+    );
+}
+
+// ---------------- GET TAX TYPES ----------------
+getTaxTypes(): Observable<TaxType[]> {
+  const formData = new FormData();
+  formData.append('dummy', '1'); // backend expects [FromForm] int? dummy
+  return this.http
+    .post<{ success: boolean; data: TaxType[] }>(
+      `${this.baseUrl}/UserManagement/GetTaxTypes`,
+      formData
+    )
+    .pipe(map(res => res.data));
+}
+
+// ---------------- CREATE TAX SETTING ----------------
+createTaxSetting(model: TaxSetting): Observable<TaxSetting> {
+  const formData = new FormData();
+  formData.append('TaxName', model.TaxName);
+  formData.append('TaxTypeId', model.TaxTypeId.toString());
+  formData.append('Rate', model.Rate.toString());
+  formData.append('EffectiveDate', model.EffectiveDate.toISOString());
+  formData.append('IsActive', model.IsActive ? 'true' : 'false');
+
+  return this.http.post<TaxSetting>(
+    `${this.baseUrl}/UserManagement/SaveTaxSettings`,
+    formData
+  );
+}
+
+// ---------------- UPDATE TAX SETTING ----------------
+updateTaxSetting(id: number, model: TaxSetting): Observable<TaxSetting> {
+  const formData = new FormData();
+  formData.append('id', id.toString());
+  formData.append('TaxName', model.TaxName);
+  formData.append('TaxTypeId', model.TaxTypeId.toString());
+  formData.append('Rate', model.Rate.toString());
+  formData.append('EffectiveDate', model.EffectiveDate.toISOString());
+  formData.append('IsActive', model.IsActive ? 'true' : 'false');
+
+  return this.http.post<TaxSetting>(
+    `${this.baseUrl}/UserManagement/UpdateTaxSettings`,
+    formData
+  );
+}
+
+// ---------------- DELETE TAX SETTING ----------------
+deleteTaxSetting(id: number): Observable<void> {
+  const formData = new FormData();
+  formData.append('id', id.toString());
+
+  return this.http.post<void>(
+    `${this.baseUrl}/UserManagement/DeleteTaxSettings`,
+    formData
   );
 }
 }
