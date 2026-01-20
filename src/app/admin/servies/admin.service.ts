@@ -71,12 +71,14 @@ export interface LeaveStatus {
   RegionID: number;
 }
 export interface LeaveType {
-  LeaveTypeId: number;
-  LeaveTypeName: string;
-  LeaveDays: number;
+  leaveTypeID: number;
+  leaveTypeName: string;
+  leaveDays: number;
   IsActive: boolean;
    CompanyID: number;
   RegionID: number;
+  companyName?: string;
+  regionName?: string;
 }
 export interface ExpenseStatus {
   ExpenseStatusID: number;
@@ -771,24 +773,26 @@ deleteLeaveStatus(id: number) {
     `${this.baseUrl}/LeaveStatus/DeleteLeaveStatus?LeaveStatusID=${id}`
   );
 }
-getLeaveType(companyId: number, regionId: number) {
-  return this.http.get<any>(
-    `${this.baseUrl}/LeaveStatus/GetLeaveStatus?CompanyID=${companyId}&RegionID=${regionId}`
-  );
-}
 
+
+ getLeaveType(): Observable<LeaveType[]> {
+    return this.http.get<LeaveType[]>(`${this.baseUrl}/MasterData/GetLeaveType`);
+  }
   createLeaveType(model: LeaveType): Observable<any> {
-    return this.http.post(`${this.baseUrl}/Create`, model);
+    return this.http.post(`${this.baseUrl}/MasterData/CreateLeaveType`, model);
   }
 
   updateLeaveType(model: LeaveType): Observable<any> {
-    return this.http.put(`${this.baseUrl}/Update`, model);
+    return this.http.put(`${this.baseUrl}/MasterData/UpdateLeaveType`, model);
   }
 deleteLeaveType(id: number) {
-  return this.http.delete<any>(
-    `${this.baseUrl}/LeaveStatus/DeleteLeaveStatus?LeaveStatusID=${id}`
+  
+  return this.http.delete(
+    `${this.baseUrl}/MasterData/DeleteLeaveType/${id}`
   );
 }
+
+
 // EXPENSE STATUS CRUD
 
 getExpenseStatus(companyId: number, regionId: number) {
