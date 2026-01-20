@@ -1,0 +1,146 @@
+/* W4 Component CSS */
+
+/* Form container */
+.form-container {
+  margin: auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-width: 100%;
+}
+
+/* Form groups */
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+/* Buttons */
+button, .btn {
+  padding: 8px 16px;
+  border: none;
+  background: #b02828;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+button:hover, .btn:hover {
+  background: #901f1f;
+}
+
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+thead th {
+  background: #000; /* Black header */
+  color: #fff;
+  font-weight: 600;
+  padding: 12px;
+  text-align: center;
+}
+
+tbody td {
+  padding: 10px;
+  border-top: 1px solid #eee;
+  font-size: 14px;
+  text-align: center;
+}
+
+tbody tr:hover {
+  background: #ffebeb; /* hover effect */
+}
+
+/* Action icons */
+.action-icons i {
+  cursor: pointer;
+  margin: 0 5px;
+  color: #000;
+  transition: color 0.3s;
+}
+
+.action-icons i:hover {
+  color: red;
+}
+
+/* Tabs (if using in W4) */
+.tab-container {
+  margin-top: 20px;
+}
+
+.tab-header {
+  display: flex;
+  border-bottom: 2px solid #ddd;
+}
+
+.tab-label {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  cursor: pointer;
+  background: #f0f0f0;
+  border-radius: 6px 6px 0 0;
+  font-weight: 600;
+  transition: background 0.3s, color 0.3s;
+}
+
+.tab-label:hover {
+  background: #e9ecef;
+}
+
+/* Show active tab */
+input[type="radio"]:checked + .tab-label {
+  background: #b02828;
+  color: #fff;
+}
+
+.tab-content {
+  display: none;
+  border: 1px solid #ddd;
+  border-top: none;
+  padding: 20px;
+  background: #fff;
+  border-radius: 0 0 6px 6px;
+}
+
+#tab1:checked ~ #content1,
+#tab2:checked ~ #content2,
+#tab3:checked ~ #content3 {
+  display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .form-group {
+    flex: 1 1 calc(50% - 20px);
+  }
+}
+
+@media (max-width: 600px) {
+  .form-group {
+    flex: 1 1 100%;
+  }
+}
