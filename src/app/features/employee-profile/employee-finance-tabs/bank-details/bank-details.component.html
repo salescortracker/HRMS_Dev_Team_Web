@@ -1,0 +1,179 @@
+<div id="content1" class="tab-content">
+
+  <!-- ---------------- BANK FORM ---------------- -->
+  <form [formGroup]="bankForm" (ngSubmit)="saveBankDetails()">
+
+    <!-- Row 1 -->
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Bank Name</label>
+        <input type="text" class="form-control" placeholder="Enter your bank name" formControlName="bankName" />
+        <div *ngIf="bankForm.get('bankName')?.touched && bankForm.get('bankName')?.invalid" class="text-danger">
+          Bank Name is required (max 100 chars)
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Branch Name</label>
+        <input type="text" class="form-control" placeholder="Enter branch name" formControlName="branchName" />
+        <div *ngIf="bankForm.get('branchName')?.touched && bankForm.get('branchName')?.invalid" class="text-danger">
+          Branch Name is required (max 100 chars)
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Account Holder Name</label>
+        <input type="text" class="form-control" placeholder="Enter account holder name" formControlName="accountHolderName" />
+        <div *ngIf="bankForm.get('accountHolderName')?.touched && bankForm.get('accountHolderName')?.invalid" class="text-danger">
+          Account Holder Name is required (letters and spaces only)
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Account Number</label>
+        <input type="text" class="form-control" placeholder="Enter account number" formControlName="accountNumber" />
+        <div *ngIf="bankForm.get('accountNumber')?.touched && bankForm.get('accountNumber')?.invalid" class="text-danger">
+          Account Number is required (9–20 digits)
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Account Type</label>
+        <select class="form-select" formControlName="accountTypeId">
+          <option value="">Select account type</option>
+          <option *ngFor="let type of accountTypes" [value]="type.id">{{ type.name }}</option>
+        </select>
+        <div *ngIf="bankForm.get('accountTypeId')?.touched && bankForm.get('accountTypeId')?.invalid" class="text-danger">
+          Account Type is required
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">IFSC Code</label>
+        <input type="text" class="form-control" placeholder="Enter IFSC code" formControlName="ifsccode" />
+        <div *ngIf="bankForm.get('ifsccode')?.touched && bankForm.get('ifsccode')?.invalid" class="text-danger">
+          IFSC Code required (format: 4 letters + 0 + 6 digits)
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3 -->
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">MICR Code</label>
+        <input type="text" class="form-control" placeholder="Enter MICR code" formControlName="micrcode" />
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">UPI ID</label>
+        <input type="text" class="form-control" placeholder="Enter UPI ID" formControlName="upiid" />
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="row">
+      <div class="col-md-12 text-end">
+        <button type="submit" class="btn-save" [disabled]="bankForm.invalid">
+          {{ bankForm.value.bankDetailsId ? 'Update' : 'Save' }} Bank Details
+        </button>
+        <button type="button" class="btn btn-secondary ms-2" (click)="resetForm()">Reset</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- ---------------- FILTERS / SEARCH ---------------- -->
+  <div class="mb-3 row g-3 align-items-end mt-4">
+    <div class="col-md-4">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search by Bank, Branch or Holder"
+        [(ngModel)]="searchText"
+      />
+    </div>
+    <div class="col-md-4">
+      <select class="form-select" [(ngModel)]="statusFilter">
+        <option value="">All Account Types</option>
+        <option *ngFor="let type of accountTypes" [ngValue]="type.id">{{ type.name }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ---------------- TABLE ---------------- -->
+  <div class="dashboard-tables full-row mt-2">
+    <div class="table-card">
+      <h3>Bank Details List</h3>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>S.No</th>
+              <th (click)="sortBy('bankName')" style="cursor:pointer">
+                Bank Name <span *ngIf="sortColumn === 'bankName'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+              </th>
+              <th (click)="sortBy('branchName')" style="cursor:pointer">
+                Branch <span *ngIf="sortColumn === 'branchName'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+              </th>
+              <th (click)="sortBy('accountHolderName')" style="cursor:pointer">
+                Account Holder <span *ngIf="sortColumn === 'accountHolderName'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+              </th>
+              <th>Account Number</th>
+              <th>Account Type</th>
+              <th>IFSC</th>
+              <th>MICR</th>
+              <th>UPI</th>
+              <th *ngIf="isAdmin">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let bank of filteredBanks(); let i = index">
+              <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+              <td>{{ bank.bankName }}</td>
+              <td>{{ bank.branchName }}</td>
+              <td>{{ bank.accountHolderName }}</td>
+              <td>{{ isAdmin ? bank.accountNumber : maskAccountNumber(bank.accountNumber) }}</td>
+              <td>{{ getAccountTypeName(bank.accountTypeId) }}</td>
+              <td>{{ bank.ifsccode }}</td>
+              <td>{{ bank.micrcode }}</td>
+              <td>{{ bank.upiid }}</td>
+              <td *ngIf="isAdmin" class="action-icons">
+                <i class="fa-solid fa-pen" (click)="editBank(i)"></i>
+                <i class="fa-solid fa-trash" (click)="deleteBank(i)"></i>
+              </td>
+            </tr>
+
+            <tr *ngIf="bankList.length === 0">
+              <td colspan="10" class="text-center">No bank details found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ---------------- PAGINATION (W4 Style) ---------------- -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          <label>
+            Show:
+            <select class="form-select d-inline w-auto ms-2" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+              <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+            </select>
+            entries
+          </label>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-outline-primary btn-sm" (click)="changePage(1)" [disabled]="currentPage === 1">First</button>
+          <button class="btn btn-outline-primary btn-sm" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+          <span class="btn btn-outline-secondary btn-sm disabled">Page {{ currentPage }} of {{ totalPages }}</span>
+          <button class="btn btn-outline-primary btn-sm" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+          <button class="btn btn-outline-primary btn-sm" (click)="changePage(totalPages)" [disabled]="currentPage === totalPages">Last</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
