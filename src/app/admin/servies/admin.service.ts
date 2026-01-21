@@ -155,10 +155,14 @@ export interface CertificationType {
   IsActive: boolean;
 }
 export interface BloodGroup {
-  bloodGroupID: number;
+    bloodGroupId: number;   // ✅ FIXED
+
   bloodGroupName: string;
   isActive: boolean;
+  companyId?: number;
+  regionId?: number;
 }
+
 export interface Gender {
   genderID: number;
   genderName: string;
@@ -698,9 +702,9 @@ deleteDesignation(id: number): Observable<any> {
   return this.http.post(`${this.baseUrl}/MasterData/DeleteDesignation/${id}`,{} );
 }
 
-getGenders() {
-  return this.http.get<{ data: { data: Gender[] } }>(`${this.baseUrl}/Gender/GetAll`);
-}
+// getGenders() {
+//   return this.http.get<{ data: { data: Gender[] } }>(`${this.baseUrl}/Gender/GetAll`);
+// }
 
 createGender(gender: Gender) {
   return this.http.post(`${this.baseUrl}/Gender/Create`, gender);
@@ -713,22 +717,41 @@ updateGender(id: number, gender: Gender) {
 deleteGender(id: number) {
   return this.http.delete(`${this.baseUrl}/Gender/Delete/${id}`);
 }
-// Example endpoints
-getBloodGroups() {
-  return this.http.get(`${this.baseUrl}/bloodgroups`);
-}
 
-createBloodGroup(data: any) {
-  return this.http.post(`${this.baseUrl}/bloodgroups`, data);
-}
+  // ============================
+  // BLOOD GROUP MASTER
+  // ============================
 
-updateBloodGroup(id: number, data: any) {
-  return this.http.put(`${this.baseUrl}/bloodgroups/${id}`, data);
-}
+  getBloodGroups(): Observable<BloodGroup[]> {
+    return this.http.get<BloodGroup[]>(
+      `${this.baseUrl}/MasterData/bloodgroups`
+    );
+  }
+  getBloodGroupById(id: number): Observable<BloodGroup> {
+    return this.http.get<BloodGroup>(
+      `${this.baseUrl}/MasterData/bloodgroups/${id}`
+    );
+  }
 
-deleteBloodGroup(id: number) {
-  return this.http.delete(`${this.baseUrl}/bloodgroups/${id}`);
-}
+  createBloodGroup(data: BloodGroup) {
+    return this.http.post(
+      `${this.baseUrl}/MasterData/bloodgroups`,
+      data
+    );
+  }
+
+  updateBloodGroup(id: number, data: BloodGroup) {
+    return this.http.put(
+      `${this.baseUrl}/MasterData/bloodgroups/${id}`,
+      data
+    );
+  }
+
+  deleteBloodGroup(id: number) {
+    return this.http.delete(
+      `${this.baseUrl}/MasterData/bloodgroups/${id}`
+    );
+  }
 // ---------------- MARITAL STATUS MASTER ---------------- //
 
 getMaritalStatuses() {
@@ -748,9 +771,9 @@ deleteMaritalStatus(id: number) {
 }
 // ---------------- RELATIONSHIP MASTER ---------------- //
 
-getRelationships() {
-  return this.http.get<any>(`${this.baseUrl}/relationship`);
-}
+// getRelationships() {
+//   return this.http.get<any>(`${this.baseUrl}/relationship`);
+// }
 
 createRelationship(data: any) {
   return this.http.post<any>(`${this.baseUrl}/relationship`, data);
