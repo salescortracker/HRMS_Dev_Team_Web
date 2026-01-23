@@ -63,7 +63,6 @@ import { MenusComponent } from './master/menus/menus.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { SubmenuComponent } from './layout/submenu/submenu.component';
-
 @NgModule({
   declarations: [
     TopbarComponent,
@@ -75,7 +74,6 @@ import { SubmenuComponent } from './layout/submenu/submenu.component';
     GenderComponent,
     MaritalStatusComponent,
     RolesPermissionsComponent,
-    
     ApprovalWorkflowComponent,
     LeavePolicyComponent,
     AttendanceSettingComponent,
@@ -126,11 +124,12 @@ import { SubmenuComponent } from './layout/submenu/submenu.component';
     MenusComponent,
     CommonUploadComponent,
     SubmenuComponent,
+
   
 
   ],
   imports: [
-    CommonModule,ReactiveFormsModule,
+    CommonModule,ReactiveFormsModule,FormsModule,
     AdminRoutingModule,FormsModule,MatTabsModule,HttpClientModule
   ]
 })

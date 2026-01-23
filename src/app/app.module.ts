@@ -59,6 +59,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ChangePasswordComponent } from './features/change-password/change-password.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -113,10 +114,11 @@ import { ReactiveFormsModule } from '@angular/forms';
     MyEventsComponent,
     CompensationComponent,
     RecruitmentProcessComponent,
-    CommonUploadComponent
+    CommonUploadComponent,
+    ChangePasswordComponent
   ],
   imports: [
-    BrowserModule,ReactiveFormsModule,
+    BrowserModule,ReactiveFormsModule,FormsModule,
     AppRoutingModule,FormsModule ,HttpClientModule,NgxSpinnerModule
   ],
   providers: [

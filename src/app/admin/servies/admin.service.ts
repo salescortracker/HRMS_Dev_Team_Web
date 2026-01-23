@@ -180,6 +180,13 @@ export interface User {
   status: string;
 }
 
+export interface ChangePasswordRequest {
+  UserID: number;
+  oldPassword: string;
+  newPassword: string;
+  captchaToken: string;
+}
+
 export interface MenuMaster {
   menuID: number;
   menuName: string;
@@ -415,6 +422,14 @@ export class AdminService {
     );
   }
 
+  changePassword(payload: ChangePasswordRequest): Observable<any>{
+  return this.http.post<any>(`${this.baseUrl}/UserManagement/change-password/`, payload, { withCredentials: true });
+}
+
+// Captcha validation
+ captchaValidation(): string {
+  return `${this.baseUrl}/UserManagement/Captcha?` + new Date().getTime();
+}
   private handleError(error: HttpErrorResponse) {
     console.error('Login API error:', error);
     return throwError(() => new Error('Unable to process login. Please try again later.'));
@@ -424,6 +439,7 @@ export class AdminService {
     return this.http.post(`${this.baseUrl}/UserManagement/SendEmail`, user);
   }
 
+   
   // -------------------------------------------------------------
   // 🔹 MENU MASTER OPERATIONS
   // -------------------------------------------------------------

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AdminService } from '../../../admin/servies/admin.service';
 import Swal from 'sweetalert2';
+import { json } from 'stream/consumers';
 @Component({
   selector: 'app-login',
   standalone: false,
@@ -49,6 +50,9 @@ export class LoginComponent {
       next: (response) => {
         this.loading = false;
 
+        const user = response.user;
+        console.log("User object:", user);
+        
         if (response && response.message) {
           // ✅ Save session or token
           sessionStorage.setItem('CompanyId', response.user.companyId.toString());
@@ -61,6 +65,17 @@ export class LoginComponent {
 
                     console.log('Logged in user:', response.user);
           Swal.fire('Login Successful', response.message, 'success');
+
+          if(user.mustChangePassword){
+            Swal.fire('Change Password', 'You must change your password before proceeding.', 'info');
+            this.router.navigate(['/change-password'] , { queryParams: { userId: user.userId } });
+            return;
+          }
+
+          //  Normal login success
+          Swal.fire('Login Successful', response.message, 'success');
+
+
           // ✅ Navigate by role or response route
           const route =
             response.user.roleName === 'Admin'

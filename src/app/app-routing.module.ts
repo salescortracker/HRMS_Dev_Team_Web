@@ -40,6 +40,7 @@ import { MyCalendarComponent } from './features/my-calendar/my-calendar/my-calen
 import { MyEventsComponent } from './features/events/my-events/my-events.component';
 import { CompensationComponent } from './features/compensation/compensation/compensation.component';
 import { RecruitmentProcessComponent } from './features/recruitment/recruitment-process/recruitment-process.component';
+import { ChangePasswordComponent } from './features/change-password/change-password.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -48,6 +49,7 @@ const routes: Routes = [
   // // { path: 'manager-dashboard', component: NavbarManagerLayoutComponent },
   // { path: 'employee-dashboard', component: NavbarEmployeeLayoutComponent },
   // { path: 'finance-dashboard', component: FinanceDashboardComponent },
+  {path : 'change-password', component : ChangePasswordComponent},
   { path: 'profile', component: ProfileComponent },
   { path: 'digitalbusiness', component: DigitalBusinessCardComponent },
   { path: 'details', component: EmployeeDetailsComponent },
