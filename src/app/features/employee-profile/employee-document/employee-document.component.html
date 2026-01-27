@@ -1,0 +1,214 @@
+<form (ngSubmit)="saveDocument()" novalidate>
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">
+        Document Type <span class="text-danger">*</span>
+      </label>
+      <select class="form-select" required [(ngModel)]="form.type" name="type">
+        <option value="">Select Document Type</option>
+        <option *ngFor="let doc of documentTypes" [value]="doc.typeName">
+          {{ doc.typeName }}
+        </option>
+      </select>
+      <div class="text-danger" *ngIf="submitted && !form.type">
+        Document Type is required.
+      </div>
+
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">
+        Document Name / Title <span class="text-danger">*</span>
+      </label>
+      <input type="text"
+             class="form-control"
+             [(ngModel)]="form.title"
+             name="title"
+             placeholder="Enter document name"
+             maxlength="150"
+             required>
+       <div class="text-danger" *ngIf="submitted && !form.title">
+          Document Title is required.
+        </div>
+
+        <div class="text-danger" *ngIf="submitted && form.title?.length > 150">
+          Title cannot exceed 150 characters.
+        </div>
+
+        <div class="text-danger" *ngIf="submitted && !titleRegex.test(form.title)">
+          Only letters, numbers, spaces, -, / and & allowed.
+        </div>
+      
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">
+        Document Number
+        <span *ngIf="isNumberRequired()" class="text-danger">*</span>
+      </label>
+      <input type="text"
+             class="form-control"
+             [(ngModel)]="form.number"
+             name="number"
+             placeholder="Enter document number"
+             maxlength="50">
+      <div class="text-danger" *ngIf="submitted && isNumberRequired() && !form.number">
+        Document Number is required for this document type.
+      </div>
+
+      <div class="text-danger" *ngIf="submitted && form.number?.length > 50">
+        Document Number cannot exceed 50 characters.
+      </div>
+
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">
+        Issued Date <span class="text-danger">*</span>
+      </label>
+      <input type="date" class="form-control" [(ngModel)]="form.issuedDate" name="issuedDate" required>
+      <div class="text-danger" *ngIf="submitted && !form.issuedDate">
+        Issued Date is required.
+      </div>
+
+      <div class="text-danger" *ngIf="submitted && issuedFutureError">
+        Issued Date cannot be a future date.
+      </div>
+
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Expiry Date</label>
+      <input type="date" class="form-control" [(ngModel)]="form.expiryDate" name="expiryDate">
+      <div class="text-danger" *ngIf="submitted && expiryError">
+        Expiry Date must be same or after Issued Date.
+      </div>
+
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">
+        Upload File <span class="text-danger">*</span>
+      </label>
+      <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" (change)="onFileSelected($event)">
+      <small class="text-muted">Allowed: PDF, JPG, PNG — Max 5 MB</small>
+      <div class="text-danger" *ngIf="submitted && !selectedFile && !editId">
+        Please upload a file.
+      </div>
+
+      <div class="text-danger" *ngIf="fileError">
+        {{ fileError }}
+      </div>
+
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">Remarks / Notes</label>
+      <textarea class="form-control" [(ngModel)]="form.remarks" name="remarks" maxlength="500"
+                placeholder="Enter remarks..."></textarea>
+    </div>
+
+    <div class="col-md-4 d-flex align-items-center">
+      <div class="form-check mt-2">
+        <input class="form-check-input" type="checkbox" [(ngModel)]="form.confidential" name="confidential">
+        <label class="form-check-label">Mark as Confidential</label>
+      </div>
+    </div>
+
+    <div class="col-md-4 text-end">
+      <button type="submit" class="btn btn-primary me-2">
+        {{ editId ? 'Update Document' : 'Add Document' }}
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="resetForm()">Reset</button>
+    </div>
+  </div>
+</form>
+
+
+ 
+ 
+
+<!-- Table -->
+<div class="dashboard-tables full-row mt-4">
+  <div class="table-card">
+    <h3>Employee Documents List</h3>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th (click)="sortBy('type')" style="cursor:pointer">Document Type
+            <span *ngIf="sortColumn === 'type'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th (click)="sortBy('title')" style="cursor:pointer">Document Name / Title 
+            <span *ngIf="sortColumn === 'title'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th (click)="sortBy('number')" style="cursor:pointer">Document Number
+            <span *ngIf="sortColumn === 'number'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th (click)="sortBy('issuedDate')" style="cursor:pointer">Issued Date
+            <span *ngIf="sortColumn === 'issuedDate'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th (click)="sortBy('expiryDate')" style="cursor:pointer">Expiry Date
+            <span *ngIf="sortColumn === 'expiryDate'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th>File</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let doc of pagedDocuments(); let i = index">
+          <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+          <td>{{ doc.type }}</td>
+          <td>{{ doc.title }}</td>
+          <td>{{ doc.number || '—' }}</td>
+          <td>{{ formatDate(doc.issuedDate) }}</td>
+          <td>{{ doc.expiryDate ? formatDate(doc.expiryDate) : '—' }}</td>
+          
+            <td>
+            <a *ngIf="doc.fileName"
+              style="cursor:pointer; color:#0d6efd; font-weight:500;"
+              (click)="viewDocument(doc)">
+              View
+            </a>
+          </td>
+          <td class="action-icons">
+            
+
+            <i class="fa-solid fa-pen me-2" style="color: black;" title="Edit" (click)="editDocument(doc)"></i>
+
+            <i class="fa-solid fa-trash" style="color: black;" title="Delete" (click)="deleteDocument(doc.id)"
+               ></i>
+          </td>
+        </tr>
+        <tr *ngIf="pagedDocuments().length === 0">
+          <td colspan="6" class="text-center">No documents found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Pagination Footer -->
+<div class="d-flex justify-content-between align-items-center mt-3">
+  <div>
+    <label>Show:
+      <select class="form-select d-inline w-auto ms-2" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+        <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+      </select>
+      entries
+    </label>
+  </div>
+
+  <div>
+    <button class="btn btn-outline-secondary btn-sm me-2" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+    <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+  </div>
+</div>
