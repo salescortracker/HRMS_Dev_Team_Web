@@ -54,6 +54,7 @@ import { CompanyComponent } from './master/company/company.component';
 import { RegionComponent } from './master/region/region.component';
 import { UsersComponent } from './master/users/users.component';
 import { MenusComponent } from './master/menus/menus.component';
+import { CountryComponent } from './pages/master/country/country.component';
 
 const routes: Routes = [
   {
@@ -114,6 +115,7 @@ const routes: Routes = [
 { path: 'region', component: RegionComponent },  
 { path: 'users', component: UsersComponent },  
 { path: 'menumaster', component: MenusComponent },  
+    {path: 'country', component: CountryComponent },
 
       // Add more admin pages here
     ]
