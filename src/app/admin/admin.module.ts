@@ -63,7 +63,8 @@ import { MenusComponent } from './master/menus/menus.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { SubmenuComponent } from './layout/submenu/submenu.component';
-
+import { CountryComponent } from './pages/master/country/country.component';
+import { count } from 'console';
 @NgModule({
   declarations: [
     TopbarComponent,
@@ -126,12 +127,13 @@ import { SubmenuComponent } from './layout/submenu/submenu.component';
     MenusComponent,
     CommonUploadComponent,
     SubmenuComponent,
+    CountryComponent,
   
 
   ],
   imports: [
     CommonModule,ReactiveFormsModule,
-    AdminRoutingModule,FormsModule,MatTabsModule,HttpClientModule
+    AdminRoutingModule,FormsModule,MatTabsModule,HttpClientModule,
   ]
 })
 export class AdminModule { }

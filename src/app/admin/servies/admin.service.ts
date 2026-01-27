@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs';
 import { map } from 'rxjs';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { UserManagementComponent } from '../pages/system-security/user-management/user-management.component';
 // ------------ Model Interfaces ----------------
 export interface Designation {
   designationID: number;
@@ -217,6 +218,21 @@ export interface Department {
   modifiedAt?: Date;
   isDeleted?: boolean;
 }
+export interface Country {
+  countryId: number;
+  companyId: number;
+  regionId: number;
+  countryName: string;
+  isActive: boolean;
+  isDeleted: boolean;
+  createdBy?: number | null;
+  createdAt?: string;
+  modifiedBy?: number | null;
+  modifiedAt?: string | null;
+}
+
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -823,6 +839,67 @@ deleteExpenseCategoryType(id: number) {
 getAllExpenseCategoryTypes(companyId: number, regionId: number) {
   return this.http.get<any>(
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
+  );
+}
+// country service methods
+ // ================= GET ALL COUNTRIES =================
+  getAllCountries(): Observable<Country[]> {
+    return this.http.get<Country[]>(
+      `${this.baseUrl}/UserManagement/GetAllCountries`
+    );
+  }
+
+  // ================= GET COUNTRY BY ID =================
+  getCountryById(id: number): Observable<Country> {
+    return this.http.get<Country>(
+      `${this.baseUrl}/UserManagement/GetCountryById/${id}`
+    );
+  }
+
+  // ================= SAVE COUNTRY =================
+  // Backend expects [FromForm]
+ saveCountry(dto: Country): Observable<any> {
+  const formData = new FormData();
+
+  formData.append('CountryId', '0');
+  formData.append('CompanyId', dto.companyId.toString());
+  formData.append('RegionId', dto.regionId.toString());
+  formData.append('CountryName', dto.countryName);
+  formData.append('IsActive', dto.isActive.toString());
+  formData.append('CreatedBy', dto.createdBy?.toString() ?? '0');
+  return this.http.post(
+    `${this.baseUrl}/UserManagement/SaveCountry`,
+    formData,
+    { responseType: 'text' } // 🔥 THIS FIXES IT
+  );
+}
+
+
+  // ================= UPDATE COUNTRY =================
+updateCountry(dto: Country): Observable<any> {
+  const formData = new FormData();
+
+  formData.append('CountryId', dto.countryId.toString());
+  formData.append('CompanyId', dto.companyId.toString());
+  formData.append('RegionId', dto.regionId.toString());
+  formData.append('CountryName', dto.countryName);
+  formData.append('IsActive', dto.isActive.toString());
+  formData.append('CreatedBy', dto.createdBy?.toString() ?? '0');
+
+  return this.http.post(
+    `${this.baseUrl}/UserManagement/UpdateCountry`,
+    formData,
+    { responseType: 'text' } //  REQUIRED
+  );
+}
+
+
+  // ================= DELETE COUNTRY =================
+deleteCountry(id: number): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/UserManagement/DeleteCountry/${id}`,
+    {},
+    { responseType: 'text' } //  REQUIRED
   );
 }
 }
