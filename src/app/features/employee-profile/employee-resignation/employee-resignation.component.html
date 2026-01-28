@@ -11,81 +11,229 @@
 </div>
 
 <div class="tab-container">
-<!-- TAB 7: RESIGNATION / EXIT -->
- <div class="content">
-  <form>
-    <div class="row mb-3">
-      <div class="col-md-4">
-        <label class="form-label">Resignation Type</label>
-        <select class="form-select" required>
-          <option value="">Select resignation type</option>
-          <option>Voluntary</option>
-          <option>Involuntary</option>
-          <option>Retirement</option>
-          <option>Other</option>
-        </select>
-      </div>
+  <div class="content container-fluid">
 
-      <div class="col-md-4">
-        <label class="form-label">Notice Period</label>
-        <input type="text" class="form-control" placeholder="Enter notice period in days/weeks" required>
-      </div>
+    <!-- ✅ FORM SECTION -->
+    <form #resignForm="ngForm" (ngSubmit)="saveResignation(resignForm)" novalidate>
+      <!-- ROW 1 -->
+      <div class="row mb-3">
+        <!-- Resignation Type -->
+        <div class="col-md-4">
+          <label class="form-label">Resignation Type <span class="text-danger">*</span></label>
+          <select
+            class="form-select"
+            [(ngModel)]="resignationModel.resignationType"
+            name="resignationType"
+            required
+            #resignationType="ngModel"
+          >
+            <option value="">Select resignation type</option>
+            <option value="Voluntary">Voluntary</option>
+            <option value="Involuntary">Involuntary</option>
+            <option value="Termination">Termination</option>
+            <option value="Retirement">Retirement</option>
+            <option value="Contract Completion">Contract Completion</option>
+          </select>
+          <div *ngIf="resignationType.invalid && (resignationType.touched || formSubmitted)" class="text-danger small mt-1">
+            Please select a resignation type.
+          </div>
+        </div>
 
-      <div class="col-md-4">
-        <label class="form-label">Last Working Day</label>
-        <input type="date" class="form-control" required>
-      </div>
-    </div>
+<!-- Notice Period -->
+<div class="col-md-4">
+  <label class="form-label">Notice Period <span class="text-danger">*</span></label>
+  
+  <input
+    type="text"
+    class="form-control"
+    maxlength="2"
+    [(ngModel)]="resignationModel.noticePeriod"
+    name="noticePeriod"
+    placeholder="Enter notice period (e.g., 30)"
+    required
+    pattern="^[0-9]{2}$"
+    #noticePeriod="ngModel"
+  />
 
-    <div class="row mb-3">
-      <div class="col-md-12">
-        <label class="form-label">Resignation Reason</label>
-        <textarea class="form-control" placeholder="Provide reason for resignation" required></textarea>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12 text-first">
-        <button type="submit" class="btn btn-primary">Submit Resignation</button>
-      </div>
-    </div>
-  </form>
-
-  <!-- Resignation Table -->
-  <div class="dashboard-tables full-row mt-4">
-    <div class="table-card">
-      <h3>Resignation / Exit List</h3>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Employee</th>
-            <th>Type</th>
-            <th>Notice Period</th>
-            <th>Last Working Day</th>
-            <th>Reason</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>EMP005 - Jane</td>
-            <td>Voluntary</td>
-            <td>30 days</td>
-            <td>2025-03-31</td>
-            <td>Personal reasons</td>
-            <td class="action-icons">
-              <i class="fa-solid fa-pen"></i>
-              <i class="fa-solid fa-trash"></i>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
- 
-</div>
+  <div *ngIf="noticePeriod.invalid && (noticePeriod.touched || formSubmitted)" class="text-danger small mt-1">
+    <div *ngIf="noticePeriod.errors?.['required']">Notice period is required.</div>
+    <div *ngIf="noticePeriod.errors?.['pattern']">Only 2 digits allowed (e.g., 30, 60, 90).</div>
+  </div>
 </div>
 
+
+        <!-- Last Working Day -->
+        <div class="col-md-4">
+          <label class="form-label">Last Working Day <span class="text-danger">*</span></label>
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="resignationModel.lastWorkingDay"
+            name="lastWorkingDay"
+            required
+            (change)="validateLastWorkingDay()"
+            #lastWorkingDay="ngModel"
+          />
+          <div *ngIf="lastWorkingDay.invalid && (lastWorkingDay.touched || formSubmitted)" class="text-danger small mt-1">
+            Last working day is required.
+          </div>
+          <div *ngIf="dateError" class="text-danger small mt-1">{{ dateError }}</div>
+        </div>
+      </div>
+
+      <!-- ROW 2 -->
+      <div class="row mb-3">
+        <div class="col-md-12">
+          <label class="form-label">Resignation Reason <span class="text-danger">*</span></label>
+          <textarea
+            class="form-control"
+            [(ngModel)]="resignationModel.resignationReason"
+            name="resignationReason"
+            placeholder="Provide reason for resignation"
+            required
+            maxlength="500"
+            #resignationReason="ngModel"
+          ></textarea>
+          <div *ngIf="(resignationReason.touched || formSubmitted)" class="text-danger small mt-1">
+            <div *ngIf="!resignationModel.resignationReason">Reason is required.</div>
+            <div *ngIf="resignationModel.resignationReason && resignationModel.resignationReason.trim().length < 10">
+              Reason must contain at least 10 characters.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 3 (Buttons) -->
+      <div class="row mb-3">
+        <div class="col-md-12 text-start">
+          <button type="submit" class="btn btn-primary me-2">
+            {{ isEditMode ? 'Update Resignation' : 'Submit Resignation' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="resetForm(resignForm)">
+            Reset
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <!-- ✅ Message -->
+    <div *ngIf="message" class="alert alert-info mt-3">{{ message }}</div>
+
+        <!-- ✅ FILTER SECTION -->
+    <div class="card p-3 shadow-sm mt-3 mb-4">
+      <h6 class="mb-3 fw-bold">Filter Resignation Requests</h6>
+      <div class="row g-2">
+        <div class="col-md-3">
+<input
+  type="text"
+  class="form-control"
+  placeholder="Search by Type"
+  [(ngModel)]="filter.resignationType"
+  (input)="applyFilter()"
+  (keyup)="applyFilter()"   
+/>
+
+        </div>
+        <div class="col-md-3">
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="filter.fromDate"
+            (change)="applyFilter()"
+          />
+        </div>
+        <div class="col-md-3">
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="filter.toDate"
+            (change)="applyFilter()"
+          />
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-outline-primary w-100" (click)="resetFilter()">Reset Filter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ Table -->
+    <div class="dashboard-tables full-row mt-4">
+      <div class="table-card">
+        <h3>Resignation / Exit List</h3>
+        <!-- COLUMN FILTER DROPDOWN -->
+<div class="dropdown mb-3 d-flex justify-content-end">
+  <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+    Show / Hide Columns
+  </button>
+
+  <ul class="dropdown-menu p-2" style="min-width: 200px;">
+    <li *ngFor="let col of allColumns">
+      <input 
+        type="checkbox" 
+        class="form-check-input me-2" 
+        [(ngModel)]="col.visible"
+        (change)="updateVisibleColumns()"
+      >
+      <label class="form-check-label">{{ col.label }}</label>
+    </li>
+  </ul>
+</div>
+<table class="table table-bordered align-middle">
+  <thead>
+    <tr>
+      <th *ngIf="columns.showIndex">#</th>
+      <th *ngIf="columns.type">Type</th>
+      <th *ngIf="columns.notice">Notice Period</th>
+      <th *ngIf="columns.lastDay">Last Working Day</th>
+      <th *ngIf="columns.reason">Reason</th>
+      <th *ngIf="columns.status">Status</th>
+      <th *ngIf="columns.actions">Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let item of filteredResignations | slice:(currentPage-1)*pageSize:(currentPage)*pageSize; let i = index">
+
+      <td *ngIf="columns.showIndex">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+      <td *ngIf="columns.type">{{ item.resignationType }}</td>
+      <td *ngIf="columns.notice">{{ item.noticePeriod }}</td>
+      <td *ngIf="columns.lastDay">{{ item.lastWorkingDay | date:'dd/MM/yyyy' }}</td>
+      <td *ngIf="columns.reason">{{ item.resignationReason }}</td>
+      <td *ngIf="columns.status">{{ item.status }}</td>
+
+      <td *ngIf="columns.actions" class="action-icons">
+        <i class="fa-solid fa-pen text-primary" (click)="editResignation(item)"></i>
+        <i class="fa-solid fa-trash text-danger ms-2" (click)="deleteResignation(item.resignationId!)"></i>
+      </td>
+
+    </tr>
+  </tbody>
+</table>
+
+
+        <!-- ✅ Pagination -->
+        <nav *ngIf="filteredResignations.length > pageSize" class="mt-3">
+          <ul class="pagination justify-content-end">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <a class="page-link" (click)="changePage(currentPage - 1)">Previous</a>
+            </li>
+
+            <li
+              class="page-item"
+              *ngFor="let p of totalPagesArray"
+              [class.active]="p === currentPage"
+            >
+              <a class="page-link" (click)="changePage(p)">{{ p }}</a>
+            </li>
+
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <a class="page-link" (click)="changePage(currentPage + 1)">Next</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
 </div>
 
 <app-footer></app-footer>
-
