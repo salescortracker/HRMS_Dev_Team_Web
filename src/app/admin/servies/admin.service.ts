@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs';
 import { map } from 'rxjs';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { UserManagementComponent } from '../pages/system-security/user-management/user-management.component';
 // ------------ Model Interfaces ----------------
 export interface Designation {
   designationID: number;
@@ -217,6 +218,51 @@ export interface Department {
   modifiedAt?: Date;
   isDeleted?: boolean;
 }
+export interface Country {
+  countryId: number;
+  companyId: number;
+  regionId: number;
+  countryName: string;
+  isActive: boolean;
+  isDeleted: boolean;
+  createdBy?: number | null;
+  createdAt?: string;
+  modifiedBy?: number | null;
+  modifiedAt?: string | null;
+}
+
+export interface City {
+  cityId: number;
+  cityName: string;
+  companyId: number;
+  regionId: number;
+  countryId: number;
+  stateId: number;
+  isActive: boolean;
+  isDeleted: boolean;
+  createdBy?: number | null;
+  createdAt?: string;
+  modifiedBy?: number | null;
+  modifiedAt?: string | null;
+}
+
+export interface State {
+  stateId: number;
+  companyId: number;
+  regionId: number;
+  countryId: number;
+  stateName: string;
+  isActive: boolean;
+  isDeleted: boolean;
+    countryName?: string;
+  createdBy?: number | null;
+  createdAt?: string;
+  modifiedBy?: number | null;
+  modifiedAt?: string | null;
+}
+
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -824,5 +870,162 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
   return this.http.get<any>(
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
   );
+}
+// country service methods
+ // ================= GET ALL COUNTRIES =================
+  getAllCountries(): Observable<Country[]> {
+    return this.http.get<Country[]>(
+      `${this.baseUrl}/UserManagement/GetAllCountries`
+    );
+  }
+
+  // ================= GET COUNTRY BY ID =================
+  getCountryById(id: number): Observable<Country> {
+    return this.http.get<Country>(
+      `${this.baseUrl}/UserManagement/GetCountryById/${id}`
+    );
+  }
+
+  // ================= SAVE COUNTRY =================
+  // Backend expects [FromForm]
+ saveCountry(dto: Country): Observable<any> {
+  const formData = new FormData();
+
+  formData.append('CountryId', '0');
+  formData.append('CompanyId', dto.companyId.toString());
+  formData.append('RegionId', dto.regionId.toString());
+  formData.append('CountryName', dto.countryName);
+  formData.append('IsActive', dto.isActive.toString());
+  formData.append('CreatedBy', dto.createdBy?.toString() ?? '0');
+  return this.http.post(
+    `${this.baseUrl}/UserManagement/SaveCountry`,
+    formData,
+    { responseType: 'text' } // 🔥 THIS FIXES IT
+  );
+}
+
+
+  // ================= UPDATE COUNTRY =================
+updateCountry(dto: Country): Observable<any> {
+  const formData = new FormData();
+
+  formData.append('CountryId', dto.countryId.toString());
+  formData.append('CompanyId', dto.companyId.toString());
+  formData.append('RegionId', dto.regionId.toString());
+  formData.append('CountryName', dto.countryName);
+  formData.append('IsActive', dto.isActive.toString());
+  formData.append('CreatedBy', dto.createdBy?.toString() ?? '0');
+
+  return this.http.post(
+    `${this.baseUrl}/UserManagement/UpdateCountry`,
+    formData,
+    { responseType: 'text' } //  REQUIRED
+  );
+}
+
+
+  // ================= DELETE COUNTRY =================
+deleteCountry(id: number): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/UserManagement/DeleteCountry/${id}`,
+    {},
+    { responseType: 'text' } //  REQUIRED
+  );
+}
+// ================== STATE ==================
+getAllStates(): Observable<State[]> {
+  return this.http.post<State[]>(`${this.baseUrl}/usermanagement/GetAllStates`, {});
+}
+
+getActiveStates(): Observable<State[]> {
+  return this.http.post<State[]>(`${this.baseUrl}/usermanagement/GetActiveStates`, {});
+}
+
+getStateById(id: number): Observable<State> {
+  const formData = new FormData();
+  formData.append('stateId', id.toString());
+  return this.http.post<State>(`${this.baseUrl}/usermanagement/GetStateById`, formData);
+}
+
+saveState(state: State): Observable<any> {
+  const formData = new FormData();
+  formData.append('StateId', (state.stateId || 0).toString());
+  formData.append('StateName', state.stateName ?? '');
+    formData.append('CountryId', state.countryId.toString());  // <-- new
+  formData.append('CompanyId', (state.companyId || 0).toString());
+  formData.append('RegionId', (state.regionId || 0).toString());
+  formData.append('IsActive', (state.isActive ?? true).toString());
+  formData.append('IsDeleted', 'false');
+
+  return this.http.post(`${this.baseUrl}/usermanagement/CreateState`, formData, { responseType: 'text' });
+}
+
+updateState(state: State): Observable<any> {
+  const formData = new FormData();
+  formData.append('StateId', state.stateId.toString());
+  formData.append('StateName', state.stateName ?? '');
+    formData.append('CountryId', state.countryId.toString());  // <-- new
+  formData.append('CompanyId', state.companyId.toString());
+  formData.append('RegionId', state.regionId.toString());
+  formData.append('IsActive', (state.isActive ?? true).toString());
+  formData.append('IsDeleted', 'false');
+
+  return this.http.post(`${this.baseUrl}/usermanagement/UpdateState`, formData, { responseType: 'text' });
+}
+
+deleteState(stateId: number): Observable<any> {
+  const formData = new FormData();
+  formData.append('stateId', stateId.toString());
+  return this.http.post(`${this.baseUrl}/usermanagement/DeleteState`, formData, { responseType: 'text' });
+}
+
+
+// ================== CITY ==================
+getAllCities(): Observable<City[]> {
+  return this.http.post<City[]>(`${this.baseUrl}/usermanagement/GetAllCities`, {});
+}
+
+getActiveCities(): Observable<City[]> {
+  return this.http.post<City[]>(`${this.baseUrl}/usermanagement/GetActiveCities`, {});
+}
+
+getCityById(id: number): Observable<City> {
+  const formData = new FormData();
+  formData.append('cityId', id.toString());
+  return this.http.post<City>(`${this.baseUrl}/usermanagement/GetCityById`, formData);
+}
+
+saveCity(city: City): Observable<any> {
+  const formData = new FormData();
+  formData.append('CityId', (city.cityId || 0).toString());
+  formData.append('CityName', city.cityName ?? '');
+  formData.append('CompanyId', (city.companyId || 0).toString());
+  formData.append('RegionId', (city.regionId || 0).toString());
+  formData.append('StateId', (city.stateId || 0).toString());
+    formData.append('CountryId', (city.countryId || 0).toString()); 
+  formData.append('IsActive', (city.isActive ?? true).toString());
+  formData.append('IsDeleted', 'false');
+
+  return this.http.post(`${this.baseUrl}/usermanagement/CreateCity`, formData, { responseType: 'text' });
+}
+
+updateCity(city: City): Observable<any> {
+  const formData = new FormData();
+  formData.append('CityId', city.cityId.toString());
+  formData.append('CityName', city.cityName ?? '');
+  formData.append('CompanyId', city.companyId.toString());
+  formData.append('RegionId', city.regionId.toString());
+  formData.append('StateId', city.stateId.toString());
+    formData.append('CountryId', city.countryId.toString()); 
+  formData.append('IsActive', (city.isActive ?? true).toString());
+  formData.append('IsDeleted', 'false');
+
+  return this.http.post(`${this.baseUrl}/usermanagement/UpdateCity`, formData, { responseType: 'text' });
+}
+
+deleteCity(cityId: number): Observable<any> {
+  const formData = new FormData();
+  formData.append('cityId', cityId.toString());
+  return this.http.post(`${this.baseUrl}/usermanagement/DeleteCity`, formData, { responseType: 'text' });
 }
 }

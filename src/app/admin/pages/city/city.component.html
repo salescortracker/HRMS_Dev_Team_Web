@@ -1,0 +1,196 @@
+<div class="card shadow-sm city-master">
+  <div class="container-fluid p-4">
+
+    <!-- HEADER -->
+    <h4 class="mb-4">
+      <i class="fa-solid fa-city me-2"></i>
+      City Management
+    </h4>
+
+    <!-- FORM -->
+    <form (ngSubmit)="saveCity()" #cityForm="ngForm" class="mb-4">
+      <div class="row g-3 align-items-end">
+
+        <!-- COUNTRY -->
+        <div class="col-md-4">
+          <label class="form-label">Country</label>
+          <select class="form-select"
+                  [(ngModel)]="city.countryId"
+                  name="countryId"
+                  (change)="onCountryChange(city.countryId)"
+                  required>
+            <option value="">Select Country</option>
+            <option *ngFor="let c of countryDropdown" [value]="c.countryId">
+              {{ c.countryName }}
+            </option>
+          </select>
+        </div>
+
+        <!-- STATE -->
+        <div class="col-md-4">
+          <label class="form-label">State</label>
+          <select class="form-select"
+                  [(ngModel)]="city.stateId"
+                  name="stateId"
+                  required>
+            <option value="">Select State</option>
+            <option *ngFor="let s of filteredStates" [value]="s.stateId">
+              {{ s.stateName }}
+            </option>
+          </select>
+        </div>
+
+        <!-- CITY NAME -->
+        <div class="col-md-4">
+          <label class="form-label">City Name</label>
+          <input type="text"
+                 class="form-control"
+                 name="cityName"
+                 [(ngModel)]="city.cityName"
+                 required>
+        </div>
+
+        <!-- COMPANY -->
+        <div class="col-md-4">
+          <label class="form-label">Company</label>
+          <select class="form-select"
+                  name="companyId"
+                  [(ngModel)]="city.companyId"
+                  required>
+            <option value="">Select Company</option>
+            <option *ngFor="let co of companyDropdown" [value]="co.companyId">
+              {{ co.companyName }}
+            </option>
+          </select>
+        </div>
+
+        <!-- REGION -->
+        <div class="col-md-4">
+          <label class="form-label">Region</label>
+          <select class="form-select"
+                  name="regionId"
+                  [(ngModel)]="city.regionId"
+                  required>
+            <option value="">Select Region</option>
+            <option *ngFor="let r of regionDropdown" [value]="r.regionID">
+              {{ r.regionName }}
+            </option>
+          </select>
+        </div>
+
+        <!-- STATUS -->
+        <div class="col-md-4 mt-2">
+          <div class="form-check form-switch">
+            <input class="form-check-input"
+                   type="checkbox"
+                   name="isActive"
+                   [(ngModel)]="city.isActive">
+            <label class="form-check-label">
+              {{ city.isActive ? 'Active' : 'Inactive' }}
+            </label>
+          </div>
+        </div>
+
+        <!-- BUTTON -->
+        <div class="col-md-8 mt-2 text-end">
+          <button class="btn btn-dark px-4" [disabled]="!cityForm.valid">
+            {{ isEditMode ? 'Update City' : 'Save City' }}
+          </button>
+        </div>
+
+      </div>
+    </form>
+
+    <!-- FILTERS -->
+    <div class="row g-3 mb-3">
+      <div class="col-md-4">
+        <input class="form-control"
+               placeholder="Search City"
+               [(ngModel)]="searchText">
+      </div>
+
+      <div class="col-md-4">
+        <select class="form-select" [(ngModel)]="statusFilter">
+          <option value="">All</option>
+          <option [ngValue]="true">Active</option>
+          <option [ngValue]="false">Inactive</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th (click)="sortTable('cityName')" style="cursor:pointer">
+              City
+              <i class="fa" [ngClass]="getSortIcon('cityName')"></i>
+            </th>
+            <th>Country</th>
+            <th>State</th>
+            <th>Region</th>
+            <th>Company</th>
+            <th>Status</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let c of pagedCities; let i = index">
+            <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+            <td>{{ c.cityName }}</td>
+            <td>{{ getCountryName(c.stateId) }}</td>
+            <td>{{ getStateName(c.stateId) }}</td>
+            <td>{{ getRegionName(c.regionId) }}</td>
+            <td>{{ getCompanyName(c.companyId) }}</td>
+            <td>
+              <span class="badge" [ngClass]="c.isActive ? 'bg-success' : 'bg-secondary'">
+                {{ c.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-primary me-2"
+                      (click)="editCity(c)">
+                Edit
+              </button>
+              <button class="btn btn-sm btn-outline-danger"
+                      (click)="deleteCity(c)">
+                Delete
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="pagedCities.length === 0">
+            <td colspan="8" class="text-center text-muted">
+              No records found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PAGINATION -->
+    <nav *ngIf="totalPages > 1" class="d-flex justify-content-end mt-3">
+      <ul class="pagination pagination-sm">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link" (click)="goToPage(currentPage - 1)">Previous</a>
+        </li>
+
+        <li class="page-item"
+            *ngFor="let _ of [].constructor(totalPages); let i = index"
+            [class.active]="currentPage === i + 1">
+          <a class="page-link" (click)="goToPage(i + 1)">
+            {{ i + 1 }}
+          </a>
+        </li>
+
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <a class="page-link" (click)="goToPage(currentPage + 1)">Next</a>
+        </li>
+      </ul>
+    </nav>
+
+  </div>
+</div>
