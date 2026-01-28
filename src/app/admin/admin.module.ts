@@ -63,6 +63,8 @@ import { MenusComponent } from './master/menus/menus.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { SubmenuComponent } from './layout/submenu/submenu.component';
+import { StateComponent } from './pages/state/state.component';
+import { CityComponent } from './pages/city/city.component';
 
 @NgModule({
   declarations: [
@@ -126,6 +128,8 @@ import { SubmenuComponent } from './layout/submenu/submenu.component';
     MenusComponent,
     CommonUploadComponent,
     SubmenuComponent,
+    StateComponent,
+    CityComponent,
   
 
   ],

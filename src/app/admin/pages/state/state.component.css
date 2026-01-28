@@ -1,0 +1,23 @@
+/* Table vertical alignment */
+.state-master table th,
+.state-master table td {
+  vertical-align: middle;
+}
+
+/* Cursor for sortable columns */
+.state-master .sortable {
+  cursor: pointer;
+}
+
+/* Maroon location icon (matching country globe icon) */
+.state-master .state-icon {
+  color: #a92727;
+  font-size: 1.25rem;
+}
+
+/* Pagination active page */
+.state-master .pagination .page-item.active .page-link {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
