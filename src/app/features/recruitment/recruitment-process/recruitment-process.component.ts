@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
   styleUrl: './recruitment-process.component.css'
 })
 export class RecruitmentProcessComponent {
-tabs = ['Resume Upload', 'Screening', 'Interview', 'Offer', 'Onboarding'];
+tabs = ['Resume Upload', 'Screening', 'Interview','Appointment','Offer', 'Onboarding'];
   totalStages = this.tabs.length;
   activeTab = 1;
 

@@ -1,0 +1,197 @@
+<h4>Interview Scheduling & Feedback</h4>
+
+        <div class="row g-3">
+          <div class="card mb-4">
+
+  <!-- ===== TOP FILTER ROW ===== -->
+  <div class="row g-3 align-items-end mb-3">
+     <!-- Department -->
+    <div class="col-md-4">
+      <label class="form-label">Department</label>
+      <select class="form-select"
+              [(ngModel)]="interviewForm.department" [disabled]="isEditMode"
+              name="department">
+        <option value="">Select</option>
+        <option *ngFor="let d of departments" [value]="d">
+          {{ d }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Designation -->
+    <div class="col-md-4">
+      <label class="form-label">Designation</label>
+      <select class="form-select"
+              [(ngModel)]="interviewForm.designation" [disabled]="isEditMode"
+              name="designation">
+        <option value="">Select</option>
+        <option *ngFor="let des of designations" [value]="des">
+          {{ des }}
+        </option>
+      </select>
+    </div>
+
+   
+
+    <!-- Show Resume -->
+    <div class="col-md-2 d-flex">
+      <button class="btn btn-primary w-100" (click)="showResume()">
+        Show Resume
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ===== TABLE ===== -->
+  <div class="table-responsive">
+    <table class="table table-sm table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Seq</th>
+          <th>Name</th>
+          <th>Mobile</th>
+          <th>Expected</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let c of screeningCandidates; let i = index">
+          <td>
+            <input type="checkbox"
+                  class="form-check-input"
+                  [checked]="isSelected(c)"
+                  (change)="toggleCandidate(c, $event)">
+          </td>
+
+          <td>{{ c.seqNo }}</td>
+          <td>{{ c.name }}</td>
+          <td>{{ c.mobile }}</td>
+          <td>{{ c.expectedCtc }}</td>
+        </tr>
+
+        <!-- Empty state -->
+        <tr *ngIf="!screeningCandidates || screeningCandidates.length === 0">
+          <td colspan="5" class="text-center text-muted">
+            No records found
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+        
+<div class="col-md-3">
+  <label class="form-label">Level</label>
+  <select class="form-select"
+          [(ngModel)]="interviewForm.level"
+          name="level">
+    <option value="">Select Level</option>
+    <option *ngFor="let l of levels" [value]="l">Level {{ l }}</option>
+  </select>
+</div>
+
+
+          <div class="col-md-3">
+            <label class="form-label">Interviewer</label>
+            
+             <select class="form-select"
+                      [(ngModel)]="interviewForm.interviewerId"
+                      name="iviewer">
+                <option value="">Select Interviewer</option>
+                <option *ngFor="let r of interviewer" [value]="r.userId">
+                  {{ r.fullName }}
+                </option>
+              </select>
+
+          </div>
+          
+          <div class="col-md-3">
+            <label class="form-label">Date & Time</label>
+            <input type="datetime-local" class="form-control" [(ngModel)]="interviewForm.dt" name="ivdt" />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Location</label>
+            <input class="form-control" [(ngModel)]="interviewForm.location" name="ivloc" placeholder="Office / Online" />
+          </div>
+
+         <div class="col-md-3">
+            <label class="form-label">Meeting Link:</label>
+            <input class="form-control" [(ngModel)]="interviewForm.meetingLink" name="ivlink" placeholder="Enter Meeting Link" />
+         </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" [(ngModel)]="interviewForm.feedback" rows="2"></textarea>
+          </div>
+
+          <div class="col-md-1 d-flex align-items-end">
+            <button class="btn"
+                    [ngClass]="isEditMode ? 'btn-warning' : 'btn-success'"
+                    (click)="scheduleInterview()">
+              {{ isEditMode ? 'Update Interview' : 'Schedule Interview' }}
+            </button>
+
+          </div>
+        </div>
+
+        <hr />
+
+        <h5>Interview Records</h5>
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Seq</th>
+                <th>Candidate</th>
+                <th>Level</th>
+                <th>Interviewer</th>
+                <th>DateTime</th>
+                <th>Location</th>
+                
+                <th>Description</th>
+                <th>Progress</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+           <tbody>
+  <tr *ngFor="let c of interviewRecords; let i = index">
+    <td>{{ i + 1 }}</td>
+    <td>{{ c.seqNo }}</td>
+    <td>{{ c.candidateName }}</td>
+    <td>Level {{ c.levelNo }}</td>
+    <td>{{ c.interviewerName }}</td>
+    <td>{{ c.interviewDate | date:'yyyy-MM-dd HH:mm' }}</td>
+    <td>{{ c.location }}</td>
+    <td>{{ c.description }}</td>
+    <td style="width:160px;">
+  <div class="progress" style="height:8px;">
+    <div class="progress-bar"
+         role="progressbar"
+         [style.width.%]="calculateProgress(c)"
+         [ngClass]="getProgressColor(c)">
+    </div>
+  </div>
+</td>
+
+    <td>
+  <button class="btn btn-sm btn-danger"
+          (click)="editInterview(c)">
+    Edit
+  </button>
+</td>
+
+  </tr>
+
+  <tr *ngIf="!interviewRecords || interviewRecords.length === 0">
+    <td colspan="10" class="text-center text-muted">
+      No interview records found
+    </td>
+  </tr>
+</tbody>
+
+          </table>
+        </div>

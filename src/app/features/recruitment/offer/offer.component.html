@@ -1,0 +1,99 @@
+ <h4>Offer Management</h4>
+
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label">Candidate</label>
+           <select class="form-select"
+                        [(ngModel)]="offerForm.candidate"
+                        name="offCandidate">
+                <option [ngValue]="null">Select Candidate</option>
+                <option *ngFor="let c of candidates" [ngValue]="c">
+                    {{ c.name }}
+                </option>
+            </select>
+
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Designation</label>
+          
+              <select class="form-select" [(ngModel)]="offerForm.role" name="offRole">
+              <option value="">Select Candidate</option>
+              <option>Software Developer</option>
+              <option>Sales</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">CTC</label>
+            <input class="form-control" [(ngModel)]="offerForm.ctc" name="offCTC" />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Expected DOJ</label>
+            <input type="date" class="form-control" [(ngModel)]="offerForm.doj" name="offDOJ" />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Offer Status</label>
+            <select class="form-select" [(ngModel)]="offerForm.status" name="offStatus">
+              <option>Offered</option>
+              <option>Accepted</option>
+              <option>Declined</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">HR Name</label>
+            <!-- <input class="form-control" [(ngModel)]="offerForm.hrName" name="offHR" /> -->
+             <select class="form-select" [(ngModel)]="offerForm.hrName" name="offHR">
+              <option>HR1</option>
+              <option>HR2</option>
+              <option>HR3</option>
+            </select>
+          </div>
+
+         
+
+          <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-success w-100" (click)="applyOffer()">Save Offer</button>
+          </div>
+        </div>
+
+        <hr />
+
+        <h5>Offers List</h5>
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Candidate</th>
+                <th>Designation</th>
+                <th>CTC</th>
+                <th>DOJ</th>
+                <th>HR</th>
+                <th>Status</th>
+                <th>Progress</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of viewCandidates(); let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ c.name }}</td>
+                <td>{{ c.offer.role || '-' }}</td>
+                <td>{{ c.offer.ctc || '-' }}</td>
+                <td>{{ c.offer.doj || '-' }}</td>
+                <td>{{ c.offer.hrName || '-' }}</td>
+                <td>{{ c.offer.status || '-' }}</td>
+                <td>
+                  <div class="progress" style="height:8px;">
+                    <div class="progress-bar" [style.width.%]="calculateProgress(c)" [ngClass]="getProgressColor(c)"></div>
+                  </div>
+                </td>
+                <td><button>Send</button><button>View</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
