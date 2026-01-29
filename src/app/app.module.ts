@@ -59,6 +59,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { TimesheetApplicationComponent } from './features/timesheet/timesheet-application/timesheet-application.component';
+import { TimesheetApprovalComponent } from './features/timesheet/timesheet-approval/timesheet-approval.component';
 import { BankDetailsComponent } from './features/employee-profile/employee-finance-tabs/bank-details/bank-details.component';
 import { DdListComponent } from './features/employee-profile/employee-finance-tabs/dd-list/dd-list.component';
 import { W4Component } from './features/employee-profile/employee-finance-tabs/w4/w4.component';
@@ -123,6 +125,8 @@ import { EmployeeCertificationsComponent } from './features/employee-profile/emp
     CompensationComponent,
     RecruitmentProcessComponent,
     CommonUploadComponent,
+    TimesheetApplicationComponent,
+    TimesheetApprovalComponent
     BankDetailsComponent,
     DdListComponent,
     W4Component

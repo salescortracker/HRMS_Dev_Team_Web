@@ -69,6 +69,8 @@
           // ✅ Save session or token
           sessionStorage.setItem('CompanyId', response.user.companyId.toString());
           sessionStorage.setItem('RegionId', response.user.regionId.toString());
+          sessionStorage.setItem('UserId', response.user.userId.toString());
+          sessionStorage.setItem('repotingTo', response.user.reportingTo.toString());
           sessionStorage.setItem('roleId', response.user.roleId.toString());
          sessionStorage.setItem('UserId', response.user.userId.toString());
           sessionStorage.setItem('currentUser', JSON.stringify(response.user));
