@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams,HttpErrorResponse  } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
+import { EmployeePersonal } from '../layout/models/employee-personal.model';
+import { CompanyPolicy } from '../layout/models/company-policies.model';
+
+export interface CategoryDropdown {
+  categoryId: number;
+  categoryName: string;
+}
 import { Observable, throwError, forkJoin, map } from 'rxjs';
 
 // ------------ Model Interfaces ----------------//
@@ -155,10 +162,14 @@ export interface CertificationType {
   IsActive: boolean;
 }
 export interface BloodGroup {
-  bloodGroupID: number;
+    bloodGroupId: number;   // ✅ FIXED
+
   bloodGroupName: string;
   isActive: boolean;
+  companyId?: number;
+  regionId?: number;
 }
+
 export interface Gender {
   genderID: number;
   genderName: string;
@@ -221,6 +232,116 @@ export interface Department {
   modifiedBy?: string;
   modifiedAt?: Date;
   isDeleted?: boolean;
+}
+// DTOs/interfaces (you can move to shared models file)
+export interface EmployeeFamilyDto {
+  familyId: number;
+  userId?: number;
+  companyId: number;
+  regionId: number;
+  name: string;
+  relationshipId?: number | null;
+  relationship?: string | null;
+  dateOfBirth: string; // ISO date string
+  gender?: string | null;
+  genderId?: number | null;
+  occupation?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  isDependent: boolean;
+  createdBy?: number;
+  createdDate?: string;
+  modifiedBy?: number | null;
+  modifiedDate?: string | null;
+}
+
+export interface RelationshipDto {
+  relationshipID: number;
+  relationshipName: string;
+}
+
+export interface DropdownGenderDto {
+  genderId: number;
+  genderName: string;
+}
+// models.ts (or admin.service.types.ts)
+export interface EmployeeEmergencyContactDto {
+  emergencyContactId: number;
+  employeeId?: number;
+  userId?: number;
+  companyId?: number;
+  regionId?: number;
+  contactName: string;
+  relationshipId?: number;
+  relationship?: string;
+  phoneNumber?: string;
+  alternatePhone?: string;
+  email?: string;
+  address?: string;
+  createdBy?: any;
+  createdDate?: string;
+  modifiedBy?: any;
+  modifiedDate?: string;
+}
+export interface EmployeeReferenceDto {
+  referenceId?: number;
+  regionId: number;
+  companyId: number;
+  name: string;
+  titleOrDesignation: string;
+  companyName: string;
+  emailId: string;
+  mobileNumber: string;
+  createdAt?: string;
+  createdBy?: number;
+  modifiedAt?: string | null;
+  modifiedBy?: number | null;
+  userId: number;
+}
+export interface CompanyNewsDto {
+  newsId?: number;
+  title: string;
+  category: string;        // roleName
+  description: string;
+  fromDate: string;
+  toDate: string;
+  companyId?: number;      // ✅ OPTIONAL (backend decides)
+  regionId: number;
+  createdBy: number;
+  
+  // 🔹 FILE INFO (ADD THESE)
+  attachmentName?: string;
+  attachmentPath?: string;
+}
+// In admin.service.ts or appropriate file
+export interface ResignationType {
+  resignationTypeId: number;
+  resignationTypeName: string;
+  noticePeriod: number;
+}
+
+export interface EmployeeResignationPayload {
+  employeeId: string;
+  resignationTypeId: number;
+  noticePeriod: number;
+  lastWorkingDay: string;
+  resignationReason: string;
+  companyId?: number;
+  regionId?: number;
+  userId?: number;
+}
+
+export interface EmployeeResignation {
+  employeeId: string;
+    resignationTypeId: number;   // ❗ REQUIRED
+
+  noticePeriod: string;
+  lastWorkingDay: string;
+  resignationReason: string;
+  status: string;
+    companyId?: number;
+  regionId?: number;
+  userId?: number;
 }
 //---------------------------------BANK DETAILS-----------------------------------------//
 export interface BankDetails {
@@ -698,9 +819,9 @@ deleteDesignation(id: number): Observable<any> {
   return this.http.post(`${this.baseUrl}/MasterData/DeleteDesignation/${id}`,{} );
 }
 
-getGenders() {
-  return this.http.get<{ data: { data: Gender[] } }>(`${this.baseUrl}/Gender/GetAll`);
-}
+// getGenders() {
+//   return this.http.get<{ data: { data: Gender[] } }>(`${this.baseUrl}/Gender/GetAll`);
+// }
 
 createGender(gender: Gender) {
   return this.http.post(`${this.baseUrl}/Gender/Create`, gender);
@@ -713,22 +834,41 @@ updateGender(id: number, gender: Gender) {
 deleteGender(id: number) {
   return this.http.delete(`${this.baseUrl}/Gender/Delete/${id}`);
 }
-// Example endpoints
-getBloodGroups() {
-  return this.http.get(`${this.baseUrl}/bloodgroups`);
-}
 
-createBloodGroup(data: any) {
-  return this.http.post(`${this.baseUrl}/bloodgroups`, data);
-}
+  // ============================
+  // BLOOD GROUP MASTER
+  // ============================
 
-updateBloodGroup(id: number, data: any) {
-  return this.http.put(`${this.baseUrl}/bloodgroups/${id}`, data);
-}
+  getBloodGroups(): Observable<BloodGroup[]> {
+    return this.http.get<BloodGroup[]>(
+      `${this.baseUrl}/MasterData/bloodgroups`
+    );
+  }
+  getBloodGroupById(id: number): Observable<BloodGroup> {
+    return this.http.get<BloodGroup>(
+      `${this.baseUrl}/MasterData/bloodgroups/${id}`
+    );
+  }
 
-deleteBloodGroup(id: number) {
-  return this.http.delete(`${this.baseUrl}/bloodgroups/${id}`);
-}
+  createBloodGroup(data: BloodGroup) {
+    return this.http.post(
+      `${this.baseUrl}/MasterData/bloodgroups`,
+      data
+    );
+  }
+
+  updateBloodGroup(id: number, data: BloodGroup) {
+    return this.http.put(
+      `${this.baseUrl}/MasterData/bloodgroups/${id}`,
+      data
+    );
+  }
+
+  deleteBloodGroup(id: number) {
+    return this.http.delete(
+      `${this.baseUrl}/MasterData/bloodgroups/${id}`
+    );
+  }
 // ---------------- MARITAL STATUS MASTER ---------------- //
 
 getMaritalStatuses() {
@@ -748,9 +888,9 @@ deleteMaritalStatus(id: number) {
 }
 // ---------------- RELATIONSHIP MASTER ---------------- //
 
-getRelationships() {
-  return this.http.get<any>(`${this.baseUrl}/relationship`);
-}
+// getRelationships() {
+//   return this.http.get<any>(`${this.baseUrl}/relationship`);
+// }
 
 createRelationship(data: any) {
   return this.http.post<any>(`${this.baseUrl}/relationship`, data);
@@ -991,6 +1131,233 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
   );
 }
+
+
+  // ---------- Family APIs ----------
+getFamilyByUserId(userId: number): Observable<EmployeeFamilyDto[]> {
+  console.log('AdminService.getFamilyByUserId called with', userId);
+  return this.http.get<EmployeeFamilyDto[]>(
+    `${this.baseUrl}/UserManagement/user/${userId}/family`
+  );
+}
+
+
+  getFamilyById(id: number): Observable<EmployeeFamilyDto> {
+    return this.http.get<EmployeeFamilyDto>(
+      `${this.baseUrl}/UserManagement/family/${id}`
+    );
+  }
+
+  addFamily(model: EmployeeFamilyDto): Observable<any> {
+    // backend expects JSON body for family (not FormData)
+    return this.http.post(`${this.baseUrl}/UserManagement/family`, model);
+  }
+
+  updateFamily(id: number, model: EmployeeFamilyDto): Observable<any> {
+    return this.http.put(`${this.baseUrl}/UserManagement/family/${id}`, model);
+  }
+
+  deleteFamily(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/UserManagement/family/${id}`);
+  }
+  // ---------------------------------
+
+  // ---------- Dropdown APIs ----------
+  getRelationships(): Observable<RelationshipDto[]> {
+    return this.http.get<RelationshipDto[]>(
+      `${this.baseUrl}/UserManagement/relationships`
+    );
+  }
+
+  getGenders(): Observable<DropdownGenderDto[]> {
+    return this.http.get<DropdownGenderDto[]>(
+      `${this.baseUrl}/UserManagement/genders`
+    );
+  }
+  // admin.service.ts (Angular)
+getEmergencyContactsByUserId(userId: number): Observable<EmployeeEmergencyContactDto[]> {
+  return this.http.get<EmployeeEmergencyContactDto[]>(
+    `${this.baseUrl}/UserManagement/user/${userId}/emergency-contact`
+  );
+}
+
+getEmergencyContactById(id: number): Observable<EmployeeEmergencyContactDto> {
+  return this.http.get<EmployeeEmergencyContactDto>(
+    `${this.baseUrl}/UserManagement/emergency-contact/${id}`
+  );
+}
+
+addEmergencyContact(model: EmployeeEmergencyContactDto): Observable<any> {
+  return this.http.post(`${this.baseUrl}/UserManagement/emergency-contact`, model);
+}
+
+updateEmergencyContact(id: number, model: EmployeeEmergencyContactDto): Observable<any> {
+  return this.http.put(`${this.baseUrl}/UserManagement/emergency-contact/${id}`, model);
+}
+
+deleteEmergencyContact(id: number): Observable<void> {
+  return this.http.delete<void>(`${this.baseUrl}/UserManagement/emergency-contact/${id}`);
+}
+  // ----------------Get references for a particular user-----------------/
+  getReferencesByUserId(userId: number): Observable<EmployeeReferenceDto[]> {
+    return this.http.get<EmployeeReferenceDto[]>(
+      `${this.baseUrl}/UserManagement/user/${userId}/references`
+    );
+  }
+
+  // get single reference by id
+  getReferenceById(id: number): Observable<EmployeeReferenceDto> {
+    return this.http.get<EmployeeReferenceDto>(`${this.baseUrl}/UserManagement/references/${id}`);
+  }
+
+  // add new reference
+  addReference(model: EmployeeReferenceDto): Observable<any> {
+    return this.http.post(`${this.baseUrl}/UserManagement/references`, model);
+  }
+
+  // update reference
+  updateReference(id: number, model: EmployeeReferenceDto): Observable<any> {
+    return this.http.put(`${this.baseUrl}/UserManagement/references/${id}`, model);
+  }
+
+  // delete reference
+  deleteReference(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/UserManagement/references/${id}`);
+  }
+
+
+  getMaritalStatus(): Observable<EmployeePersonal[]> {
+    return this.http.get<EmployeePersonal[]>(
+      `${this.baseUrl}/UserManagement/marital-statuses/active/names`
+    );
+  }
+
+  getAllPersonal(): Observable<EmployeePersonal[]> {
+  // Endpoint: GET /api/<controller>/personal
+  return this.http.get<EmployeePersonal[]>(`${this.baseUrl}/UserManagement/personal`);
+}
+
+// ADD personal details (multipart/form-data)
+addPersonal(formData: FormData): Observable<any> {
+  // Don't set Content-Type header here — browser will set multipart boundary automatically.
+  return this.http.post(`${this.baseUrl}/UserManagement/personal`, formData);
+}
+// -------------------------------------------------------------
+// 🔹 COMPANY NEWS (MasterDataController)
+// -------------------------------------------------------------
+
+// CREATE
+createCompanyNewsForm(formData: FormData) {
+  return this.http.post(
+    `${this.baseUrl}/MasterData/CreateCompanyNews`,
+    formData
+  );
+}
+
+updateCompanyNewsForm(id: number, formData: FormData) {
+  return this.http.put(
+    `${this.baseUrl}/MasterData/UpdateCompanyNews/${id}`,
+    formData
+  );
+}
+
+
+// GET ALL
+getCompanyNews(companyId: number, regionId: number) {
+  return this.http.get<CompanyNewsDto[]>(
+    `${this.baseUrl}/MasterData/GetCompanyNews`,
+    { params: { companyId, regionId } }
+  );
+}
+
+// DELETE
+deleteCompanyNews(newsId: number): Observable<any> {
+  return this.http.delete<any>(
+    `${this.baseUrl}/MasterData/DeleteCompanyNews/${newsId}`
+  );
+}
+
+// ---------------- CATEGORY DROPDOWN ----------------
+getActiveCategories(): Observable<CategoryDropdown[]> {
+  return this.http.get<CategoryDropdown[]>(
+    `${this.baseUrl}/MasterData/GetActiveCategories`
+  
+  );
+}
+
+// -------------------------------------------------------------
+// 🔹 COMPANY POLICIES (CRUD with file upload)
+// -------------------------------------------------------------
+
+getCompanyPolicies(companyId: number, regionId: number): Observable<CompanyPolicy[]> {
+  return this.http.get<CompanyPolicy[]>(
+    `${this.baseUrl}/MasterData/GetAll`,
+    { params: { companyId, regionId } }
+  );
+}
+
+getCompanyPolicyById(id: number): Observable<CompanyPolicy> {
+  return this.http.get<CompanyPolicy>(
+    `${this.baseUrl}/MasterData/GetById/${id}`
+  );
+}
+
+createCompanyPolicy(formData: FormData): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/MasterData/Create`,
+    formData
+  );
+}
+
+updateCompanyPolicy(id: number, formData: FormData): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/MasterData/Update/${id}`,
+    formData
+  );
+}
+
+deleteCompanyPolicy(id: number): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/MasterData/Delete/${id}`,
+    {}
+  );
+}
+getAllCompanyPolicies(): Observable<CompanyPolicy[]> {
+  return this.http.get<CompanyPolicy[]>(
+    `${this.baseUrl}/MasterData/GetAllPolicies`
+  );
+}
+
+getResignationTypes(): Observable<ResignationType[]> {
+  return this.http.get<ResignationType[]>(
+    `${this.baseUrl}/MasterData/get`
+  ).pipe(
+    catchError((error: any) => {
+      console.error('API Error:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+submitResignation(payload: any) {
+  console.log('Sending payload', payload);
+  return this.http.post(
+    `${this.baseUrl}/MasterData/submit`,
+    payload,
+    { headers: { 'Content-Type': 'application/json' } }
+  );
+}
+
+
+
+getResignations(employeeId: string): Observable<EmployeeResignation[]> {
+  return this.http.get<EmployeeResignation[]>(
+    `${this.baseUrl}/MasterData/list/${employeeId}`
+  );
+}
+
+
+
 //--------------------------------BANK - DETAILS-----------------------------------//
 getBankDetails(): Observable<BankDetails[]> {
   return this.http.get<BankDetails[]>(`${this.baseUrl}/UserManagement/GetAllBankDetails`);

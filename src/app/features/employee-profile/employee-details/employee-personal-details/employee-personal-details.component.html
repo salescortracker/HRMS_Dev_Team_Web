@@ -1,145 +1,256 @@
-<div class="form-container">
-   
-    <form class="form-grid">
+<div class="card shadow-sm p-4">
+  <form [formGroup]="personalForm" (ngSubmit)="onSubmit()" class="row g-3 align-items-end mb-4">
 
-      <div class="form-group">
-        <label>First Name</label>
-        <input type="text" placeholder="Enter first name">
+    <div class="col-md-4">
+      <label class="form-label">First Name <span class="text-danger">*</span></label>
+      <input class="form-control" formControlName="firstName" type="text" placeholder="Enter first name" maxlength="50" />
+      <div *ngIf="f.firstName.touched && f.firstName.invalid" class="text-danger small mt-1">
+        <div *ngIf="f.firstName.errors?.required">First Name is required.</div>
+        <div *ngIf="f.firstName.errors?.maxlength">Max 50 characters allowed.</div>
+        <div *ngIf="f.firstName.errors?.pattern">Only letters and spaces allowed.</div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Last Name</label>
-        <input type="text" placeholder="Enter last name">
+    <div class="col-md-4">
+      <label class="form-label">Last Name <span class="text-danger">*</span></label>
+      <input class="form-control" formControlName="lastName" type="text" placeholder="Enter last name" maxlength="50" />
+      <div *ngIf="f.lastName.touched && f.lastName.invalid" class="text-danger small mt-1">
+        <div *ngIf="f.lastName.errors?.required">Last Name is required.</div>
+        <div *ngIf="f.lastName.errors?.maxlength">Max 50 characters allowed.</div>
+        <div *ngIf="f.lastName.errors?.pattern">Only letters and spaces allowed.</div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Date of Birth</label>
-        <input type="date">
+    <div class="col-md-4">
+      <label class="form-label">Date of Birth <span class="text-danger">*</span></label>
+      <input class="form-control" formControlName="dateOfBirth" type="date" placeholder="Select date of birth" />
+      <div *ngIf="f.dateOfBirth.touched && f.dateOfBirth.invalid" class="text-danger small mt-1">
+        <div *ngIf="f.dateOfBirth.errors?.required">Date of Birth is required.</div>
+        <div *ngIf="f.dateOfBirth.errors?.invalidDate">Invalid date.</div>
       </div>
+      <small class="text-muted">Format: DD/MM/YYYY</small>
+    </div>
 
-      <div class="form-group">
-        <label>Gender</label>
-        <select>
-          <option value="">Select gender</option>
-          <option>Male</option>
-          <option>Female</option>
-          <option>Other</option>
-        </select>
+    <div class="col-md-4">
+      <label class="form-label">Gender <span class="text-danger">*</span></label>
+     <select class="form-select" formControlName="gender">
+      <option value="">Select gender</option>
+      <option *ngFor="let g of genders" [value]="g.genderId">{{ g.genderName }}</option>
+    </select>
+
+
+      <div *ngIf="f.gender.touched && f.gender.invalid" class="text-danger small mt-1">Gender is required.</div>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Mobile Number <span class="text-danger">*</span></label>
+      <input class="form-control" formControlName="mobileNumber" type="tel" placeholder="Enter mobile number" maxlength="15" />
+      <div *ngIf="f.mobileNumber.touched && f.mobileNumber.invalid" class="text-danger small mt-1">
+        <div *ngIf="f.mobileNumber.errors?.required">Mobile number is required.</div>
+        <div *ngIf="f.mobileNumber.errors?.pattern">Only digits allowed (10-15 digits).</div>
+        <div *ngIf="f.mobileNumber.errors?.minlength || f.mobileNumber.errors?.maxlength">Length must be 10–15 digits.</div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Mobile Number</label>
-        <input type="tel" placeholder="Enter mobile number">
+    <div class="col-md-4">
+      <label class="form-label">Personal Email <span class="text-danger">*</span></label>
+      <input class="form-control" formControlName="personalEmail" type="email" placeholder="Enter personal email" maxlength="100" />
+      <div *ngIf="f.personalEmail.touched && f.personalEmail.invalid" class="text-danger small mt-1">
+        <div *ngIf="f.personalEmail.errors?.required">Email is required.</div>
+        <div *ngIf="f.personalEmail.errors?.email">Enter a valid email.</div>
+        <div *ngIf="f.personalEmail.errors?.maxlength">Max 100 characters allowed.</div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Personal Email</label>
-        <input type="email" placeholder="Enter personal email">
+    <div class="col-md-6">
+      <label class="form-label">Permanent Address <span class="text-danger">*</span></label>
+      <textarea class="form-control" formControlName="permanentAddress" rows="4" maxlength="250" placeholder="Enter permanent address"></textarea>
+      <div *ngIf="f.permanentAddress.touched && f.permanentAddress.invalid" class="text-danger small mt-1">
+        <div *ngIf="f.permanentAddress.errors?.required">Permanent address is required.</div>
+        <div *ngIf="f.permanentAddress.errors?.maxlength">Max 250 characters allowed.</div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Permanent Address</label>
-        <textarea placeholder="Enter permanent address"></textarea>
+    <div class="col-md-6">
+      <label class="form-label">Present Address <span class="text-danger">*</span></label>
+      <textarea class="form-control" formControlName="presentAddress" rows="4" maxlength="250" placeholder="Enter present address"></textarea>
+      <div *ngIf="f.presentAddress.touched && f.presentAddress.invalid" class="text-danger small mt-1">
+        <div *ngIf="f.presentAddress.errors?.required">Present address is required.</div>
+        <div *ngIf="f.presentAddress.errors?.maxlength">Max 250 characters allowed.</div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Present Address</label>
-        <textarea placeholder="Enter present address"></textarea>
+    <div class="col-md-4">
+      <label class="form-label">PAN Number <span class="text-danger">*</span></label>
+      <input class="form-control" formControlName="panNumber" type="text" placeholder="Enter PAN number" maxlength="10" />
+      <div *ngIf="f.panNumber.touched && f.panNumber.invalid" class="text-danger small mt-1">
+        <div *ngIf="f.panNumber.errors?.required">PAN is required.</div>
+        <div *ngIf="f.panNumber.errors?.pattern">PAN format must be 5 letters, 4 digits, 1 letter (e.g. ABCDE1234F).</div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>PAN Number</label>
-        <input type="text" placeholder="Enter PAN number">
+    <div class="col-md-4">
+      <label class="form-label">Aadhaar Number <span class="text-danger">*</span></label>
+      <input class="form-control" formControlName="aadhaarNumber" type="text" placeholder="Enter Aadhaar number" maxlength="12" />
+      <div *ngIf="f.aadhaarNumber.touched && f.aadhaarNumber.invalid" class="text-danger small mt-1">
+        <div *ngIf="f.aadhaarNumber.errors?.required">Aadhaar is required.</div>
+        <div *ngIf="f.aadhaarNumber.errors?.pattern">Aadhaar must be 12 digits.</div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Aadhaar Number</label>
-        <input type="text" placeholder="Enter Aadhaar number">
+    <div class="col-md-4">
+      <label class="form-label">Profile Picture <span class="text-danger">*</span></label>
+      <input class="form-control" type="file" (change)="onFileChange($event)" accept=".jpg,.jpeg,.png" />
+      <div *ngIf="fileError" class="text-danger small mt-1">{{ fileError }}</div>
+      <div *ngIf="previewImage" class="mt-2">
+        <img [src]="previewImage" alt="preview" style="height:64px; border-radius:6px;"/>
+        <div class="small text-muted">{{ profilePictureName }}</div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Profile Picture</label>
-        <input type="file" accept=".jpg,.jpeg,.png">
+    <div class="col-md-4">
+      <label class="form-label">Passport Number</label>
+      <input class="form-control" formControlName="passportNumber" type="text" maxlength="20" placeholder="Enter passport number" />
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Place of Birth</label>
+      <input class="form-control" formControlName="placeOfBirth" type="text" maxlength="100" placeholder="Enter place of birth" />
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">UAN</label>
+      <input class="form-control" formControlName="uan" type="text" maxlength="12" placeholder="Enter UAN number" />
+      <div *ngIf="f.uan.touched && f.uan.invalid" class="text-danger small mt-1">
+        <div *ngIf="f.uan.errors?.pattern">UAN must be 12 digits.</div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Passport Number</label>
-        <input type="text" placeholder="Enter passport number">
+    <div class="col-md-4">
+      <label class="form-label">Blood Group <span class="text-danger">*</span></label>
+      <select class="form-select" formControlName="bloodGroup">
+        <option value="">Select blood group</option>
+        <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+        <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+      </select>
+      <div *ngIf="f.bloodGroup.touched && f.bloodGroup.invalid" class="text-danger small mt-1">Blood group is required.</div>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Citizenship</label>
+      <input class="form-control" formControlName="citizenship" maxlength="50" placeholder="Enter citizenship" />
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Religion</label>
+      <input class="form-control" formControlName="religion" maxlength="50" placeholder="Enter religion" />
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Driving Licence</label>
+      <input class="form-control" formControlName="drivingLicence" maxlength="20" placeholder="Enter driving licence number" />
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Marital Status <span class="text-danger">*</span></label>
+      <select formControlName="maritalStatus" class="form-control">
+        <option value="">-- Select Marital Status --</option>
+        <option *ngFor="let name of maritalNames" [value]="name">{{ name }}</option>
+      </select>
+
+      <div *ngIf="f.maritalStatus.touched && f.maritalStatus.invalid" class="text-danger small mt-1">Marital status is required.</div>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Marriage Date</label>
+      <input class="form-control" formControlName="marriageDate" type="date" placeholder="Select marriage date" [disabled]="personalForm.get('maritalStatus')?.value !== 'Married'"/>
+      <div *ngIf="f.marriageDate.touched && f.marriageDate.invalid" class="text-danger small mt-1">
+        <div *ngIf="f.marriageDate.errors?.required">Marriage date required for Married status.</div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Place of Birth</label>
-        <input type="text" placeholder="Enter place of birth">
+    <div class="col-md-4">
+      <label class="form-label">Work Phone</label>
+      <input class="form-control" formControlName="workPhone" type="tel" maxlength="15" placeholder="Enter work phone number" />
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">LinkedIn Profile</label>
+      <input class="form-control" formControlName="linkedInProfile" type="url" maxlength="150" placeholder="Enter LinkedIn profile URL" />
+      <div *ngIf="f.linkedInProfile.touched && f.linkedInProfile.invalid" class="text-danger small mt-1">
+        <div *ngIf="f.linkedInProfile.errors?.pattern">Enter a valid LinkedIn URL (starts with http(s) and contains linkedin.com).</div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>UAN</label>
-        <input type="text" placeholder="Enter UAN number">
+    <div class="col-md-6">
+      <label class="form-label">Previous Experience</label>
+      <div class="d-flex gap-2">
+        <textarea class="form-control" formControlName="previousExperienceText" rows="3" maxlength="250" placeholder="Enter previous experience details"></textarea>
+        <input class="form-control" formControlName="previousExperienceYears" type="number" min="0" max="50" placeholder="0 - 50 yrs" style="max-width:140px;" />
       </div>
-
-      <div class="form-group">
-        <label>Blood Group</label>
-        <select>
-          <option value="">Select blood group</option>
-          <option>A+</option>
-          <option>A-</option>
-          <option>B+</option>
-          <option>B-</option>
-          <option>AB+</option>
-          <option>AB-</option>
-          <option>O+</option>
-          <option>O-</option>
-        </select>
+      <div *ngIf="(f.previousExperienceYears.touched && f.previousExperienceYears.invalid)" class="text-danger small mt-1">
+        <div *ngIf="f.previousExperienceYears.errors?.min || f.previousExperienceYears.errors?.max">Years must be between 0 and 50.</div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Citizenship</label>
-        <input type="text" placeholder="Enter citizenship">
-      </div>
+    <div style="flex-basis: 100%;">
+      <button type="submit" class="btn btn-dark me-2">{{ editMode ? 'Update Details' : 'Save Details' }}</button>
+      <button type="button" class="btn btn-outline-secondary" (click)="resetForm()">Reset</button>
+    </div>
+  </form>
 
-      <div class="form-group">
-        <label>Religion</label>
-        <input type="text" placeholder="Enter religion">
-      </div>
-
-      <div class="form-group">
-        <label>Driving Licence</label>
-        <input type="text" placeholder="Enter driving licence number">
-      </div>
-
-      <div class="form-group">
-        <label>Marital Status</label>
-        <select>
-          <option value="">Select marital status</option>
-          <option>Single</option>
-          <option>Married</option>
-          <option>Divorced</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Marriage Date</label>
-        <input type="date">
-      </div>
-
-      <div class="form-group">
-        <label>Work Phone</label>
-        <input type="tel" placeholder="Enter work phone number">
-      </div>
-
-      <div class="form-group">
-        <label>LinkedIn Profile</label>
-        <input type="url" placeholder="Enter LinkedIn profile URL">
-      </div>
-
-      <div class="form-group">
-        <label>Previous Experience</label>
-        <textarea placeholder="Enter previous experience details"></textarea>
-      </div>
-
-      <div style="flex-basis: 100%;">
-        <button type="submit" class="submit-btn">Save Details</button>
-      </div>
-
-    </form>
+  <!-- SEARCH / CONTROLS -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+    <div style="max-width: 350px; width: 100%;">
+      <input class="form-control" type="text" placeholder="Search name / email / mobile" [(ngModel)]="searchText" (ngModelChange)="currentPage=1" />
+    </div>
   </div>
+
+  <!-- TABLE -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th style="width:60px; text-align:center">S.No</th>
+          <th (click)="sortBy('firstName')" style="cursor:pointer">Name <small *ngIf="sortColumn==='firstName'">{{ sortDirection==='asc' ? '▲' : '▼' }}</small></th>
+          <th (click)="sortBy('personalEmail')" style="cursor:pointer">Email</th>
+          <th (click)="sortBy('mobileNumber')" style="cursor:pointer">Mobile</th>
+          
+          <th (click)="sortBy('gender')" style="cursor:pointer">Gender</th>
+          
+          
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let it of filteredList(); let i = index">
+          <td style="text-align:center">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+          <td>{{ it.firstName }} {{ it.lastName }}</td>
+          <td>{{ it.personalEmail }}</td>
+          <td>{{ it.mobileNumber }}</td>
+          
+          <td>{{ it.gender }}</td>
+          
+          
+        </tr>
+        <tr *ngIf="filteredList().length === 0">
+          <td colspan="8" class="text-center py-3">No records found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAGINATION FOOTER -->
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="d-flex align-items-center gap-2">
+      <label class="mb-0 small">Show:</label>
+      <select class="form-select form-select-sm" style="width:90px;" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+        <option *ngFor="let s of pageSizeOptions" [ngValue]="s">{{ s }}</option>
+      </select>
+      <div class="ms-3 small">Showing {{ showingRange }} of {{ filteredCount }}</div>
+    </div>
+    <div class="btn-group" role="group" aria-label="pagination">
+      <button class="btn btn-sm btn-outline-secondary" (click)="changePage(currentPage-1)" [disabled]="currentPage===1">Previous</button>
+      <button class="btn btn-sm btn-outline-secondary" (click)="changePage(currentPage+1)" [disabled]="currentPage===totalPages">Next</button>
+    </div>
+  </div>
+</div>

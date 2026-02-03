@@ -127,3 +127,26 @@ body {
       flex: 1 1 100%;
     }
   }
+  /* container spacing */
+.card { border-radius: 8px; }
+
+/* table header styling */
+.table-dark th {
+  background-color: #0b0b0b;
+  color: #fff;
+  vertical-align: middle;
+  font-weight: 600;
+  border-color: rgba(0,0,0,0.1);
+}
+
+/* table body row hover */
+.table tbody tr:hover {
+  background-color: rgba(0,0,0,0.03);
+}
+
+/* tighten table cell padding for readable rows */
+.table th, .table td {
+  padding: 12px 10px;
+  vertical-align: middle;
+}
+

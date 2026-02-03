@@ -1,81 +1,123 @@
-<div class="form-container">
-   
-    <!-- Form Section -->
-    <form>
-      <!-- Row 1: Name, Title, Company -->
-      <div class="form-row">
-        <div class="form-group">
-          <label class="required">Name</label>
-          <input type="text" placeholder="Enter full name of reference" required>
-        </div>
+<div class="card shadow-sm p-4">
 
-        <div class="form-group">
-          <label class="required">Title / Designation</label>
-          <input type="text" placeholder="Enter designation or title" required>
-        </div>
-
-        <div class="form-group">
-          <label class="required">Company Name</label>
-          <input type="text" placeholder="Enter company name" required>
-        </div>
+  <!-- FORM -->
+  <form [formGroup]="referenceForm" (ngSubmit)="onSubmit()" class="row g-3 align-items-end mb-4">
+    <div class="col-md-4">
+      <label class="form-label">Name *</label>
+      <input class="form-control" formControlName="name" type="text" placeholder="Enter full name" />
+      <div *ngIf="f['name'].touched && f['name'].invalid" class="text-danger small mt-1">
+        Name is required and must be valid.
       </div>
+    </div>
 
-      <!-- Row 2: Email, Mobile -->
-      <div class="form-row">
-        <div class="form-group">
-          <label class="required">Email ID</label>
-          <input type="email"  placeholder="Enter email address" required>
-        </div>
-
-        <div class="form-group">
-          <label class="required">Mobile Number</label>
-          <input type="tel"  placeholder="Enter mobile number" required>
-        </div>
-         <div class="form-group">
-        </div>
+    <div class="col-md-4">
+      <label class="form-label">Title / Designation *</label>
+      <input class="form-control" formControlName="titleOrDesignation" type="text" placeholder="Enter title / designation" />
+      <div *ngIf="f['titleOrDesignation'].touched && f['titleOrDesignation'].invalid" class="text-danger small mt-1">
+        Title / Designation is required.
       </div>
+    </div>
 
-      <button type="submit" class="submit-btn">Add Reference</button>
-    </form>
+    <div class="col-md-4">
+      <label class="form-label">Company Name *</label>
+      <input class="form-control" formControlName="companyName" type="text" placeholder="Enter company name" />
+      <div *ngIf="f['companyName'].touched && f['companyName'].invalid" class="text-danger small mt-1">
+        Company name is required.
+      </div>
+    </div>
 
-    <!-- Table Section -->
-    <table>
-      <thead>
+    <div class="col-md-4">
+      <label class="form-label">Email ID *</label>
+      <input class="form-control" formControlName="emailId" type="email" placeholder="Enter email address" />
+      <div *ngIf="f['emailId'].touched && f['emailId'].invalid" class="text-danger small mt-1">
+        Valid email is required.
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Mobile Number *</label>
+      <input class="form-control" formControlName="mobileNumber" type="tel" placeholder="Enter mobile number" />
+      <div *ngIf="f['mobileNumber'].touched && f['mobileNumber'].invalid" class="text-danger small mt-1">
+        Mobile number is required and must be valid.
+      </div>
+    </div>
+
+    <!-- optional hidden / readonly: user/company/region -->
+   <div class="col-md-15 d-flex justify-content-end">
+  <div>
+    <button type="submit" class="btn btn-dark me-2">
+      {{ editMode ? 'Update Reference' : 'Add Reference' }}
+    </button>
+    <button type="button" class="btn btn-outline-secondary" (click)="resetForm()">
+      Reset
+    </button>
+  </div>
+</div>
+
+  </form>
+
+  <!-- SEARCH / CONTROLS -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+    <div style="max-width: 350px; width: 100%;">
+      <input class="form-control" type="text"
+             placeholder="Search name / company / title / email / phone"
+             [(ngModel)]="searchText" name="referenceSearch"
+             (ngModelChange)="currentPage = 1" />
+    </div>
+
+ 
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle mb-0">
+      <thead class="table-dark">
         <tr>
-          <th>S.No</th>
-          <th>Name</th>
-          <th>Title / Designation</th>
-          <th>Company Name</th>
-          <th>Email ID</th>
-          <th>Mobile Number</th>
-          <th class="actions">Actions</th>
+          <th style="width:60px; text-align:center">S.No</th>
+          <th (click)="sortBy('name')" style="cursor:pointer">Name <small *ngIf="sortColumn === 'name'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</small></th>
+          <th (click)="sortBy('titleOrDesignation')" style="cursor:pointer">Title <small *ngIf="sortColumn === 'titleOrDesignation'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</small></th>
+          <th (click)="sortBy('companyName')" style="cursor:pointer">Company <small *ngIf="sortColumn === 'companyName'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</small></th>
+          <th (click)="sortBy('emailId')" style="cursor:pointer">Email</th>
+          <th (click)="sortBy('mobileNumber')" style="cursor:pointer">Mobile</th>
+          <th style="width:120px; text-align:center">Actions</th>
         </tr>
       </thead>
+
       <tbody>
-        <tr>
-          <td>1</td>
-          <td>John Doe</td>
-          <td>Manager</td>
-          <td>ABC Corp</td>
-          <td>john&#64;example.com</td>
-          <td>9876543210</td>
-          <td class="actions">
-            <i class="fa-solid fa-edit" title="Edit"></i>
-            <i class="fa-solid fa-trash" title="Delete"></i>
+        <tr *ngFor="let item of filteredReferences(); let i = index">
+          <td style="text-align:center">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.titleOrDesignation }}</td>
+          <td>{{ item.companyName }}</td>
+          <td>{{ item.emailId }}</td>
+          <td>{{ item.mobileNumber }}</td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-light me-1" title="Edit" (click)="edit(item)"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-sm btn-outline-danger" title="Delete" (click)="delete(item.referenceId!)"><i class="fa-solid fa-trash"></i></button>
           </td>
         </tr>
-        <tr>
-          <td>2</td>
-          <td>Mary Smith</td>
-          <td>Director</td>
-          <td>XYZ Ltd</td>
-          <td>mary&#64;example.com</td>
-          <td>9123456780</td>
-          <td class="actions">
-            <i class="fa-solid fa-edit" title="Edit"></i>
-            <i class="fa-solid fa-trash" title="Delete"></i>
-          </td>
+
+        <tr *ngIf="filteredReferences().length === 0">
+          <td colspan="7" class="text-center py-3">No reference records found.</td>
         </tr>
       </tbody>
     </table>
   </div>
+
+  <!-- PAGINATION FOOTER -->
+  <div class="d-flex justify-content-between align-items-center mt-3">
+      <div class="d-flex align-items-center gap-2">
+      <label class="mb-0 small">Show:</label>
+      <select class="form-select form-select-sm" style="width:90px;"
+              [(ngModel)]="pageSize" name="referencePageSize"
+              (change)="changePageSize(pageSize)">
+        <option *ngFor="let s of pageSizeOptions" [ngValue]="s">{{ s }}</option>
+      </select>
+    </div>
+    <div class="btn-group" role="group" aria-label="pagination">
+      <button class="btn btn-sm btn-outline-secondary" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+      <button class="btn btn-sm btn-outline-secondary" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+    </div>
+  </div>
+
+</div>
