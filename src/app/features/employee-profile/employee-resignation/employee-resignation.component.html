@@ -11,81 +11,111 @@
 </div>
 
 <div class="tab-container">
-<!-- TAB 7: RESIGNATION / EXIT -->
- <div class="content">
-  <form>
-    <div class="row mb-3">
-      <div class="col-md-4">
-        <label class="form-label">Resignation Type</label>
-        <select class="form-select" required>
-          <option value="">Select resignation type</option>
-          <option>Voluntary</option>
-          <option>Involuntary</option>
-          <option>Retirement</option>
-          <option>Other</option>
-        </select>
+  <div class="content">
+    <form>
+
+      <!-- Row 1 -->
+      <div class="row mb-3">
+
+        <!-- Resignation Type -->
+        <div class="col-md-4">
+          <label class="form-label">Resignation Type</label>
+          <select class="form-select"
+        [(ngModel)]="selectedResignationTypeId"
+        (ngModelChange)="onResignationTypeChange()"
+        name="resignationType"
+        required>
+
+  <option [ngValue]="null">Select resignation type</option>
+
+  <option *ngFor="let type of resignationTypes"
+          [ngValue]="type.resignationTypeId">
+    {{ type.resignationTypeName }}
+  </option>
+</select>
+
+        </div>
+
+        <!-- Notice Period -->
+        <div class="col-md-4">
+          <label class="form-label">Notice Period (Days)</label>
+          <input type="text"
+                 class="form-control"
+                 [value]="noticePeriod"
+                 readonly>
+        </div>
+
+        <!-- Last Working Day -->
+        <div class="col-md-4">
+          <label class="form-label">Last Working Day</label>
+          <input type="date"
+       class="form-control"
+       [value]="calculateLastWorkingDay()"
+       readonly>
+
+        </div>
+
       </div>
 
-      <div class="col-md-4">
-        <label class="form-label">Notice Period</label>
-        <input type="text" class="form-control" placeholder="Enter notice period in days/weeks" required>
+      <!-- Row 2 -->
+      <div class="row mb-3">
+        <div class="col-md-12">
+          <label class="form-label">Resignation Reason</label>
+          <textarea class="form-control"
+          placeholder="Provide reason for resignation"
+          name="reason"
+          [(ngModel)]="reason"
+          required>
+</textarea>
+
+        </div>
       </div>
 
-      <div class="col-md-4">
-        <label class="form-label">Last Working Day</label>
-        <input type="date" class="form-control" required>
+      <!-- Submit -->
+      <div class="row">
+        <div class="col-md-12 text-first">
+          <button type="button"
+                  class="btn btn-primary"
+                  (click)="submitResignation()">
+            Submit Resignation
+          </button>
+
+        </div>
+      </div>
+
+    </form>
+
+    <!-- Resignation Table -->
+    <div class="dashboard-tables full-row mt-4">
+      <div class="table-card">
+        <h3>Resignation / Exit List</h3>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Type</th>
+              <th>Notice Period</th>
+              <th>Last Working Day</th>
+              <th>Reason</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Future dynamic rows -->
+            <tr *ngFor="let r of resignations">
+              <td>{{ r.employeeId }}</td>
+              <td>{{ r.resignationType }}</td>
+              <td>{{ r.noticePeriod }}</td>
+              <td>{{ r.lastWorkingDay | date:'yyyy-MM-dd'  }}</td>
+              <td>{{ r.resignationReason }}</td>
+            </tr>
+
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <div class="row mb-3">
-      <div class="col-md-12">
-        <label class="form-label">Resignation Reason</label>
-        <textarea class="form-control" placeholder="Provide reason for resignation" required></textarea>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12 text-first">
-        <button type="submit" class="btn btn-primary">Submit Resignation</button>
-      </div>
-    </div>
-  </form>
-
-  <!-- Resignation Table -->
-  <div class="dashboard-tables full-row mt-4">
-    <div class="table-card">
-      <h3>Resignation / Exit List</h3>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Employee</th>
-            <th>Type</th>
-            <th>Notice Period</th>
-            <th>Last Working Day</th>
-            <th>Reason</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>EMP005 - Jane</td>
-            <td>Voluntary</td>
-            <td>30 days</td>
-            <td>2025-03-31</td>
-            <td>Personal reasons</td>
-            <td class="action-icons">
-              <i class="fa-solid fa-pen"></i>
-              <i class="fa-solid fa-trash"></i>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
- 
-</div>
-</div>
-
+  </div>
 </div>
 
 <app-footer></app-footer>
-

@@ -308,8 +308,36 @@ export interface CompanyNewsDto {
   attachmentName?: string;
   attachmentPath?: string;
 }
+// In admin.service.ts or appropriate file
+export interface ResignationType {
+  resignationTypeId: number;
+  resignationTypeName: string;
+  noticePeriod: number;
+}
 
+export interface EmployeeResignationPayload {
+  employeeId: string;
+  resignationTypeId: number;
+  noticePeriod: number;
+  lastWorkingDay: string;
+  resignationReason: string;
+  companyId?: number;
+  regionId?: number;
+  userId?: number;
+}
 
+export interface EmployeeResignation {
+  employeeId: string;
+    resignationTypeId: number;   // ❗ REQUIRED
+
+  noticePeriod: string;
+  lastWorkingDay: string;
+  resignationReason: string;
+  status: string;
+    companyId?: number;
+  regionId?: number;
+  userId?: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -1131,6 +1159,34 @@ deleteCompanyPolicy(id: number): Observable<any> {
 getAllCompanyPolicies(): Observable<CompanyPolicy[]> {
   return this.http.get<CompanyPolicy[]>(
     `${this.baseUrl}/MasterData/GetAllPolicies`
+  );
+}
+
+getResignationTypes(): Observable<ResignationType[]> {
+  return this.http.get<ResignationType[]>(
+    `${this.baseUrl}/MasterData/get`
+  ).pipe(
+    catchError((error: any) => {
+      console.error('API Error:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+submitResignation(payload: any) {
+  console.log('Sending payload', payload);
+  return this.http.post(
+    `${this.baseUrl}/MasterData/submit`,
+    payload,
+    { headers: { 'Content-Type': 'application/json' } }
+  );
+}
+
+
+
+getResignations(employeeId: string): Observable<EmployeeResignation[]> {
+  return this.http.get<EmployeeResignation[]>(
+    `${this.baseUrl}/MasterData/list/${employeeId}`
   );
 }
 
