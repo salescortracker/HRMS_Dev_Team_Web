@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams,HttpErrorResponse  } from '@angular/common/http';
+
+import { forkJoin } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { catchError } from 'rxjs/operators';
 import { Observable, throwError, forkJoin, map } from 'rxjs';
 
@@ -222,6 +226,34 @@ export interface Department {
   modifiedAt?: Date;
   isDeleted?: boolean;
 }
+export interface UserDropdown {
+  userId: number;
+  employeeCode: string;
+  fullName: string;
+}
+
+export interface LateArrivalDto {
+  employeeName?: string;
+  employeeCode?: string;
+  department?: string;
+  attendanceDate?: string; // ISO date
+  scheduledStartTime?: string;
+  clockInTime?: string;
+  minutesLate?: number;
+  shiftName?: string;
+  clockInOutId?: number;
+}
+
+export interface LateArrivalRecord {
+  employeeName?: string;
+  employeeCode?: string;
+  attendanceDate?: string;
+  scheduledStartTime?: string;
+  clockInTime?: string;
+  minutesLate?: number;
+  status?: string;
+}
+
 //---------------------------------BANK DETAILS-----------------------------------------//
 export interface BankDetails {
   bankDetailsId: number;
@@ -991,6 +1023,47 @@ getAllExpenseCategoryTypes(companyId: number, regionId: number) {
     `${this.baseUrl}/ExpenseCategoryType/GetAll/${companyId}/${regionId}`
   );
 }
+
+getUsersByReportingTo(reportingTo: number): Observable<UserDropdown[]> {
+  const url = `${this.baseUrl}/UserManagement/users-by-reporting/${reportingTo}`;
+  return this.http.get<UserDropdown[]>(url);
+}
+
+
+getLateArrivals(companyId: number, regionId: number, fromDate: string, toDate: string, employeeCode?: string): Observable<LateArrivalDto[]> {
+  let params = new HttpParams()
+    .set('companyId', companyId.toString())
+    .set('regionId', regionId.toString())
+    .set('fromDate', fromDate)
+    .set('toDate', toDate);
+
+  if (employeeCode) {
+    params = params.set('employeeCode', employeeCode);
+  }
+
+const url = `${this.baseUrl}/Attendance/late-arrivals`;
+  return this.http.get<any>(url, { params }).pipe(
+    map(res => {
+      const arr = Array.isArray(res) ? res : (res?.data ?? res?.result ?? res?.lateArrivals ?? res?.users ?? res);
+      if (!Array.isArray(arr)) return [];
+      return arr.map((r: any) => ({
+        employeeName: r.employeeName,
+        employeeCode: r.employeeCode,
+        attendanceDate: r.attendanceDate,
+        scheduledStartTime: r.shiftStartTime,  
+        clockInTime: r.clockInTime,
+        minutesLate: r.lateByMinutes,         
+        status: r.status
+      }));
+
+    }),
+    catchError(err => {
+      console.error('Error in getLateArrivals', err);
+      return throwError(() => err);
+    })
+  );
+}
+
 //--------------------------------BANK - DETAILS-----------------------------------//
 getBankDetails(): Observable<BankDetails[]> {
   return this.http.get<BankDetails[]>(`${this.baseUrl}/UserManagement/GetAllBankDetails`);
