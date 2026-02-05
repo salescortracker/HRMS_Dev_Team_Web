@@ -1,0 +1,209 @@
+<h4>Onboarding</h4>
+
+<div class="row g-3">
+    <div class="card mb-4">
+
+        <!-- ===== TOP FILTER ROW ===== -->
+        <div class="row g-3 align-items-end mb-3">
+            <!-- Department -->
+            <div class="col-md-4">
+                <label class="form-label">Department</label>
+                <select class="form-select" [(ngModel)]="candidate.department" name="department">
+                    <option value="">Select</option>
+                    <option *ngFor="let d of departments" [value]="d">
+                        {{ d }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- Designation -->
+            <div class="col-md-4">
+                <label class="form-label">Designation</label>
+                <select class="form-select" [(ngModel)]="candidate.designation" name="designation">
+                    <option value="">Select</option>
+                    <option *ngFor="let des of designations" [value]="des">
+                        {{ des }}
+                    </option>
+                </select>
+            </div>
+
+
+
+            <!-- Show Resume -->
+            <div class="col-md-2 d-flex">
+                <button class="btn btn-primary w-100 me-2" (click)="showResume()">
+                    Show Resume
+                </button>
+                <button class="btn btn-outline-secondary w-100" (click)="resetScreeningFilters()">
+                    Reset
+                </button>
+            </div>
+
+        </div>
+
+        <!-- ===== TABLE ===== -->
+
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th (click)="sortTop('seqNo')" style="cursor:pointer">
+                            Seq
+                            <span *ngIf="topSortColumn === 'seqNo'">
+                                {{ topSortDirection === 'asc' ? '▲' : '▼' }}
+                            </span>
+                        </th>
+                        <th (click)="sortTop('name')" style="cursor:pointer">
+                            Name
+                            <span *ngIf="topSortColumn === 'name'">
+                                {{ topSortDirection === 'asc' ? '▲' : '▼' }}
+                            </span>
+                        </th>
+                        <th>Mobile</th>
+                        <th (click)="sortTop('expectedCtc')" style="cursor:pointer">
+                            Expected
+                            <span *ngIf="topSortColumn === 'expectedCtc'">
+                                {{ topSortDirection === 'asc' ? '▲' : '▼' }}
+                            </span>
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let c of pagedTopCandidates(); let i = index">
+                        <td>
+                            <input type="checkbox" class="form-check-input"
+                                [checked]="onboardForm.candidate?.candidateId === c.candidateId"
+                                (change)="toggleCandidate(c, $event)">
+
+                        </td>
+
+                        <td>{{ c.seqNo }}</td>
+                        <td>{{ c.name }}</td>
+                        <td>{{ c.mobile }}</td>
+                        <td>{{ c.expectedCtc }}</td>
+                    </tr>
+
+                    <tr *ngIf="pagedTopCandidates().length === 0">
+                        <td colspan="5" class="text-center text-muted">
+                            No records found
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-between align-items-center mt-2">
+
+                <div>
+                    <label>
+                        Show
+                        <select class="form-select d-inline w-auto ms-2" [(ngModel)]="topPageSize"
+                            (change)="changeTopPageSize(topPageSize)">
+                            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+                                {{ size }}
+                            </option>
+                        </select>
+                        entries
+                    </label>
+                </div>
+
+                <div>
+                    <button class="btn btn-outline-secondary btn-sm me-2" (click)="changeTopPage(topCurrentPage - 1)"
+                        [disabled]="topCurrentPage === 1">
+                        Previous
+                    </button>
+
+                    <span>Page {{ topCurrentPage }} of {{ topTotalPages }}</span>
+
+                    <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changeTopPage(topCurrentPage + 1)"
+                        [disabled]="topCurrentPage === topTotalPages">
+                        Next
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+    <div class="col-md-2">
+        <label class="form-label">Joining Date</label>
+        <input type="date" class="form-control" [(ngModel)]="onboardForm.joiningDate" name="onJoin" />
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Documents Collected</label>
+        <select class="form-select" [(ngModel)]="onboardForm.docsCollected" name="onDocs">
+            <option [ngValue]="true">Yes</option>
+            <option [ngValue]="false">No</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Background Check</label>
+        <select class="form-select" [(ngModel)]="onboardForm.bgCheck" name="onBg">
+            <option>Pending</option>
+            <option>Clear</option>
+            <option>Issue</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Laptop Issued</label>
+        <select class="form-select" [(ngModel)]="onboardForm.laptop" name="onLaptop">
+            <option [ngValue]="true">Yes</option>
+            <option [ngValue]="false">No</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Buddy Assigned</label>
+        <input class="form-control" [(ngModel)]="onboardForm.buddy" name="onBuddy" />
+    </div>
+
+    <div class="col-md-2 d-flex align-items-end">
+        <button class="btn btn-success w-100" (click)="applyOnboarding()">Save Onboarding</button>
+    </div>
+</div>
+
+<hr />
+
+<h5>Onboarding Status</h5>
+<div class="table-responsive">
+    <table class="table table-sm">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Candidate</th>
+                <th>Joining</th>
+                <th>Docs</th>
+                <th>BG Check</th>
+                <th>Laptop</th>
+                <th>Buddy</th>
+                <th>Progress</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let c of viewCandidates(); let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ c.name }}</td>
+                <td>{{ c.onboarding.joiningDate || '-' }}</td>
+                <td>{{ c.onboarding.docsCollected ? 'Yes' : 'No' }}</td>
+                <td>{{ c.onboarding.bgCheck || '-' }}</td>
+                <td>{{ c.onboarding.laptop ? 'Yes' : 'No' }}</td>
+                <td>{{ c.onboarding.buddy || '-' }}</td>
+                <td>
+                    <div class="progress" style="height:8px;">
+                        <div class="progress-bar" [style.width.%]="calculateProgress(c)"
+                            [ngClass]="getProgressColor(c)"></div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

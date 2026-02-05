@@ -1,0 +1,288 @@
+<h4>Screening</h4>
+
+<div class="card mb-4">
+
+  <!-- ===== TOP FILTER ROW ===== -->
+  <div class="row g-3 align-items-end mb-3">
+    <!-- Department -->
+    <div class="col-md-4">
+      <label class="form-label">Department</label>
+      <select class="form-select" [(ngModel)]="candidate.department" name="department">
+        <option value="">Select</option>
+        <option *ngFor="let d of departments" [value]="d">
+          {{ d }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Designation -->
+    <div class="col-md-4">
+      <label class="form-label">Designation</label>
+      <select class="form-select" [(ngModel)]="candidate.designation" name="designation">
+        <option value="">Select</option>
+        <option *ngFor="let des of designations" [value]="des">
+          {{ des }}
+        </option>
+      </select>
+    </div>
+
+
+
+    <!-- Show Resume -->
+    <div class="col-md-2 d-flex">
+      <button class="btn btn-primary w-100 me-2" (click)="showResume()">
+        Show Resume
+      </button>
+      <button class="btn btn-outline-secondary w-100" (click)="resetScreeningFilters()">
+        Reset
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ===== TABLE ===== -->
+
+  <div class="table-responsive">
+    <table class="table table-sm table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th (click)="sortTop('seqNo')" style="cursor:pointer">
+            Seq
+            <span *ngIf="topSortColumn === 'seqNo'">
+              {{ topSortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+          <th (click)="sortTop('name')" style="cursor:pointer">
+            Name
+            <span *ngIf="topSortColumn === 'name'">
+              {{ topSortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+          <th>Mobile</th>
+          <th (click)="sortTop('expectedCtc')" style="cursor:pointer">
+            Expected
+            <span *ngIf="topSortColumn === 'expectedCtc'">
+              {{ topSortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let c of pagedTopCandidates(); let i = index">
+          <td>
+            <input type="checkbox" class="form-check-input" [checked]="isSelected(c)"
+              (change)="toggleCandidate(c, $event)">
+          </td>
+
+          <td>{{ c.seqNo }}</td>
+          <td>{{ c.name }}</td>
+          <td>{{ c.mobile }}</td>
+          <td>{{ c.expectedCtc }}</td>
+        </tr>
+
+        <tr *ngIf="pagedTopCandidates().length === 0">
+          <td colspan="5" class="text-center text-muted">
+            No records found
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-2">
+
+      <div>
+        <label>
+          Show
+          <select class="form-select d-inline w-auto ms-2" [(ngModel)]="topPageSize"
+            (change)="changeTopPageSize(topPageSize)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+              {{ size }}
+            </option>
+          </select>
+          entries
+        </label>
+      </div>
+
+      <div>
+        <button class="btn btn-outline-secondary btn-sm me-2" (click)="changeTopPage(topCurrentPage - 1)"
+          [disabled]="topCurrentPage === 1">
+          Previous
+        </button>
+
+        <span>Page {{ topCurrentPage }} of {{ topTotalPages }}</span>
+
+        <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changeTopPage(topCurrentPage + 1)"
+          [disabled]="topCurrentPage === topTotalPages">
+          Next
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+</div>
+
+
+
+
+<div class="row g-3">
+
+
+  <div class="col-md-4">
+    <label class="form-label">Recruiters<span class="text-danger">*</span></label>
+    <select class="form-select" [(ngModel)]="screeningRecruiterId" name="screeningRecruiterId">
+      <option value="">Select</option>
+      <option *ngFor="let r of recruiters" [value]="r.userId">
+        {{ r.fullName }}
+      </option>
+    </select>
+
+
+
+
+
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">Result <span class="text-danger">*</span></label>
+    <select class="form-select" [(ngModel)]="screeningResult">
+      <option value="Pass">Pass</option>
+      <option value="Hold">Hold</option>
+      <option value="Reject">Reject</option>
+    </select>
+  </div>
+
+  <div class="col-md-8">
+    <label class="form-label">Remarks <span class="text-danger">*</span></label>
+    <textarea class="form-control" rows="2" [(ngModel)]="screeningRemarks"></textarea>
+  </div>
+
+  <div class="col-md-4 d-flex align-items-end gap-2">
+
+    <!-- Apply / Update -->
+    <button *ngIf="isFormValid()" type="button" class="btn btn-primary flex-fill"
+      (click)="isEditMode ? updateScreening() : applyScreening()">
+      {{ isEditMode ? 'Update Screening' : 'Apply Screening' }}
+    </button>
+
+    <!-- Reset -->
+    <button type="button" class="btn btn-outline-secondary flex-fill" (click)="resetScreeningForm()">
+      Reset
+    </button>
+
+  </div>
+
+
+</div>
+
+<hr />
+
+<h5>Screening Records</h5>
+<div class="table-responsive">
+  <table class="table table-sm">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th (click)="sortBottom('seqNo')" style="cursor:pointer">
+          Seq
+          <span *ngIf="bottomSortColumn === 'seqNo'">
+            {{ bottomSortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+        <th (click)="sortBottom('name')" style="cursor:pointer">
+          Name
+          <span *ngIf="bottomSortColumn === 'name'">
+            {{ bottomSortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+        <th>Recruiters</th>
+        <th (click)="sortBottom('result')" style="cursor:pointer">
+          Result
+          <span *ngIf="bottomSortColumn === 'result'">
+            {{ bottomSortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+        <th>Remarks</th>
+        <th (click)="sortBottom('date')" style="cursor:pointer">
+          Date
+          <span *ngIf="bottomSortColumn === 'date'">
+            {{ bottomSortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+        <th>Progress</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let c of pagedBottomRecords(); let i = index">
+        <td>{{ (bottomCurrentPage - 1) * bottomPageSize + i + 1 }}</td>
+        <td>{{c.seqNo}}</td>
+        <td>{{ c.name }}</td>
+        <td>
+          <ul class="mb-0">
+            <li *ngFor="let s of c.screening">{{ s.recruiter }}</li>
+          </ul>
+        </td>
+        <td>{{ c.screening.length ? c.screening[c.screening.length-1].status : '-' }}</td>
+        <td>{{ c.screening.length ? c.screening[c.screening.length-1].remarks : '-' }}</td>
+        <td>{{ c.screening.length ? (c.screening[c.screening.length-1].date | date:'dd-MMM-yyyy') : '-' }}</td>
+
+        <td style="width:170px;">
+          <div class="progress" style="height:8px;">
+            <div class="progress-bar" [style.width.%]="calculateProgress(c)" [ngClass]="getProgressColor(c)">
+            </div>
+          </div>
+        </td>
+
+        <td>
+          <button *ngIf="canEdit(c)" class="btn btn-sm btn-warning" (click)="editScreening(c)">
+            Edit
+          </button>
+        </td>
+      </tr>
+
+      <tr *ngIf="pagedBottomRecords().length === 0">
+        <td colspan="9" class="text-center text-muted">
+          No screening records
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <div class="d-flex justify-content-between align-items-center mt-2">
+
+    <div>
+      <label>
+        Show
+        <select class="form-select d-inline w-auto ms-2" [(ngModel)]="bottomPageSize"
+          (change)="changeBottomPageSize(bottomPageSize)">
+          <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+            {{ size }}
+          </option>
+        </select>
+        entries
+      </label>
+    </div>
+
+    <div>
+      <button class="btn btn-outline-secondary btn-sm me-2" (click)="changeBottomPage(bottomCurrentPage - 1)"
+        [disabled]="bottomCurrentPage === 1">
+        Previous
+      </button>
+
+      <span>Page {{ bottomCurrentPage }} of {{ bottomTotalPages }}</span>
+
+      <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changeBottomPage(bottomCurrentPage + 1)"
+        [disabled]="bottomCurrentPage === bottomTotalPages">
+        Next
+      </button>
+    </div>
+
+  </div>
+</div>

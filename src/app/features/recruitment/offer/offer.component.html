@@ -1,0 +1,153 @@
+<h4>Offer Management</h4>
+
+<div class="card mb-4">
+
+  <!-- ===== TOP FILTER ROW ===== -->
+  <div class="row g-3 align-items-end mb-3">
+    <!-- Department -->
+    <div class="col-md-4">
+      <label class="form-label">Department</label>
+      <select class="form-select" [(ngModel)]="offerForm.department" name="department">
+        <option value="">Select</option>
+        <option *ngFor="let d of departments" [value]="d">
+          {{ d }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Designation -->
+    <div class="col-md-4">
+      <label class="form-label">Designation</label>
+      <select class="form-select" [(ngModel)]="offerForm.designation" name="designation">
+        <option value="">Select</option>
+        <option *ngFor="let des of designations" [value]="des">
+          {{ des }}
+        </option>
+      </select>
+    </div>
+
+
+
+    <!-- Show Resume -->
+    <div class="col-md-2 d-flex">
+      <button class="btn btn-primary w-100" (click)="showResume()">
+        Show Resume
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ===== TABLE ===== -->
+  <div class="table-responsive">
+    <table class="table table-sm table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Seq</th>
+          <th>Name</th>
+          <th>Mobile</th>
+          <th>Expected</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let c of screeningCandidates; let i = index">
+          <td>
+            <input type="checkbox" class="form-check-input" [checked]="isSelected(c)"
+              (change)="toggleCandidate(c, $event)">
+          </td>
+
+          <td>{{ c.seqNo }}</td>
+          <td>{{ c.name }}</td>
+          <td>{{ c.mobile }}</td>
+          <td>{{ c.expectedCtc }}</td>
+        </tr>
+
+        <!-- Empty state -->
+        <tr *ngIf="!screeningCandidates || screeningCandidates.length === 0">
+          <td colspan="5" class="text-center text-muted">
+            No records found
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<div class="row g-3">
+  <div class="col-md-3">
+    <label class="form-label">CTC</label>
+    <input class="form-control" [(ngModel)]="offerForm.ctc" name="offCTC" />
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label">Expected DOJ</label>
+    <input type="date" class="form-control" [(ngModel)]="offerForm.doj" name="offDOJ" />
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label">Offer Status</label>
+    <select class="form-select" [(ngModel)]="offerForm.status" name="offStatus">
+
+      <option>Accepted</option>
+      <option>Declined</option>
+    </select>
+  </div>
+
+  
+
+
+
+
+  <div class="col-md-2 d-flex align-items-end">
+    <button class="btn btn-success w-100" (click)="applyOffer()">Save Offer</button>
+  </div>
+</div>
+
+<hr />
+
+<h5>Offers List</h5>
+<div class="table-responsive">
+  <table class="table table-sm">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Candidate</th>
+        <th>Designation</th>
+        <th>CTC</th>
+        <th>DOJ</th>
+        
+        <th>Status</th>
+        <th>Progress</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of viewCandidates(); let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ c.name }}</td>
+        <td>{{ c.offer.role || '-' }}</td>
+        <td>{{ c.offer.ctc || '-' }}</td>
+        <td>{{ c.offer.doj || '-' }}</td>
+        
+        <td>{{ c.offer.status || '-' }}</td>
+        <td>
+          <div class="progress" style="height:8px;">
+            <div class="progress-bar" [style.width.%]="calculateProgress(c)" [ngClass]="getProgressColor(c)"></div>
+          </div>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-primary me-2" (click)="sendOffer(c)">
+            Send
+          </button>
+          <button class="btn btn-sm btn-secondary" (click)="viewOffer(c)">
+            View
+          </button>
+        </td>
+
+
+      </tr>
+    </tbody>
+  </table>
+</div>

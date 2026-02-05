@@ -1,0 +1,578 @@
+<div class="card mb-4">
+  <h4 class="mb-3">Resume Upload</h4>
+
+  <form #uploadForm="ngForm" class="row g-3" novalidate>
+
+    <!-- ================= PERSONAL DETAILS ================= -->
+    <div class="card mb-3">
+      <div class="card-header fw-bold">Personal Details</div>
+      <div class="card-body">
+        <div class="row g-3">
+
+          <div class="col-md-3">
+            <label class="form-label">
+              Applied Date <span class="text-danger">*</span>
+            </label>
+            <input type="date" class="form-control" [(ngModel)]="candidate.appliedDate" name="appliedDate" required
+              [min]="today" [max]="today" #appliedDate="ngModel">
+            <small class="text-danger" *ngIf="appliedDate.invalid && appliedDate.touched">
+              Applied Date is required
+            </small>
+          </div>
+
+          <!-- First Name -->
+          <div class="col-md-3">
+            <label class="form-label">
+              First Name <span class="text-danger">*</span>
+            </label>
+            <input class="form-control" [(ngModel)]="candidate.firstName" name="firstName" required
+              pattern="^[A-Z][a-zA-Z]*$" (input)="capitalizeFirst($event, 'firstName')" #firstName="ngModel">
+            <small class="text-danger" *ngIf="firstName.invalid && firstName.touched">
+              Only letters, first letter capital
+            </small>
+          </div>
+
+          <!-- Last Name -->
+          <div class="col-md-3">
+            <label class="form-label">Last Name</label>
+            <input class="form-control" [(ngModel)]="candidate.lastName" name="lastName" pattern="^[A-Z][a-zA-Z]*$"
+              (input)="capitalizeFirst($event, 'lastName')" #lastName="ngModel">
+            <small class="text-danger" *ngIf="lastName.invalid && lastName.touched">
+              Only letters, first letter capital
+            </small>
+          </div>
+
+          <!-- Email -->
+          <div class="col-md-3">
+            <label class="form-label">
+              Email <span class="text-danger">*</span>
+            </label>
+            <input type="email" class="form-control" [(ngModel)]="candidate.email" name="email" required email
+              #email="ngModel">
+            <small class="text-danger" *ngIf="email.invalid && email.touched">
+              Enter valid email (ex: junnu12&#64;gmail.com)
+            </small>
+          </div>
+
+          <!-- Mobile -->
+          <div class="col-md-3">
+            <label class="form-label">Mobile</label>
+            <input class="form-control" [(ngModel)]="candidate.mobile" name="mobile" maxlength="10" minlength="10"
+              pattern="^[0-9]{10}$" (keypress)="allowNumbersOnly($event)" #mobile="ngModel">
+            <small class="text-danger" *ngIf="mobile.invalid && mobile.touched">
+              Mobile must be exactly 10 digits
+            </small>
+          </div>
+
+          <!-- Gender -->
+          <div class="col-md-3">
+            <label class="form-label">Gender</label>
+            <select class="form-select" [(ngModel)]="candidate.gender" name="gender">
+              <option value="">Select</option>
+              <option>Male</option>
+              <option>Female</option>
+            </select>
+          </div>
+
+          <!-- DOB -->
+          <div class="col-md-3">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" class="form-control" [(ngModel)]="candidate.dob" name="dob" [max]="today" #dob="ngModel">
+            <small class="text-danger" *ngIf="dob.invalid && dob.touched">
+              Future dates not allowed
+            </small>
+          </div>
+
+          <!-- Marital Status -->
+          <div class="col-md-3">
+            <label>Marital Status</label>
+            <select class="form-select" [(ngModel)]="candidate.maritalStatus" name="maritalStatus">
+              <option value="">Select</option>
+              <option>Single</option>
+              <option>Married</option>
+            </select>
+          </div>
+
+          <!-- Current Salary -->
+          <div class="col-md-3">
+            <label>Current Salary</label>
+            <input type="number" class="form-control" [(ngModel)]="candidate.currentSalary" name="currentSalary">
+          </div>
+
+          <!-- Expected Salary -->
+          <div class="col-md-3">
+            <label>
+              Expected Salary <span class="text-danger">*</span>
+            </label>
+            <input type="number" class="form-control" [(ngModel)]="candidate.expectedSalary" name="expectedSalary"
+              required #expectedSalary="ngModel">
+            <small class="text-danger" *ngIf="expectedSalary.invalid && expectedSalary.touched">
+              Expected Salary is required
+            </small>
+          </div>
+
+          <!-- Reference -->
+          <div class="col-md-3">
+            <label>Reference</label>
+            <select class="form-select" [(ngModel)]="candidate.reference" name="reference">
+              <option value="">Select</option>
+              <option *ngFor="let r of references" [value]="r.fullName">
+                {{ r.fullName }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Resume -->
+          <div class="col-md-3">
+            <label class="form-label">
+              Resume <span class="text-danger">*</span>
+            </label>
+            <input type="file" class="form-control" required (change)="onResumeFiles($event)">
+            <small class="text-info" *ngIf="isParsing">Parsing resume...</small>
+
+
+            <small class="text-danger" *ngIf="!resumeFile">
+              Resume is required
+            </small>
+
+            <div *ngIf="existingResumeName" class="mt-1">
+              <small>
+                Current:
+                <a (click)="viewDocument(existingResumeName)" style="cursor:pointer; color:#0d6efd">
+                  {{ existingResumeName }}
+                </a>
+              </small>
+            </div>
+          </div>
+
+          <!-- Department -->
+          <div class="col-md-3">
+            <label>Department</label>
+            <select class="form-select" [(ngModel)]="candidate.department" name="department">
+              <option value="">Select</option>
+              <option *ngFor="let d of departments" [value]="d">
+                {{ d }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Designation -->
+          <div class="col-md-3">
+            <label>
+              Designation <span class="text-danger">*</span>
+            </label>
+            <select class="form-select" [(ngModel)]="candidate.designation" name="designation" required
+              #designation="ngModel">
+              <option value="">Select</option>
+              <option *ngFor="let des of designations" [value]="des">
+                {{ des }}
+              </option>
+            </select>
+            <small class="text-danger" *ngIf="designation.invalid && designation.touched">
+              Designation is required
+            </small>
+          </div>
+
+          <!-- Skills -->
+          <div class="col-md-3">
+            <label>Skills</label>
+            <input class="form-control" [(ngModel)]="candidate.skills" name="skills">
+          </div>
+
+          <!-- Notice Period -->
+          <div class="col-md-3">
+            <label>Notice Period</label>
+            <select class="form-select" [(ngModel)]="candidate.noticePeriod" name="noticePeriod">
+              <option value="">Select</option>
+              <option>Immediate</option>
+              <option>15 Days</option>
+              <option>30 Days</option>
+              <option>60 Days</option>
+            </select>
+          </div>
+
+          <!-- Any Offers -->
+          <div class="col-md-3">
+            <label>Any Offers</label>
+            <input class="form-control" [(ngModel)]="candidate.anyOffers" name="anyOffers">
+          </div>
+
+          <!-- Location -->
+          <div class="col-md-3">
+            <label>Location</label>
+            <input class="form-control" [(ngModel)]="candidate.location" name="location">
+          </div>
+
+          <!-- Reason -->
+          <div class="col-md-6">
+            <label>Reason</label>
+            <textarea rows="2" class="form-control" [(ngModel)]="candidate.reason" name="reason">
+        </textarea>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= EXPERIENCE DETAILS ================= -->
+    <div class="card mb-3">
+      <div class="card-header fw-bold">Experience Details</div>
+
+      <div class="card-body">
+
+        <!-- INPUT ROW -->
+        <div class="row g-2 align-items-end mb-2">
+          <!-- From -->
+          <div class="col-md-2">
+            <label class="form-label">From</label>
+            <select class="form-select" [(ngModel)]="expForm.from" name="expFromYear" (change)="onExpFromChange()">
+              <option value="">Select</option>
+              <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+            </select>
+
+          </div>
+
+          <!-- To -->
+          <div class="col-md-2">
+            <label class="form-label">To</label>
+            <select class="form-select" [(ngModel)]="expForm.to" name="expToYear">
+              <option value="">Select</option>
+              <option *ngFor="let y of expToYears" [value]="y">{{ y }}</option>
+            </select>
+
+          </div>
+
+
+          <div class="col-md-3">
+            <label class="form-label">Designation</label>
+            <!-- <input class="form-control" [(ngModel)]="expForm.designation" name="expDesignation"> -->
+            <select class="form-select" [(ngModel)]="expForm.designation" name="expDesignation">
+              <option value="">Select</option>
+              <option *ngFor="let des of designations" [value]="des">
+                {{ des }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Organization</label>
+            <input class="form-control" [(ngModel)]="expForm.organization" name="expOrg">
+          </div>
+
+          <div class="col-md-1 text-end">
+            <button type="button" class="btn btn-primary w-100" (click)="addExperience()">
+              Add
+            </button>
+          </div>
+        </div>
+
+        <!-- TABLE -->
+        <div style="max-height:180px; overflow-y:auto;">
+          <table class="table table-bordered table-sm mb-0">
+            <thead class="table-light sticky-top">
+              <tr>
+                <th>#</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Designation</th>
+                <th>Organization</th>
+                <th>Actions</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let exp of experienceList; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ exp.from }}</td>
+                <td>{{ exp.to }}</td>
+                <td>{{ exp.designation }}</td>
+                <td>{{ exp.organization }}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary" (click)="editExperience(exp, i)">
+                    ✏️
+                  </button>
+                </td>
+
+              </tr>
+
+              <tr *ngIf="experienceList.length === 0">
+                <td colspan="5" class="text-center text-muted">No Experience Added</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ================= QUALIFICATION DETAILS ================= -->
+    <div class="card mb-3">
+      <div class="card-header fw-bold">Qualification Details</div>
+
+      <div class="card-body">
+
+        <!-- INPUT ROW -->
+        <div class="row g-2 align-items-end mb-2">
+          <!-- From -->
+          <div class="col-md-2">
+            <label class="form-label">From</label>
+            <select class="form-select" [(ngModel)]="eduForm.from" name="eduFromYear" (change)="onEduFromChange()">
+              <option value="">Select</option>
+              <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+            </select>
+
+          </div>
+
+          <!-- To -->
+          <div class="col-md-2">
+            <label class="form-label">To</label>
+            <select class="form-select" [(ngModel)]="eduForm.to" name="eduToYear">
+              <option value="">Select</option>
+              <option *ngFor="let y of eduToYears" [value]="y">{{ y }}</option>
+            </select>
+
+          </div>
+
+
+          <div class="col-md-3">
+            <label class="form-label">Qualification</label>
+            <input class="form-control" [(ngModel)]="eduForm.qualification" name="eduQual">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Board / University</label>
+            <input class="form-control" [(ngModel)]="eduForm.board" name="eduBoard">
+          </div>
+
+          <div class="col-md-1 text-end">
+            <button type="button" class="btn btn-primary w-100" (click)="addQualification()">
+              Add
+            </button>
+          </div>
+        </div>
+
+        <!-- TABLE -->
+        <div style="max-height:180px; overflow-y:auto;">
+          <table class="table table-bordered table-sm mb-0">
+            <thead class="table-light sticky-top">
+              <tr>
+                <th>#</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Qualification</th>
+                <th>Board / University</th>
+                <th>Actions</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let q of qualificationList; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ q.from }}</td>
+                <td>{{ q.to }}</td>
+                <td>{{ q.qualification }}</td>
+                <td>{{ q.board }}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary" (click)="editQualification(q, i)">
+                    ✏️
+                  </button>
+                </td>
+
+              </tr>
+
+              <tr *ngIf="qualificationList.length === 0">
+                <td colspan="5" class="text-center text-muted">No Qualification Added</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+
+  </form>
+
+  <!-- ================= SAVE SECTION ================= -->
+  <!-- <div class="card mb-4"> -->
+  <div class="card-body text-end">
+    <button class="btn btn-success px-4" [disabled]="uploadForm.invalid" (click)="saveCandidate()">
+      {{ isEditMode ? 'Update Candidate' : 'Save Candidate' }}
+    </button>
+    <button class="btn btn-success px-4" type="button" (click)="onReset()">
+      Reset
+    </button>
+  </div>
+</div>
+
+
+<hr />
+
+<h5>Candidates Listing</h5>
+<div class="table-responsive">
+  <table class="table table-sm table-hover">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+
+        <th>Seq</th>
+        <th (click)="sortBy('candidateName')" style="cursor:pointer">
+          Name
+          <span *ngIf="sortColumn === 'candidateName'">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+
+        <th (click)="sortBy('technology')" style="cursor:pointer">
+          Designation
+          <span *ngIf="sortColumn === 'technology'">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+
+
+
+        <th>Mobile</th>
+
+        <th (click)="sortBy('appliedDate')" style="cursor:pointer">
+          Applied
+          <span *ngIf="sortColumn === 'appliedDate'">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+
+        <th>File</th>
+        <th (click)="sortBy('stageName')" style="cursor:pointer">
+          Stage
+          <span *ngIf="sortColumn === 'stageName'">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+
+
+        <th>Progress</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let c of pagedCandidates(); let i = index"
+        [class.table-active]="selectedCandidate?.candidateId === c.candidateId">
+
+        <!-- # -->
+        <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+
+        <!-- S.N -->
+        <td>
+          {{ c.seqNo }}
+
+        </td>
+
+        <!-- Name -->
+        <td>
+          {{ c.candidateName }}
+          <small class="d-block text-muted">{{ c.email }}</small>
+        </td>
+
+        <!-- Designation -->
+        <td>
+          {{ c.technology }}
+        </td>
+
+        <!-- Mobile -->
+        <td>
+          {{ c.mobile }}
+        </td>
+
+        <!-- Applied -->
+        <td>
+          {{ c.appliedDate | date:'dd-MMM-yyyy' }}
+        </td>
+        <td>
+          <a *ngIf="c.fileName; else noFile" (click)="viewDocument(c.fileName)"
+            style="cursor:pointer; color:#0d6efd; font-weight:500;">
+            View
+          </a>
+          <ng-template #noFile>
+            <span class="text-muted">No File</span>
+          </ng-template>
+        </td>
+
+        <!-- Stage -->
+        <td>
+          <span class="badge bg-info text-dark">{{ c.stageName }}</span>
+        </td>
+
+
+
+
+        <!-- Progress -->
+        <td style="min-width:170px;">
+          <div class="d-flex align-items-center">
+            <div class="flex-fill me-2">
+              <div class="progress" style="height:8px;">
+                <div class="progress-bar" [style.width.%]="calculateProgress(c)" [ngClass]="getProgressColor(c)">
+                </div>
+              </div>
+            </div>
+            <small>{{ calculateProgress(c) }}%</small>
+          </div>
+        </td>
+
+        <!-- Actions -->
+        <td>
+          <button class="btn btn-sm btn-outline-success me-1" (click)="advanceStage(c)"
+            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding'].includes(c.stageName)">
+            Select
+          </button>
+          <button class="btn btn-sm btn-outline-danger"
+            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding'].includes(c.stageName)"
+            (click)="removeCandidate(c)">
+            Delete
+          </button>
+          <button class="btn btn-sm btn-outline-primary me-1"
+            [disabled]="['Screening','Interview','Appointment','Offer','Onboarding'].includes(c.stageName)"
+            (click)="editCandidate(c)">
+            Edit
+          </button>
+
+        </td>
+      </tr>
+
+      <tr *ngIf="viewCandidates().length === 0">
+        <td colspan="8" class="text-center text-muted">No candidates found</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="d-flex justify-content-between align-items-center mt-3">
+
+    <div>
+      <label>
+        Show
+        <select class="form-select d-inline w-auto ms-2" [(ngModel)]="pageSize" (change)="changePageSize(pageSize)">
+          <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+            {{ size }}
+          </option>
+        </select>
+        entries
+      </label>
+    </div>
+
+    <div>
+      <button class="btn btn-outline-secondary btn-sm me-2" (click)="changePage(currentPage - 1)"
+        [disabled]="currentPage === 1">
+        Previous
+      </button>
+
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+      <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changePage(currentPage + 1)"
+        [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
+
+  </div>
+
+</div>

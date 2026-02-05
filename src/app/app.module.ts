@@ -59,6 +59,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonUploadComponent } from './shared/common-upload/common-upload.component';
 import { ReactiveFormsModule } from '@angular/forms';
+<<<<<<< Updated upstream
+=======
+import { ResumeuploadComponent } from './features/recruitment/resumeupload/resumeupload.component';
+import { ScreeningComponent } from './features/recruitment/screening/screening.component';
+import { InterviewComponent } from './features/recruitment/interview/interview.component';
+import { AppointmentComponent } from './features/recruitment/appointment/appointment.component';
+import { OfferComponent } from './features/recruitment/offer/offer.component';
+import { OnboardingComponent } from './features/recruitment/onboarding/onboarding.component';
+
+>>>>>>> Stashed changes
 @NgModule({
   declarations: [
     AppComponent,
@@ -113,7 +123,18 @@ import { ReactiveFormsModule } from '@angular/forms';
     MyEventsComponent,
     CompensationComponent,
     RecruitmentProcessComponent,
+<<<<<<< Updated upstream
     CommonUploadComponent
+=======
+    CommonUploadComponent,
+    ResumeuploadComponent,
+    ScreeningComponent,
+    InterviewComponent,
+    AppointmentComponent,
+    OfferComponent,
+    OnboardingComponent
+
+>>>>>>> Stashed changes
   ],
   imports: [
     BrowserModule,ReactiveFormsModule,

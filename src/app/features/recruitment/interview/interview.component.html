@@ -1,0 +1,293 @@
+<h4>Interview Scheduling & Feedback</h4>
+
+<div class="row g-3">
+  <div class="card mb-4">
+
+    <!-- ===== TOP FILTER ROW ===== -->
+    <div class="row g-3 align-items-end mb-3">
+      <!-- Department -->
+      <div class="col-md-4">
+        <label class="form-label">Department</label>
+        <select class="form-select" [(ngModel)]="interviewForm.department" [disabled]="isEditMode" name="department">
+          <option value="">Select</option>
+          <option *ngFor="let d of departments" [value]="d">
+            {{ d }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Designation -->
+      <div class="col-md-4">
+        <label class="form-label">Designation</label>
+        <select class="form-select" [(ngModel)]="interviewForm.designation" [disabled]="isEditMode" name="designation">
+          <option value="">Select</option>
+          <option *ngFor="let des of designations" [value]="des">
+            {{ des }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Show Resume + Reset -->
+      <div class="col-md-2 d-flex">
+        <button class="btn btn-primary w-100 me-2" (click)="showResume()">
+          Show Resume
+        </button>
+        <button class="btn btn-outline-secondary w-100" (click)="resetInterviewFilters()">
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== TOP TABLE ===== -->
+    <div class="table-responsive">
+      <table class="table table-sm table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+
+            <th (click)="sortTop('seqNo')" style="cursor:pointer">
+              Seq
+              <span *ngIf="topSortColumn === 'seqNo'">
+                {{ topSortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+
+            <th (click)="sortTop('name')" style="cursor:pointer">
+              Name
+              <span *ngIf="topSortColumn === 'name'">
+                {{ topSortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+
+            <th>Mobile</th>
+
+            <th (click)="sortTop('expectedCtc')" style="cursor:pointer">
+              Expected
+              <span *ngIf="topSortColumn === 'expectedCtc'">
+                {{ topSortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let c of pagedTopCandidates(); let i = index">
+            <td>
+              <input type="checkbox" class="form-check-input" [checked]="isSelected(c)"
+                (change)="toggleCandidate(c, $event)">
+            </td>
+
+            <td>{{ c.seqNo }}</td>
+            <td>{{ c.name }}</td>
+            <td>{{ c.mobile }}</td>
+            <td>{{ c.expectedCtc }}</td>
+          </tr>
+
+          <tr *ngIf="pagedTopCandidates().length === 0">
+            <td colspan="5" class="text-center text-muted">
+              No records found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ===== TOP PAGINATION ===== -->
+      <div class="d-flex justify-content-between align-items-center mt-2">
+
+        <div>
+          <label>
+            Show
+            <select class="form-select d-inline w-auto ms-2" [(ngModel)]="topPageSize"
+              (change)="changeTopPageSize(topPageSize)">
+              <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+                {{ size }}
+              </option>
+            </select>
+            entries
+          </label>
+        </div>
+
+        <div>
+          <button class="btn btn-outline-secondary btn-sm me-2" (click)="changeTopPage(topCurrentPage - 1)"
+            [disabled]="topCurrentPage === 1">
+            Previous
+          </button>
+
+          <span>Page {{ topCurrentPage }} of {{ topTotalPages }}</span>
+
+          <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changeTopPage(topCurrentPage + 1)"
+            [disabled]="topCurrentPage === topTotalPages">
+            Next
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================= FORM ================= -->
+
+  <div class="col-md-3">
+    <label class="form-label">Level<span class="text-danger">*</span></label>
+    <select class="form-select" [(ngModel)]="interviewForm.level" name="level">
+      <option value="">Select Level</option>
+      <option *ngFor="let l of levels" [value]="l">Level {{ l }}</option>
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label">Interviewer<span class="text-danger">*</span></label>
+    <select class="form-select" [(ngModel)]="interviewForm.interviewerId" name="iviewer">
+      <option value="">Select Interviewer</option>
+      <option *ngFor="let r of interviewer" [value]="r.userId">
+        {{ r.fullName }}
+      </option>
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label">Date & Time<span class="text-danger">*</span></label>
+    <input type="datetime-local" class="form-control" [(ngModel)]="interviewForm.dt" name="ivdt" />
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label">Location<span class="text-danger">*</span></label>
+    <input class="form-control" [(ngModel)]="interviewForm.location" name="ivloc" placeholder="Office / Online" />
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label">Meeting Link:</label>
+    <input class="form-control" [(ngModel)]="interviewForm.meetingLink" name="ivlink"
+      placeholder="Enter Meeting Link" />
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">Description<span class="text-danger">*</span></label>
+    <textarea class="form-control" [(ngModel)]="interviewForm.feedback" rows="2"></textarea>
+  </div>
+
+  <div class="col-md-1 d-flex align-items-end gap-2">
+    <button class="btn flex-fill" [ngClass]="isEditMode ? 'btn-warning' : 'btn-success'"
+      (click)="scheduleInterview()">
+      {{ isEditMode ? 'Update Interview' : 'Schedule Interview' }}
+    </button>
+
+    <button class="btn btn-outline-secondary flex-fill" (click)="resetInterviewForm()">
+      Reset
+    </button>
+  </div>
+</div>
+
+<hr />
+
+<h5>Interview Records</h5>
+<div class="table-responsive">
+  <table class="table table-sm">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+
+        <th (click)="sortBottom('seqNo')" style="cursor:pointer">
+          Seq
+          <span *ngIf="bottomSortColumn === 'seqNo'">
+            {{ bottomSortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+
+        <th (click)="sortBottom('candidateName')" style="cursor:pointer">
+          Candidate
+          <span *ngIf="bottomSortColumn === 'candidateName'">
+            {{ bottomSortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+
+        <th>Level</th>
+
+        <th (click)="sortBottom('interviewerName')" style="cursor:pointer">
+          Interviewer
+          <span *ngIf="bottomSortColumn === 'interviewerName'">
+            {{ bottomSortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+
+        <th (click)="sortBottom('interviewDate')" style="cursor:pointer">
+          DateTime
+          <span *ngIf="bottomSortColumn === 'interviewDate'">
+            {{ bottomSortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+
+        <th>Location</th>
+        <th>Description</th>
+        <th>Progress</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let c of pagedBottomRecords(); let i = index">
+        <td>{{ (bottomCurrentPage - 1) * bottomPageSize + i + 1 }}</td>
+        <td>{{ c.seqNo }}</td>
+        <td>{{ c.candidateName }}</td>
+        <td>Level {{ c.levelNo }}</td>
+        <td>{{ c.interviewerName }}</td>
+        <td>{{ c.interviewDate | date:'yyyy-MM-dd HH:mm' }}</td>
+        <td>{{ c.location }}</td>
+        <td>{{ c.description }}</td>
+
+        <td style="width:160px;">
+          <div class="progress" style="height:8px;">
+            <div class="progress-bar" role="progressbar" [style.width.%]="calculateProgress(c)"
+              [ngClass]="getProgressColor(c)">
+            </div>
+          </div>
+        </td>
+
+        <td>
+          <button class="btn btn-sm btn-danger" (click)="editInterview(c)">
+            Edit
+          </button>
+        </td>
+      </tr>
+
+      <tr *ngIf="pagedBottomRecords().length === 0">
+        <td colspan="10" class="text-center text-muted">
+          No interview records found
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ===== BOTTOM PAGINATION ===== -->
+  <div class="d-flex justify-content-between align-items-center mt-2">
+
+    <div>
+      <label>
+        Show
+        <select class="form-select d-inline w-auto ms-2" [(ngModel)]="bottomPageSize"
+          (change)="changeBottomPageSize(bottomPageSize)">
+          <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+            {{ size }}
+          </option>
+        </select>
+        entries
+      </label>
+    </div>
+
+    <div>
+      <button class="btn btn-outline-secondary btn-sm me-2" (click)="changeBottomPage(bottomCurrentPage - 1)"
+        [disabled]="bottomCurrentPage === 1">
+        Previous
+      </button>
+
+      <span>Page {{ bottomCurrentPage }} of {{ bottomTotalPages }}</span>
+
+      <button class="btn btn-outline-secondary btn-sm ms-2" (click)="changeBottomPage(bottomCurrentPage + 1)"
+        [disabled]="bottomCurrentPage === bottomTotalPages">
+        Next
+      </button>
+    </div>
+
+  </div>
+</div>

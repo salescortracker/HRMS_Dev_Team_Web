@@ -1,0 +1,112 @@
+<h4 class="mb-3">Appointment Details</h4>
+
+<div class="card mb-4">
+
+  <!-- =================== SELECT INTERVIEW =================== -->
+  <label class="form-label mb-2">Select Interview</label>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-sm table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Seq</th>
+          <th>Date</th>
+          <th>Designation</th>
+          <th>Venue</th>
+          <th>Description</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let row of appointments; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ row.seqNo }}</td>
+          <td>{{ row.interviewDate | date:'dd-MMM-yyyy' }}</td>
+          <td>{{ row.designation }}</td>
+          <td>{{ row.location }}</td>
+          <td>{{ row.description }}</td>
+          <td class="text-center">
+            <i class="fa fa-edit" style="cursor:pointer" (click)="onEdit(row)"></i>
+          </td>
+
+        </tr>
+      </tbody>
+
+    </table>
+  </div>
+
+  <!-- =================== ATTENDEE DETAILS =================== -->
+  <label class="form-label mb-2">Attendee Details</label>
+
+  <div class="table-responsive">
+    <table class="table table-sm table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Seq</th>
+          <th>Name</th>
+          <th>Gender</th>
+          <th>Mobile</th>
+          <th>Expected</th>
+          <th>Status</th>
+          <th>Description</th>
+
+          <th>Reported By</th>
+
+
+        </tr>
+      </thead>
+
+      <tbody *ngIf="selectedCandidate">
+        <tr>
+          <td>1</td>
+          <td>{{ selectedCandidate.seqNo }}</td>
+          <td>{{ selectedCandidate.name }}</td>
+          <td>{{ selectedCandidate.gender }}</td>
+          <td>{{ selectedCandidate.mobile }}</td>
+          <td>{{ selectedCandidate.expected }}</td>
+
+          <!-- Status (Disabled) -->
+          <td>
+            <select class="form-select form-select-sm" [(ngModel)]="selectedCandidate.result">
+              <option value="Selected">Selected</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Level 1 Complete">Level 1 Complete</option>
+              
+            </select>
+          </td>
+
+
+          <!-- Description (Editable) -->
+          <td>
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="selectedCandidate.description">
+          </td>
+
+
+
+          <!-- Reported By -->
+          <td>
+            <select class="form-select form-select-sm" [(ngModel)]="selectedCandidate.reportedBy">
+              <option value="">-Select-</option>
+              <option *ngFor="let u of reporters" [value]="u.userId">
+                {{ u.fullName }}
+              </option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+  </div>
+
+  <!-- =================== SAVE BUTTON =================== -->
+  <div class="mt-4">
+    <button class="btn btn-success px-4" (click)="save()">
+      Save
+    </button>
+
+  </div>
+
+</div>
